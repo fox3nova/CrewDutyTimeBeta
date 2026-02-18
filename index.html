@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v4.8.1 Logic Fix)</title>
+    <title>CAL Duty (Pro v4.8.2 Logic Fix)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -543,7 +543,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px;">PRO v4.8.1 Logic Fix</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px;">PRO v4.8.2 Logic Fix</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -1386,10 +1386,31 @@
             if (i === 0) globalPauseMinutes = pause;
         });
 
+        // Calculate Limits First (Needed for Rest Logic)
+        let base = 14; 
+        if(app.crew==='M') base=18; if(app.crew==='D') base=24; 
+        
+        const isNight = document.getElementById('nightOps').checked;
+        let lim = isNight ? base - 2 : base;
+        
+        const totalExtension = stationLimitExtensions.reduce((a, b) => a + b, 0);
+        const isExt = document.getElementById('extFdt').checked;
+        const discretionMins = isExt ? 120 : 0;
+
+        let globalMaxFdpMins = (lim*60) + globalPauseMinutes + totalExtension + discretionMins; 
+        let isCapped = false;
+        if (globalMaxFdpMins > 1440) { globalMaxFdpMins = 1440; isCapped = true; } 
+
+        let limitText = `${base}h`;
+        if(isNight) limitText += `-2h`;
+        if(globalPauseMinutes > 0) limitText += `+S`; 
+        if(totalExtension > 0) limitText += `+E`; 
+        if(isExt) limitText += `+CD`; 
+
+        document.getElementById('disp-limit-dur').innerText = limitText;
+
         calcTotals();
 
-        // --- REWRITTEN LOGIC FOR FT CALCULATION AND DUTY END TIME ---
-        
         // 1. Calculate Total Block Time (For Table Lookup)
         let totalFtCalc = 0;
         for(let k=0; k<app.stations.length-1; k++) {
@@ -1467,8 +1488,6 @@
              if (legBlock >= 960) isULR = true;
         }
 
-        // --- END REWRITTEN LOGIC ---
-
         const alertOverlay = document.getElementById('ulr-alert');
         if (isULR && app.crew !== 'D') {
             alertOverlay.classList.remove('hidden');
@@ -1538,28 +1557,6 @@
             }
         }
         document.getElementById('resReport').innerHTML = repHtml;
-        
-        let base = 14; 
-        if(app.crew==='M') base=18; if(app.crew==='D') base=24; 
-        
-        const isNight = document.getElementById('nightOps').checked;
-        let lim = isNight ? base - 2 : base;
-        
-        const totalExtension = stationLimitExtensions.reduce((a, b) => a + b, 0);
-        const isExt = document.getElementById('extFdt').checked;
-        const discretionMins = isExt ? 120 : 0;
-
-        let globalMaxFdpMins = (lim*60) + globalPauseMinutes + totalExtension + discretionMins; 
-        let isCapped = false;
-        if (globalMaxFdpMins > 1440) { globalMaxFdpMins = 1440; isCapped = true; } 
-
-        let limitText = `${base}h`;
-        if(isNight) limitText += `-2h`;
-        if(globalPauseMinutes > 0) limitText += `+S`; 
-        if(totalExtension > 0) limitText += `+E`; 
-        if(isExt) limitText += `+CD`; 
-
-        document.getElementById('disp-limit-dur').innerText = limitText;
 
         const fdpEndTime = rep + globalMaxFdpMins;
         const maxFdtEl = document.getElementById('resMaxFdtCard');
@@ -1721,23 +1718,23 @@
                 nextLegCheck.classList.add('hidden');
             }
             // --------------------------
-
+            
+            // --- LOGIC FIX v4.8.2: Only apply FDP extension if LIMIT is exceeded ---
+            let finalRestHours = tableRest;
+            
+            // Check current FDP against MAX FDP
             let actualFdpMins = estimatedDutyEndTime - rep;
             if (actualFdpMins < 0) actualFdpMins += 1440;
-            const fdpRestHours = Math.ceil(actualFdpMins / 60);
-            
-            let finalRestHours = Math.max(tableRest, fdpRestHours);
+
+            if (actualFdpMins > globalMaxFdpMins) {
+                const fdpRestHours = Math.ceil(actualFdpMins / 60);
+                finalRestHours = Math.max(tableRest, fdpRestHours);
+            }
             
             const finalRestMins = finalRestHours * 60;
             const postDuty = 30; 
             
-            let arrivalZAbs = estimatedDutyEndTime; // Use our estimated/actual end time
-            
-            // Reconstruct absolute arrival Z for date calculation if needed
-            // (Simplified relative to rep for day offset calculation)
-            // Note: estimatedDutyEndTime is 0-1440, we need the "flow" time for date calc
-            // This part uses the existing date logic but applies our new end time
-            
+            let arrivalZAbs = estimatedDutyEndTime; 
             let nextRptZAbs = arrivalZAbs + postDuty + finalRestMins;
             const destCode = app.stations[lastIdx].code;
             let nextRptHtml = fmt(nextRptZAbs % 1440) + " Z"; 
@@ -1747,10 +1744,7 @@
 
             if (destCode in airportIanaZones) {
                 const zone = airportIanaZones[destCode];
-                // We need to approximate the arrival DATE based on report time
                 const anchor = new Date(refDate);
-                // Adjust anchor based on rep time vs arrival time flow
-                // Simplified: Calculate offset from Rep to Arrival
                 let flowMins = estimatedDutyEndTime - rep;
                 if(flowMins < 0) flowMins += 1440;
                 
