@@ -127,7 +127,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .app-title {
@@ -163,18 +163,13 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* === NEW CONTROL PANEL DESIGN === */
-        .controls-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .control-row {
+        /* === COMPACT CONTROL GRID === */
+        .controls-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px 8px; /* Tighter gap to save vertical space */
             align-items: center;
+            justify-content: flex-start;
         }
 
         .date-trigger {
@@ -182,7 +177,7 @@
             border: 1px solid var(--border-light);
             color: var(--text-primary);
             padding: 0 8px; 
-            height: 34px;    
+            height: 32px; /* Compressed height */   
             line-height: normal;
             border-radius: var(--radius-md);
             font-weight: 600;
@@ -193,7 +188,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            flex: 0 0 auto;
+            flex: 1 1 auto;
         }
 
         .toggle-wrapper {
@@ -202,7 +197,7 @@
             justify-content: space-between;
             background: var(--bg-input);
             padding: 0 10px; 
-            height: 34px;    
+            height: 32px; /* Compressed height */   
             border-radius: var(--radius-md);
             border: 1px solid var(--border-light);
             cursor: pointer;
@@ -231,7 +226,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 12px; 
-            height: 34px;    
+            height: 32px; /* Compressed height */   
             border-radius: var(--radius-md);
             font-size: 12px;
             font-weight: 700;
@@ -251,7 +246,7 @@
             padding: 8px 16px;
             background: var(--bg-app);
             position: absolute;
-            top: 165px; /* Adjusted downward to accommodate the stable dual-row controls */
+            top: 150px; /* Restored to optimal compact value */
             left: 0;
             width: 100%;
             z-index: 90;
@@ -288,7 +283,7 @@
             align-items: center; 
             
             position: absolute;
-            top: 225px; /* Adjusted downward */
+            top: 210px; /* Restored to optimal compact value */
             bottom: 80px; /* Above footer */
             left: 0;
             width: 100%;
@@ -504,118 +499,111 @@
             </div>
         </div>
 
-        <!-- NEW DUAL-ROW DASHBOARD DESIGN -->
-        <div class="controls-panel">
+        <div class="controls-grid">
             
-            <!-- 1. System Row (Top) -->
-            <div class="control-row">
-                <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;">
-                    <span id="nightBtnIcon">🌙</span>
-                </button>
-                
-                <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
-                
-                <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue); flex: 0 0 auto;">
-                    ALL UTC
-                </button>
+            <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 38px; padding:0;">
+                <span id="nightBtnIcon">🌙</span>
+            </button>
+            
+            <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
+            
+            <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue); flex: 0 0 auto; min-width: 70px;">
+                ALL UTC
+            </button>
 
-                <!-- Spacer to force Save & Reset to the far right -->
-                <div style="flex-grow: 1;"></div>
+            <!-- ACARS LBO Input -->
+            <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
+                <span style="display:flex; align-items:center; font-size:10px;">
+                    JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
+                </span>
+                <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
+            </div>
 
-                <div style="display: flex; gap: 8px; flex: 0 0 auto; position: relative;">
-                    <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
-                    
-                    <div id="routePopup" class="popover">
-                        <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
-                        <div class="flex gap-2 mb-2">
-                            <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
-                            <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
+            <div style="position: relative; flex: 1 1 auto; min-width:115px;">
+                <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup()">
+                    <span style="display:flex; align-items:center; font-size:10px;">
+                        PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
+                    </span>
+                    <div style="display:flex; align-items:center;">
+                        <input type="tel" id="prevFt" value="0000" readonly style="background:transparent; text-align:right; font-weight:bold; width:40px; color:inherit; pointer-events:none;">
+                        <span style="font-size:8px; margin-left:4px;">▼</span>
+                    </div>
+                </div>
+                <div id="prevPopup" class="popover">
+                    <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-secondary">DATE (Z)</span>
+                            <input type="date" id="pf-date" class="glass-input" style="width:120px; font-size:12px;" onchange="calc24hOverlap(); runAllCalc()">
                         </div>
-                        <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
-                        <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
-                            <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
-                            <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-secondary">IN (Z)</span>
+                            <input type="tel" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-secondary">FT</span>
+                            <input type="tel" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                        </div>
+                        <div style="margin-top:8px; display:flex; justify-content:center;">
+                            <button onclick="togglePrevPopup()" class="crew-btn active" style="width:100%; background:var(--brand-green); color:white;">✅ OK</button>
                         </div>
                     </div>
-
-                    <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
                 </div>
             </div>
 
-            <!-- 2. Flight Modifiers Row (Bottom) -->
-            <div class="control-row">
-                <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
-                    <span style="display:flex; align-items:center; font-size:10px;">
-                        JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
-                    </span>
-                    <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
-                </div>
+            <div class="toggle-wrapper" id="extFdtContainer">
+                <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
+                <label class="switch">
+                    <input type="checkbox" id="extFdt" onchange="runAllCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-wrapper" id="night-container">
+                <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
+                <label class="switch">
+                    <input type="checkbox" id="nightOps" onchange="runAllCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
 
-                <div style="position: relative; flex: 1 1 auto; min-width:125px;">
-                    <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup()">
-                        <span style="display:flex; align-items:center; font-size:10px;">
-                            PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
-                        </span>
-                        <div style="display:flex; align-items:center;">
-                            <input type="tel" id="prevFt" value="0000" readonly style="background:transparent; text-align:right; font-weight:bold; width:40px; color:inherit; pointer-events:none;">
-                            <span style="font-size:8px; margin-left:4px;">▼</span>
-                        </div>
-                    </div>
-                    <div id="prevPopup" class="popover">
-                        <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
-                        <div class="flex flex-col gap-2">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-secondary">DATE (Z)</span>
-                                <input type="date" id="pf-date" class="glass-input" style="width:120px; font-size:12px;" onchange="calc24hOverlap(); runAllCalc()">
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-secondary">IN (Z)</span>
-                                <input type="tel" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-secondary">FT</span>
-                                <input type="tel" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
-                            </div>
-                            <div style="margin-top:8px; display:flex; justify-content:center;">
-                                <button onclick="togglePrevPopup()" class="crew-btn active" style="width:100%; background:var(--brand-green); color:white;">✅ OK</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="toggle-wrapper">
+                <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
+                <label class="switch">
+                    <input type="checkbox" id="noBunk" onchange="runAllCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <!-- Early Morning -->
+            <div class="toggle-wrapper" style="padding:0 8px; flex: 1 1 auto; min-width: 115px;">
+                <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
+                <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
+                    <option value="0">一般</option>
+                    <option value="2">連 2 天</option>
+                    <option value="3">連 3 天</option>
+                </select>
+                <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
+            </div>
 
-                <div class="toggle-wrapper" id="extFdtContainer">
-                    <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
-                    <label class="switch">
-                        <input type="checkbox" id="extFdt" onchange="runAllCalc()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+            <!-- ACTION GROUP: 魔法屬性 margin-left: auto 強制它們對齊至每一行的最右側 -->
+            <div style="display: flex; gap: 8px; margin-left: auto; flex: 0 0 auto; position: relative;">
+                <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
                 
-                <div class="toggle-wrapper" id="night-container">
-                    <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
-                    <label class="switch">
-                        <input type="checkbox" id="nightOps" onchange="runAllCalc()">
-                        <span class="slider"></span>
-                    </label>
+                <div id="routePopup" class="popover">
+                    <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
+                        <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
+                    </div>
+                    <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
+                    <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
+                        <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
+                        <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
+                    </div>
                 </div>
 
-                <div class="toggle-wrapper">
-                    <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
-                    <label class="switch">
-                        <input type="checkbox" id="noBunk" onchange="runAllCalc()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                
-                <div class="toggle-wrapper" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
-                    <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
-                    <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
-                        <option value="0">一般</option>
-                        <option value="2">連 2 天</option>
-                        <option value="3">連 3 天</option>
-                    </select>
-                    <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
-                </div>
+                <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
             </div>
 
         </div>
