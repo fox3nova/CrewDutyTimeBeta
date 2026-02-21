@@ -163,13 +163,18 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* Responsive Controls Grid */
-        .controls-grid {
+        /* === NEW CONTROL PANEL DESIGN === */
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-row {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             align-items: center;
-            justify-content: flex-start;
         }
 
         .date-trigger {
@@ -188,7 +193,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            flex: 1 1 auto;
+            flex: 0 0 auto;
         }
 
         .toggle-wrapper {
@@ -246,7 +251,7 @@
             padding: 8px 16px;
             background: var(--bg-app);
             position: absolute;
-            top: 155px;
+            top: 165px; /* Adjusted downward to accommodate the stable dual-row controls */
             left: 0;
             width: 100%;
             z-index: 90;
@@ -283,7 +288,7 @@
             align-items: center; 
             
             position: absolute;
-            top: 215px;
+            top: 225px; /* Adjusted downward */
             bottom: 80px; /* Above footer */
             left: 0;
             width: 100%;
@@ -499,110 +504,120 @@
             </div>
         </div>
 
-        <div class="controls-grid">
-            <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;">
-                <span id="nightBtnIcon">🌙</span>
-            </button>
+        <!-- NEW DUAL-ROW DASHBOARD DESIGN -->
+        <div class="controls-panel">
             
-            <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
-            
-            <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
-                ALL UTC
-            </button>
-
-            <!-- ACARS LBO Input (Fleet Notification 2024-14) -->
-            <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
-                <span style="display:flex; align-items:center; font-size:10px;">
-                    JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
-                </span>
-                <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
-            </div>
-
-            <div class="toggle-wrapper" id="extFdtContainer">
-                <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="extFdt" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div class="toggle-wrapper" id="night-container">
-                <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="nightOps" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-wrapper">
-                <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="noBunk" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <!-- Early Morning CAPSULE UI (3.4.3.4) -->
-            <div class="toggle-wrapper" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
-                <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
-                <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
-                    <option value="0">一般</option>
-                    <option value="2">連 2 天</option>
-                    <option value="3">連 3 天</option>
-                </select>
-                <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
-            </div>
-
-            <div style="position: relative; flex: 1 1 auto; min-width:125px;">
-                <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup()">
-                    <span style="display:flex; align-items:center; font-size:10px;">
-                        PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
-                    </span>
-                    <div style="display:flex; align-items:center;">
-                        <input type="tel" id="prevFt" value="0000" readonly style="background:transparent; text-align:right; font-weight:bold; width:40px; color:inherit; pointer-events:none;">
-                        <span style="font-size:8px; margin-left:4px;">▼</span>
-                    </div>
-                </div>
-                <div id="prevPopup" class="popover">
-                    <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
-                    <div class="flex flex-col gap-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-secondary">DATE (Z)</span>
-                            <input type="date" id="pf-date" class="glass-input" style="width:120px; font-size:12px;" onchange="calc24hOverlap(); runAllCalc()">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-secondary">IN (Z)</span>
-                            <input type="tel" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-secondary">FT</span>
-                            <input type="tel" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
-                        </div>
-                        <div style="margin-top:8px; display:flex; justify-content:center;">
-                            <button onclick="togglePrevPopup()" class="crew-btn active" style="width:100%; background:var(--brand-green); color:white;">✅ OK</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 將 RESET 與 檔案存取按鈕包裝進一個右側對齊的彈性群組 -->
-            <div style="display: flex; gap: 8px; flex: 1 1 auto; justify-content: flex-end; min-width: 112px; position: relative;">
-                <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
-                <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
+            <!-- 1. System Row (Top) -->
+            <div class="control-row">
+                <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;">
+                    <span id="nightBtnIcon">🌙</span>
+                </button>
                 
-                <div id="routePopup" class="popover">
-                    <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
-                    <div class="flex gap-2 mb-2">
-                        <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
-                        <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
+                <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
+                
+                <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue); flex: 0 0 auto;">
+                    ALL UTC
+                </button>
+
+                <!-- Spacer to force Save & Reset to the far right -->
+                <div style="flex-grow: 1;"></div>
+
+                <div style="display: flex; gap: 8px; flex: 0 0 auto; position: relative;">
+                    <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
+                    
+                    <div id="routePopup" class="popover">
+                        <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
+                        <div class="flex gap-2 mb-2">
+                            <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
+                            <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
+                        </div>
+                        <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
+                        <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
+                            <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
+                            <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
+                        </div>
                     </div>
-                    <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
-                    <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
-                        <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
-                        <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
-                    </div>
+
+                    <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
                 </div>
             </div>
+
+            <!-- 2. Flight Modifiers Row (Bottom) -->
+            <div class="control-row">
+                <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
+                    <span style="display:flex; align-items:center; font-size:10px;">
+                        JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
+                    </span>
+                    <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
+                </div>
+
+                <div style="position: relative; flex: 1 1 auto; min-width:125px;">
+                    <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup()">
+                        <span style="display:flex; align-items:center; font-size:10px;">
+                            PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
+                        </span>
+                        <div style="display:flex; align-items:center;">
+                            <input type="tel" id="prevFt" value="0000" readonly style="background:transparent; text-align:right; font-weight:bold; width:40px; color:inherit; pointer-events:none;">
+                            <span style="font-size:8px; margin-left:4px;">▼</span>
+                        </div>
+                    </div>
+                    <div id="prevPopup" class="popover">
+                        <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-secondary">DATE (Z)</span>
+                                <input type="date" id="pf-date" class="glass-input" style="width:120px; font-size:12px;" onchange="calc24hOverlap(); runAllCalc()">
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-secondary">IN (Z)</span>
+                                <input type="tel" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-secondary">FT</span>
+                                <input type="tel" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                            </div>
+                            <div style="margin-top:8px; display:flex; justify-content:center;">
+                                <button onclick="togglePrevPopup()" class="crew-btn active" style="width:100%; background:var(--brand-green); color:white;">✅ OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="toggle-wrapper" id="extFdtContainer">
+                    <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
+                    <label class="switch">
+                        <input type="checkbox" id="extFdt" onchange="runAllCalc()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-wrapper" id="night-container">
+                    <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
+                    <label class="switch">
+                        <input type="checkbox" id="nightOps" onchange="runAllCalc()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-wrapper">
+                    <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
+                    <label class="switch">
+                        <input type="checkbox" id="noBunk" onchange="runAllCalc()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="toggle-wrapper" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
+                    <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
+                    <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
+                        <option value="0">一般</option>
+                        <option value="2">連 2 天</option>
+                        <option value="3">連 3 天</option>
+                    </select>
+                    <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
+                </div>
+            </div>
+
         </div>
         <div id="ulr-alert" class="hidden" style="background:var(--brand-red); color:white; text-align:center; font-size:10px; font-weight:bold; border-radius:4px; margin-top:4px; padding:2px;">⚠️ ULR DETECTED: REQUIRE 4 PILOTS</div>
     </header>
