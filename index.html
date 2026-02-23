@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.1.0)</title>
+    <title>CAL Duty (Pro v5.2.0)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -300,6 +300,23 @@
             box-shadow: inset var(--shadow-sm);
             overflow: hidden;
         }
+        
+        /* Ghost Overlay for Planned FDP */
+        .dt-ghost {
+            position: absolute; top: -1px; bottom: -1px; left: 0;
+            border: 1px dashed var(--text-tertiary);
+            border-radius: var(--radius-full);
+            background: rgba(148, 163, 184, 0.15);
+            z-index: 1; pointer-events: none;
+            box-sizing: border-box;
+            display: none;
+            transition: width 0.5s ease;
+        }
+        body.dark-mode .dt-ghost {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
         .dt-fill {
             position: absolute;
             top: 0;
@@ -309,6 +326,7 @@
             border-radius: var(--radius-full);
             transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
             box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            z-index: 2;
         }
         .dt-segment {
             position: absolute;
@@ -316,7 +334,7 @@
             bottom: 1px;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 4px;
-            z-index: 2;
+            z-index: 3;
             box-shadow: 1px 0 0 rgba(0,0,0,0.1);
         }
         body.dark-mode .dt-segment { background: rgba(0, 0, 0, 0.25); }
@@ -327,7 +345,7 @@
             height: 100%;
             width: 3px;
             background: var(--brand-red);
-            z-index: 3;
+            z-index: 4;
         }
 
         /* === TIMELINE === */
@@ -343,7 +361,7 @@
             align-items: center; 
             
             position: absolute;
-            top: 245px; /* Pushed down to accommodate the new timeline bar */
+            top: 265px; /* Pushed down to accommodate the detailed timeline bar */
             bottom: 80px; /* Above footer */
             left: 0;
             width: 100%;
@@ -561,7 +579,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.1.0 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.2.0 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -699,12 +717,29 @@
 
     <!-- NEW: DYNAMIC DUTY TIMELINE MINIMAP -->
     <div class="duty-timeline-wrapper" id="dutyTimelineWrapper">
-        <div class="dt-header">
-            <span>Report <span id="dt-rpt-label">--:--</span></span>
-            <span style="color:var(--brand-blue);" id="dt-pct-label">0%</span>
-            <span>Max FDP <span id="dt-max-label">--:--</span></span>
+        <div class="dt-header" style="align-items: flex-end; margin-top: 4px;">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+                <span style="font-size:9px; color:var(--text-tertiary); font-weight:bold;">REPORT</span>
+                <span style="font-size:12px; font-weight:800; font-family:monospace;" id="dt-rpt-label">--:--</span>
+            </div>
+            
+            <!-- Center FDP Display -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                <span style="font-size:9px; font-weight:bold;">
+                    <span style="color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace;">--:--</span></span>
+                    <span style="margin:0 4px; color:var(--border-light);">|</span>
+                    <span style="color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
+                </span>
+                <span style="color:var(--brand-blue); font-size:14px; font-weight:800; font-family:monospace;" id="dt-pct-label">0%</span>
+            </div>
+
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
+                <span style="font-size:9px; color:var(--text-tertiary); font-weight:bold;">MAX LIMIT</span>
+                <span style="font-size:12px; font-weight:800; font-family:monospace;" id="dt-max-label">--:--</span>
+            </div>
         </div>
-        <div class="dt-track">
+        <div class="dt-track" style="margin-top:6px;">
+            <div class="dt-ghost" id="dtGhost"></div>
             <div class="dt-fill" id="dtFill"></div>
             <!-- Flight segments will be injected here by JS -->
             <div id="dtSegments"></div>
@@ -754,9 +789,11 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.1.0</b><br>• 🚀 新增「動態時間條 (Duty Minimap)」，以視覺化膠囊顯示預估工時與航段佈局。<br>• 📚 全局說明系統升級，加入精美雙語排版與 FOM 條文對照。</div>
+            text: `<div class="info-zh"><b>v5.2.0</b><br>• 🚀 導入極致 Progressive Fill 漸進預估邏輯：當僅有 STD/STA 時顯示計畫殘影 (Ghost)；輸入實際數值後，即刻觸發實心條漸進式填滿與連鎖推算。<br>• ⏱️ 時間條新增「表定 / 實際」純數字對照儀表。</div>
                    <div class="info-divider"></div>
-                   <div class="info-en"><b>v5.0.2</b><br>• 新增 JZ ACARS LBO 限制整合。<br>• 新增連續早班機 (Early Morning) 休時規則。<br>• 新增 Prev FT 24小時重疊飛時檢查。</div>`
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.1.0</b><br>• 新增「動態時間條 (Duty Minimap)」，視覺化預估工時與航段佈局。<br>• 全局說明系統升級，加入精美雙語排版與 FOM 條文對照。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.0.2</b><br>• 新增 JZ ACARS LBO 限制整合。<br>• 新增連續早班機 (Early Morning) 休時規則。<br>• 新增 Prev FT 24小時重疊飛時檢查。</div>`
         },
         'jz': {
             title: '聯管通報 JZ LBO',
@@ -858,7 +895,7 @@
         isLocked: false,
         nextLegHeavy: false,
         acarsLbo: '',
-        earlyMorning: '0' 
+        earlyMorning: '0'
     };
     let savedRoutes = [];
 
@@ -1525,22 +1562,11 @@
         if (isULR && app.crew !== 'D') alertOverlay.classList.remove('hidden');
         else alertOverlay.classList.add('hidden');
 
-        // Estimate Duty End
-        const lastIdx = app.stations.length - 1; const lastLegIdx = lastIdx - 1; 
-        const lastActIn = parse(app.stations[lastIdx].in); const lastActOut = parse(app.stations[lastLegIdx].out);
-        const lastManFt = parse(app.sfts[lastLegIdx]); const lastStd = parse(app.stations[lastLegIdx].std); const lastSta = parse(app.stations[lastIdx].sta);
-        const l_txOut = (app.stations[lastLegIdx].taxiOut !== undefined) ? app.stations[lastLegIdx].taxiOut : 15;
-        const l_txIn  = (app.stations[lastIdx].taxiIn !== undefined) ? app.stations[lastIdx].taxiIn : 15;
-
-        let estimatedDutyEndTime = null;
-        if (lastActIn !== null) estimatedDutyEndTime = lastActIn;
-        else if (lastActOut !== null && lastManFt !== null) estimatedDutyEndTime = lastActOut + lastManFt + l_txOut + l_txIn;
-        else if (lastStd !== null && lastManFt !== null) estimatedDutyEndTime = lastStd + lastManFt + l_txOut + l_txIn;
-        else if (lastSta !== null) estimatedDutyEndTime = lastSta;
-
-        if (estimatedDutyEndTime !== null) {
-            while (estimatedDutyEndTime >= 1440) estimatedDutyEndTime -= 1440;
-            while (estimatedDutyEndTime < 0) estimatedDutyEndTime += 1440;
+        // --- NEW: Dynamic Ripple Delay & Accumulation Logic ---
+        let globalSchedEndAbs = null;
+        for (let i = app.stations.length - 1; i > 0; i--) {
+            let sta = parse(app.stations[i].sta);
+            if (sta !== null) { globalSchedEndAbs = sta; break; }
         }
 
         const s1 = parse(app.stations[0].std);
@@ -1588,13 +1614,69 @@
         }
 
         let repHtml = fmt(rep);
-        if (rep !== null && code in airportIanaZones) {
+        if (code in airportIanaZones) {
             let rptDate = new Date(refDate);
             if (s1 !== null && (s1 - reportOffset) < 0) rptDate.setUTCDate(rptDate.getUTCDate() - 1);
             const rptLoc = getLocalInfo(rep, airportIanaZones[code], rptDate);
             if (rptLoc) repHtml += ` <span style="font-size:10px; color:var(--text-secondary); font-weight:normal;">(${rptLoc.timeStr}L)</span>`;
         }
         document.getElementById('resReport').innerHTML = repHtml;
+
+        // Overall duty estimation for Next Rpt calculation (assumes all future scheduled legs are flown)
+        let cumulativeElapsed = 0;
+        if (s1 !== null) {
+            let lastDepartureElapsed = reportOffset; 
+
+            for (let i = 0; i < app.stations.length - 1; i++) {
+                let st = app.stations[i];
+                let nextSt = app.stations[i+1];
+                
+                let std = parse(st.std);
+                let sta = parse(nextSt.sta);
+                let out = parse(st.out);
+                let inc = parse(nextSt.in);
+                let ft = parse(app.sfts[i]);
+                let txOut = st.taxiOut !== undefined ? st.taxiOut : 15;
+                let txIn = nextSt.taxiIn !== undefined ? nextSt.taxiIn : 15;
+
+                // Calc OUT
+                let outElapsed = lastDepartureElapsed;
+                if (out !== null) {
+                    outElapsed = out - rep;
+                    if (outElapsed < 0) outElapsed += 1440;
+                    if (i > 0 && outElapsed < lastDepartureElapsed - 720) outElapsed += 1440;
+                } else if (std !== null) {
+                    let stdElapsed = std - rep;
+                    if (stdElapsed < 0) stdElapsed += 1440;
+                    if (i > 0 && stdElapsed < lastDepartureElapsed - 720) stdElapsed += 1440;
+                    outElapsed = Math.max(lastDepartureElapsed, stdElapsed);
+                }
+
+                // Calc IN
+                let inElapsed = outElapsed;
+                if (inc !== null) {
+                    let rawInElapsed = inc - rep;
+                    if (rawInElapsed < 0) rawInElapsed += 1440;
+                    while (rawInElapsed < outElapsed) rawInElapsed += 1440;
+                    inElapsed = rawInElapsed;
+                } else if (ft !== null) {
+                    inElapsed = outElapsed + ft + txOut + txIn;
+                } else if (std !== null && sta !== null) {
+                    let schedBlock = diff(std, sta);
+                    inElapsed = outElapsed + schedBlock;
+                } else {
+                    inElapsed = outElapsed + txOut + txIn;
+                }
+
+                cumulativeElapsed = inElapsed;
+                lastDepartureElapsed = inElapsed + 45; // 45 min standard turn
+            }
+        }
+
+        let estimatedDutyEndTime = rep + cumulativeElapsed;
+        if (estimatedDutyEndTime >= 1440) {
+            estimatedDutyEndTime = estimatedDutyEndTime % 1440;
+        }
 
         const fdpEndTime = rep + globalMaxFdpMins;
         const maxFdtEl = document.getElementById('resMaxFdtCard');
@@ -1623,10 +1705,9 @@
             if (actualElapsed > effectiveLimit) isActExceeded = true;
         }
 
-        const lastSt = app.stations[app.stations.length - 1]; const lastStaVal = parse(lastSt.sta);
         let isStaExceeded = false;
-        if (lastStaVal !== null) {
-             let staElapsed = lastStaVal - rep; if (staElapsed < 0) staElapsed += 1440;
+        if (globalSchedEndAbs !== null) {
+             let staElapsed = globalSchedEndAbs - rep; if (staElapsed < 0) staElapsed += 1440;
              if (staElapsed > effectiveLimit) isStaExceeded = true;
         }
         
@@ -1653,6 +1734,7 @@
         }
         
         // --- REST CALCULATION ---
+        const lastIdx = app.stations.length - 1;
         if (estimatedDutyEndTime === null) {
             document.getElementById('resNextRpt').innerHTML = "--:--";
             document.getElementById('min-rest-lbl').innerText = "Rest: --";
@@ -1768,7 +1850,7 @@
         updateTurns();
 
         // 🟢 INJECT DYNAMIC TIMELINE UPDATE
-        updateDynamicTimeline(rep, globalMaxFdpMins, estimatedDutyEndTime);
+        updateDynamicTimeline(rep, globalMaxFdpMins, globalSchedEndAbs);
     }
       
     function updateTurns() {
@@ -1783,80 +1865,148 @@
         }
     }
 
-    // === NEW FUNCTION: DYNAMIC TIMELINE HANDLER ===
-    function updateDynamicTimeline(rep, maxFdpMins, estEndAbs) {
+    // === NEW FUNCTION: PROGRESSIVE DYNAMIC TIMELINE HANDLER ===
+    function updateDynamicTimeline(rep, maxFdpMins, schedEndAbs) {
         const wrapper = document.getElementById('dutyTimelineWrapper');
-        if (rep === null || estEndAbs === null || !maxFdpMins) {
+        if (rep === null || !maxFdpMins) {
             wrapper.style.display = 'none';
             return;
         }
         wrapper.style.display = 'flex';
 
-        // 1. Calculate main fill percentage
-        let actualFdpMins = estEndAbs - rep;
-        if (actualFdpMins < 0) actualFdpMins += 1440;
-
-        let pct = (actualFdpMins / maxFdpMins) * 100;
-        let displayPct = pct > 100 ? 100 : pct;
-
-        // 2. Update UI Elements
+        // 1. Update Fixed Labels
         document.getElementById('dt-rpt-label').innerText = fmt(rep);
         document.getElementById('dt-max-label').innerText = fmt(rep + maxFdpMins);
         
-        const pctLabel = document.getElementById('dt-pct-label');
-        pctLabel.innerText = Math.round(pct) + '%';
-        
-        const fillEl = document.getElementById('dtFill');
-        fillEl.style.width = displayPct + '%';
+        // 2. Handle Sched Ghost Overlay (The Container)
+        let schedFdpMins = 0;
+        const ghostEl = document.getElementById('dtGhost');
+        ghostEl.style.display = 'none';
 
-        // 3. Dynamic Warning Colors
-        if (pct >= 95) {
-            fillEl.style.background = 'linear-gradient(90deg, var(--brand-orange), var(--brand-red))';
-            pctLabel.style.color = 'var(--brand-red)';
-        } else if (pct >= 75) {
-            fillEl.style.background = 'linear-gradient(90deg, var(--brand-blue), var(--brand-orange))';
-            pctLabel.style.color = 'var(--brand-orange)';
+        if (schedEndAbs !== null) {
+            schedFdpMins = schedEndAbs - rep;
+            if (schedFdpMins < 0) schedFdpMins += 1440;
+            document.getElementById('dt-sch-val').innerText = fmt(schedFdpMins, false);
+            let schedPct = (schedFdpMins / maxFdpMins) * 100;
+            ghostEl.style.display = 'block';
+            ghostEl.style.width = Math.min(schedPct, 100) + '%';
         } else {
-            fillEl.style.background = 'linear-gradient(90deg, var(--brand-blue), var(--brand-purple))';
-            pctLabel.style.color = 'var(--brand-blue)';
+            document.getElementById('dt-sch-val').innerText = '--:--';
         }
 
-        // 4. Draw Flight Segments (Visual mapping of OUT to IN)
+        // 3. Progressive Actual Fill (The Water)
+        let progActMins = 0;
+        let hasAnyActData = false;
+        const code = app.stations[0].code.trim().toUpperCase();
+        let lastProgElapsed = (code === 'TPE') ? 90 : 60; // Initial report offset
+
         const segmentsContainer = document.getElementById('dtSegments');
-        segmentsContainer.innerHTML = ''; // Clear old
+        segmentsContainer.innerHTML = '';
 
-        app.stations.forEach((st, idx) => {
-            if (idx === app.stations.length - 1) return; // Skip last (dest)
-
-            // Prefer Actual over Sched
-            let outTime = parse(st.out);
-            if (outTime === null) outTime = parse(st.std);
+        for (let i = 0; i < app.stations.length - 1; i++) {
+            let st = app.stations[i];
+            let nextSt = app.stations[i+1];
             
-            let inTime = parse(app.stations[idx+1].in);
-            if (inTime === null) inTime = parse(app.stations[idx+1].sta);
-            
-            // If neither exist, we can't draw the segment accurately
-            if (outTime !== null && inTime !== null) {
-                let outElapsed = outTime - rep; 
-                if (outElapsed < 0) outElapsed += 1440;
-                
-                let inElapsed = inTime - rep; 
-                if (inElapsed < 0) inElapsed += 1440;
+            let out = parse(st.out);
+            let inc = parse(nextSt.in);
+            let ft = parse(app.sfts[i]);
+            let std = parse(st.std);
+            let txOut = st.taxiOut !== undefined ? st.taxiOut : 15;
+            let txIn = nextSt.taxiIn !== undefined ? nextSt.taxiIn : 15;
 
-                let startPct = (outElapsed / maxFdpMins) * 100;
-                let durationPct = ((inElapsed - outElapsed) / maxFdpMins) * 100;
-
-                // Only draw if it's somewhat within the legal bar window
-                if (startPct >= 0 && startPct <= 100) {
-                    const seg = document.createElement('div');
-                    seg.className = 'dt-segment';
-                    seg.style.left = startPct + '%';
-                    // Cap width so it doesn't overflow the container
-                    seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
-                    segmentsContainer.appendChild(seg);
-                }
+            // Stop accumulation loop immediately if this leg has no actual progress data
+            if (out === null && inc === null && ft === null) {
+                break;
             }
-        });
+
+            hasAnyActData = true;
+            
+            // Calculate Accumulated OUT
+            let legOutRel = lastProgElapsed;
+            if (out !== null) {
+                let outRel = out - rep;
+                if (outRel < 0) outRel += 1440;
+                if (i > 0 && outRel < lastProgElapsed - 720) outRel += 1440;
+                legOutRel = outRel;
+            } else if (std !== null) {
+                let stdRel = std - rep;
+                if (stdRel < 0) stdRel += 1440;
+                if (i > 0 && stdRel < lastProgElapsed - 720) stdRel += 1440;
+                legOutRel = Math.max(lastProgElapsed, stdRel); // Fallback to delayed std
+            }
+
+            // Calculate Accumulated IN
+            let legInRel = legOutRel;
+            if (inc !== null) {
+                let inRel = inc - rep;
+                if (inRel < 0) inRel += 1440;
+                while (inRel < legOutRel) inRel += 1440; // Next day arrival
+                legInRel = inRel;
+            } else if (ft !== null) {
+                legInRel = legOutRel + ft + txOut + txIn; // Projecting IN via FT
+            }
+
+            progActMins = legInRel;
+            
+            // Turn Time for next leg loop
+            let turn = 45;
+            if (st.hotel && i < app.stations.length - 1) {
+                const hTime = calcRest(st.ci, st.co);
+                if (hTime >= 180) turn = hTime; // Handle split duty rest gap
+            }
+            lastProgElapsed = legInRel + turn; 
+
+            // Draw Segment Visuals
+            let startPct = (legOutRel / maxFdpMins) * 100;
+            let durationPct = ((legInRel - legOutRel) / maxFdpMins) * 100;
+            if (startPct >= 0 && startPct <= 100) {
+                const seg = document.createElement('div');
+                seg.className = 'dt-segment';
+                seg.style.left = startPct + '%';
+                seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
+                segmentsContainer.appendChild(seg);
+            }
+        }
+
+        const fillEl = document.getElementById('dtFill');
+        const pctLabel = document.getElementById('dt-pct-label');
+        const titleAct = document.getElementById('dt-act-title');
+
+        if (!hasAnyActData) {
+            // Sched-only state: clear the solid progressive bar entirely
+            fillEl.style.width = '0%';
+            fillEl.style.background = 'transparent';
+            fillEl.style.boxShadow = 'none';
+            document.getElementById('dt-act-val').innerText = '--:--';
+            pctLabel.innerText = '0%';
+            pctLabel.style.color = 'var(--text-tertiary)';
+            titleAct.style.color = 'var(--text-tertiary)';
+        } else {
+            // Act mode: render the solid progressive bar
+            let displayPct = (progActMins / maxFdpMins) * 100;
+
+            fillEl.style.width = Math.min(displayPct, 100) + '%';
+            document.getElementById('dt-act-val').innerText = fmt(progActMins, false);
+            pctLabel.innerText = Math.round(displayPct) + '%';
+
+            // Warning Colors
+            if (displayPct >= 95) {
+                fillEl.style.background = 'linear-gradient(90deg, var(--brand-orange), var(--brand-red))';
+                fillEl.style.boxShadow = '0 1px 4px rgba(255,59,48,0.2)';
+                pctLabel.style.color = 'var(--brand-red)';
+                titleAct.style.color = 'var(--brand-red)';
+            } else if (displayPct >= 75) {
+                fillEl.style.background = 'linear-gradient(90deg, var(--brand-blue), var(--brand-orange))';
+                fillEl.style.boxShadow = '0 1px 4px rgba(255,149,0,0.2)';
+                pctLabel.style.color = 'var(--brand-orange)';
+                titleAct.style.color = 'var(--brand-orange)';
+            } else {
+                fillEl.style.background = 'linear-gradient(90deg, var(--brand-blue), var(--brand-purple))';
+                fillEl.style.boxShadow = '0 1px 4px rgba(0,122,255,0.2)';
+                pctLabel.style.color = 'var(--brand-blue)';
+                titleAct.style.color = 'var(--brand-blue)';
+            }
+        }
     }
 
     function updateBar(elId, val, limit) {
@@ -2136,6 +2286,7 @@
                 
             } catch(e){} 
         }
+
         setCrew(savedCrew);
         drawTimeline(); 
     };
