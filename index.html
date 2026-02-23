@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.0.3)</title>
+    <title>CAL Duty (Pro v5.1.0)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -127,7 +127,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .app-title {
@@ -136,21 +136,10 @@
             background: linear-gradient(135deg, var(--brand-blue), var(--brand-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-        }
-
-        .version-badge {
-            border: 1px solid var(--border-light);
-            padding: 2px 6px;
-            border-radius: 6px;
-            background: var(--bg-input);
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
-        .version-badge:active { transform: scale(0.95); background: var(--border-light); }
 
         .crew-selector {
             background: var(--bg-input);
@@ -174,11 +163,11 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* === COMPACT CONTROL GRID === */
+        /* Responsive Controls Grid */
         .controls-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px 8px; /* Tighter gap to save vertical space */
+            gap: 8px;
             align-items: center;
             justify-content: flex-start;
         }
@@ -188,7 +177,7 @@
             border: 1px solid var(--border-light);
             color: var(--text-primary);
             padding: 0 8px; 
-            height: 32px; /* Compressed height */   
+            height: 34px;    
             line-height: normal;
             border-radius: var(--radius-md);
             font-weight: 600;
@@ -208,7 +197,7 @@
             justify-content: space-between;
             background: var(--bg-input);
             padding: 0 10px; 
-            height: 32px; /* Compressed height */   
+            height: 34px;    
             border-radius: var(--radius-md);
             border: 1px solid var(--border-light);
             cursor: pointer;
@@ -237,7 +226,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 12px; 
-            height: 32px; /* Compressed height */   
+            height: 34px;    
             border-radius: var(--radius-md);
             font-size: 12px;
             font-weight: 700;
@@ -257,7 +246,7 @@
             padding: 8px 16px;
             background: var(--bg-app);
             position: absolute;
-            top: 150px; /* Restored to optimal compact value */
+            top: 155px;
             left: 0;
             width: 100%;
             z-index: 90;
@@ -281,6 +270,66 @@
         .stat-alert { border: 1px solid var(--brand-red); background: rgba(255, 59, 48, 0.05); }
         .stat-alert .stat-value { color: var(--brand-red); }
 
+        /* === DYNAMIC DUTY TIMELINE === */
+        .duty-timeline-wrapper {
+            position: absolute;
+            top: 220px; /* Positioned right below the stats dashboard */
+            left: 16px;
+            right: 16px;
+            z-index: 90;
+            display: none; /* Shown via JS */
+            flex-direction: column;
+            gap: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+        .dt-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+        }
+        .dt-track {
+            position: relative;
+            width: 100%;
+            height: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-full);
+            box-shadow: inset var(--shadow-sm);
+            overflow: hidden;
+        }
+        .dt-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--brand-blue), var(--brand-purple));
+            border-radius: var(--radius-full);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .dt-segment {
+            position: absolute;
+            top: 1px;
+            bottom: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            z-index: 2;
+            box-shadow: 1px 0 0 rgba(0,0,0,0.1);
+        }
+        body.dark-mode .dt-segment { background: rgba(0, 0, 0, 0.25); }
+        .dt-limit-marker {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--brand-red);
+            z-index: 3;
+        }
+
         /* === TIMELINE === */
         #timeline-container {
             display: flex;
@@ -294,7 +343,7 @@
             align-items: center; 
             
             position: absolute;
-            top: 210px; /* Restored to optimal compact value */
+            top: 245px; /* Pushed down to accommodate the new timeline bar */
             bottom: 80px; /* Above footer */
             left: 0;
             width: 100%;
@@ -456,21 +505,32 @@
         }
         .info-modal-overlay.show { display: flex; opacity: 1; }
         .info-modal-card {
-            background: var(--bg-card); width: 85%; max-width: 340px;
-            border-radius: var(--radius-lg); padding: 20px;
+            background: var(--bg-card); width: 85%; max-width: 360px;
+            border-radius: var(--radius-lg); padding: 0;
             box-shadow: var(--shadow-float); transform: scale(0.95); transition: transform 0.2s ease;
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-light); overflow: hidden;
         }
         .info-modal-overlay.show .info-modal-card { transform: scale(1); }
-        .info-modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 12px; margin-bottom: 12px;}
-        .info-modal-body { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
-        .info-modal-body b { color: var(--text-primary); }
+        .info-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-light);}
+        .info-modal-body { padding: 20px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); max-height: 70vh; overflow-y: auto;}
+        
+        /* Modal Typography Utilities */
+        .info-ref { display: inline-block; background: var(--bg-accent); color: var(--brand-blue); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; letter-spacing: 0.5px; border: 1px solid rgba(0,122,255,0.1); }
+        .info-zh { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; line-height: 1.5; letter-spacing: 0.02em; }
+        .info-en { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; letter-spacing: 0.01em; }
+        .info-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
 
         /* RESPONSIVE RESET for Mobile Portrait */
         @media screen and (max-width: 820px) and (orientation: portrait) {
             html, body { position: static; overflow-y: auto; overflow-x: hidden; }
             .app-header { position: sticky; top: 0; }
             .stats-dashboard { position: static; margin-top: 0; }
+            
+            .duty-timeline-wrapper {
+                position: static;
+                margin: 12px 16px 0 16px;
+            }
+            
             #timeline-container {
                 position: static; height: auto; flex-direction: column; 
                 overflow-x: hidden; overflow-y: visible; padding-bottom: 120px; 
@@ -500,12 +560,8 @@
 
     <header class="app-header">
         <div class="header-top">
-            <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:20px;">✈️</span>
-                <span class="app-title">CAL Duty</span>
-                <span class="text-xs font-medium version-badge" onclick="showInfo('version')">
-                    Pro v5.0.3 ℹ️
-                </span>
+            <div class="app-title">
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.1.0 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -515,18 +571,17 @@
         </div>
 
         <div class="controls-grid">
-            
-            <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 38px; padding:0;">
+            <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;">
                 <span id="nightBtnIcon">🌙</span>
             </button>
             
             <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
             
-            <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue); flex: 0 0 auto; min-width: 70px;">
+            <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
                 ALL UTC
             </button>
 
-            <!-- ACARS LBO Input -->
+            <!-- ACARS LBO Input (Fleet Notification 2024-14) -->
             <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
                 <span style="display:flex; align-items:center; font-size:10px;">
                     JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
@@ -534,7 +589,42 @@
                 <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
             </div>
 
-            <div style="position: relative; flex: 1 1 auto; min-width:115px;">
+            <div class="toggle-wrapper" id="extFdtContainer">
+                <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
+                <label class="switch">
+                    <input type="checkbox" id="extFdt" onchange="runAllCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <div class="toggle-wrapper" id="night-container">
+                <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
+                <label class="switch">
+                    <input type="checkbox" id="nightOps" onchange="runAllCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-wrapper">
+                <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
+                <label class="switch">
+                    <input type="checkbox" id="noBunk" onchange="runAllCalc()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            
+            <!-- Early Morning CAPSULE UI (3.4.3.4) -->
+            <div class="toggle-wrapper" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
+                <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
+                <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
+                    <option value="0">一般</option>
+                    <option value="2">連 2 天</option>
+                    <option value="3">連 3 天</option>
+                </select>
+                <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
+            </div>
+
+            <div style="position: relative; flex: 1 1 auto; min-width:125px;">
                 <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup()">
                     <span style="display:flex; align-items:center; font-size:10px;">
                         PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
@@ -565,62 +655,22 @@
                     </div>
                 </div>
             </div>
-
-            <div class="toggle-wrapper" id="extFdtContainer">
-                <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="extFdt" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
             
-            <div class="toggle-wrapper" id="night-container">
-                <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="nightOps" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-wrapper">
-                <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="noBunk" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
+            <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
+            <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
             
-            <!-- Early Morning -->
-            <div class="toggle-wrapper" style="padding:0 8px; flex: 1 1 auto; min-width: 115px;">
-                <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
-                <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
-                    <option value="0">Normal</option>
-                    <option value="2">2 Days</option>
-                    <option value="3">3 Days</option>
-                </select>
-                <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
-            </div>
-
-            <!-- ACTION GROUP: 魔法屬性 margin-left: auto 強制它們對齊至每一行的最右側 -->
-            <div style="display: flex; gap: 8px; margin-left: auto; flex: 0 0 auto; position: relative;">
-                <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
-                
-                <div id="routePopup" class="popover">
-                    <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
-                    <div class="flex gap-2 mb-2">
-                        <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
-                        <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
-                    </div>
-                    <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
-                    <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
-                        <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
-                        <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
-                    </div>
+             <div id="routePopup" class="popover">
+                <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
+                <div class="flex gap-2 mb-2">
+                    <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
+                    <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
                 </div>
-
-                <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
+                <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
+                <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
+                    <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
+                    <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
+                </div>
             </div>
-
         </div>
         <div id="ulr-alert" class="hidden" style="background:var(--brand-red); color:white; text-align:center; font-size:10px; font-weight:bold; border-radius:4px; margin-top:4px; padding:2px;">⚠️ ULR DETECTED: REQUIRE 4 PILOTS</div>
     </header>
@@ -644,6 +694,21 @@
             <span class="stat-label">Actual</span>
             <span id="t-act" class="stat-value" style="color:var(--brand-blue);">--</span>
             <div id="bar-act" class="progress-bar-bg"></div>
+        </div>
+    </div>
+
+    <!-- NEW: DYNAMIC DUTY TIMELINE MINIMAP -->
+    <div class="duty-timeline-wrapper" id="dutyTimelineWrapper">
+        <div class="dt-header">
+            <span>Report <span id="dt-rpt-label">--:--</span></span>
+            <span style="color:var(--brand-blue);" id="dt-pct-label">0%</span>
+            <span>Max FDP <span id="dt-max-label">--:--</span></span>
+        </div>
+        <div class="dt-track">
+            <div class="dt-fill" id="dtFill"></div>
+            <!-- Flight segments will be injected here by JS -->
+            <div id="dtSegments"></div>
+            <div class="dt-limit-marker"></div>
         </div>
     </div>
 
@@ -687,41 +752,67 @@
 <script>
     // === INFO SYSTEM DATA & LOGIC ===
     const INFO_DATA = {
-        'version': { 
-            title: '版本更新 / Release Notes', 
-            text: '<b>🚀 v5.0.3 最新修訂：</b><br>• [優化] 介面語系全英文配置<br>• [優化] 說明視窗支援中英雙語<br>• [功能] 新增各項計算之 FOM 法規依據 (Ref) 方便查找<br><br><b>🌟 歷史重點 (v5.0.x)：</b><br>• 頂部控制列 UI 適配優化<br>• 支援 JZ ACARS LBO 比對<br>• 支援 Early Morning 休時<br>• 航線儲存 (📂) 與深色模式 (🌙)<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);"><b>🚀 v5.0.3 Updates:</b><br>• [UI] Full English UI localization<br>• [System] Bilingual (ZH/EN) Info Modals<br>• [System] Added FOM Manual References<br><br><b>🌟 Previous Highlights:</b><br>• Optimized Top Control Bar layout<br>• JZ ACARS LBO comparison<br>• Early Morning rest rules<br>• Saved Routes (📂) & Dark Mode (🌙)</div>'
+        'changelog': {
+            title: '版本更新資訊 (Changelog)',
+            text: `<div class="info-zh"><b>v5.1.0</b><br>• 🚀 新增「動態時間條 (Duty Minimap)」，以視覺化膠囊顯示預估工時與航段佈局。<br>• 📚 全局說明系統升級，加入精美雙語排版與 FOM 條文對照。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en"><b>v5.0.2</b><br>• 新增 JZ ACARS LBO 限制整合。<br>• 新增連續早班機 (Early Morning) 休時規則。<br>• 新增 Prev FT 24小時重疊飛時檢查。</div>`
         },
-        'jz': { 
-            title: '聯管通報 JZ LBO / Dispatch LBO', 
-            text: '依據 Fleet Notification 2024-14，當航班延誤或轉降時，請輸入聯管透過 ACARS 傳送的最後後推時間。<br><br>系統將自動與自算 LBO 進行比對，並嚴格採用兩者中<b>最早</b>的時間作為最終限制。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">Per Fleet Notification 2024-14, enter the latest pushback time sent by Dispatch via ACARS during delays/diversions.<br><br>The system will automatically compare it with the calculated LBO and strictly apply the <b>earliest</b> time as the final limit.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> B744 Fleet Notification 2024-14</div>' 
+        'jz': {
+            title: '聯管通報 JZ LBO',
+            text: `<div class="info-ref">B744 Fleet Notification 2024-14</div>
+                   <div class="info-zh">當航班遇有延誤或轉降時，聯管處將以 ACARS 主動提供最後合法計劃後推時間。若客艙組員 FDP limit 較早，則應以先到的時間計算。<br><br>⚠️ 系統將自動與自算 LBO 比對，並嚴格採用兩者中<b>最早 (Earliest)</b> 的時間。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">When Flight was delayed or diverted, JZ will proactively provide latest legally pushback time via ACARS. If FDP limit of cabin crew reaches earlier, the last legal block out time should be based on the earlier FDP limit.</div>`
         },
-        'ext': { 
-            title: '延長任務 (Ext FDT) / Extended FDT', 
-            text: '機長裁量權 (Captain\'s Discretion)。<br><br>勾選後系統將自動為 Max FDP 增加 2 小時的寬限額度。僅適用於 M 或 D 組員，S 組員不可使用。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">Captain\'s Discretion.<br><br>When checked, adds a 2-hour buffer to the Max FDP. Applicable only for Multi (M) or Double (D) crew; unavailable for Single (S) crew.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> FOM 3.4.3.3 (C) Extension of Flight Duty Period</div>' 
+        'ext': {
+            title: '延長任務 (Ext. FDT)',
+            text: `<div class="info-ref">FOM 3.4.3.3 C.</div>
+                   <div class="info-zh">機長裁量權 (Captain's Discretion)。<br>僅限多重派遣 (M)，在遭遇不可抗力之轉降情況下，機長可同意延長最大飛行任務期間不超過 2 小時。單重 (S) 不可使用。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">For multiple crew dispatch only, in the event of diversion due to natural disasters or events beyond control, the PIC may agree to extend the maximum flight duty period for not more than 2 hours.</div>`
         },
-        'night': { 
-            title: '夜間航班限制 (Night Ops)', 
-            text: '表定第一段起飛落在當地時間 <b>2100L ~ 0700L</b> 之間。<br><br>勾選後，系統會將 Max FDP 上限自動扣除 2 小時。系統預設會依第一段 STD 的當地時間自動判斷是否勾選。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">Scheduled first sector departs between <b>2100L and 0700L</b> local time.<br><br>When checked, deducts 2 hours from the Max FDP limit. The system auto-detects this based on the first sector\'s STD local time.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> FOM 3.4.3.5 Departure Between 2100L to 0700L</div>' 
+        'night': {
+            title: '夜間航班限制 (Night Ops)',
+            text: `<div class="info-ref">FOM 3.4.3.5</div>
+                   <div class="info-zh">表定第一段起飛時間介於當地時間 <b>2100L 至 0700L</b> 之間 (不含)。<br>單重、多重與雙重派遣之最大飛行任務期間 (Max FDP) 將自正常限制中扣除 2 小時。系統預設會自動判斷勾選。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Flights scheduled to depart between the hours of 2100L and 0700L (not included). Maximum flight duty period will be reduced 2 hours from the normal limits.</div>`
         },
-        'nobunk': { 
-            title: '無睡眠設備 (No Bunk)', 
-            text: '機上無適當之水平睡眠設備 (如僅配備商務艙座位等)。<br><br>勾選後，多重(M)或雙重(D)組員在 24 小時內的最高飛航時間 (Max Flight Time) 將被下修限制為 <b>12 小時</b>。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">No proper horizontal rest facility on board (e.g., only business class seats).<br><br>When checked, caps the 24-hour Max Flight Time at <b>12 hours</b> for Multi (M) or Double (D) crews.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> FOM 3.4.3.1 Duty & Rest Time Limitation (B.d / C.d)</div>' 
+        'nobunk': {
+            title: '無睡眠設備 (No Bunk)',
+            text: `<div class="info-ref">FOM 3.4.3.1 B/C</div>
+                   <div class="info-zh">當機上無適當之睡眠設備 (僅提供商務艙座位等) 時。<br>⚠️ 勾選後，多重 (M) 或雙重 (D) 派遣於連續 24 小時內之最高飛行時間將被下修限制為 <b>12 小時</b>。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">With at least a business class seat whenever a bunk is not available, Max. Flight Time in 24 Consecutive Hours is limited to 12 hours for Multiple/Double Crew.</div>`
         },
-        'early': { 
-            title: '連續早班機 (Early Morning)', 
-            text: '起降涵蓋 <b>0200L ~ 0500L</b> (出發地當地時間) 的航班。<br><br>若連續 2 天執行，下次最低休時強制需達 <b>34 小時</b>；連續 3 天執行，最低休時強制需達 <b>54 小時</b>。系統會自動套用至 Next Rpt 計算中。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">Flights operating within <b>0200L ~ 0500L</b> (departure local time).<br><br>If operated for 2 consecutive days, the next minimum rest is <b>34 hours</b>; for 3 consecutive days, <b>54 hours</b>. Auto-applied to Next Rpt.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> FOM 3.4.3.4 Early Morning Flight Duty Limits</div>' 
+        'early': {
+            title: '連續早班機 (Early Morning)',
+            text: `<div class="info-ref">FOM 3.4.3.4</div>
+                   <div class="info-zh">起降涵蓋首段出發地當地時間 <b>0200L 至 0500L</b> 之航班。<br>• 連續 2 天執行：下次最低休時強制需達 <b>34 小時</b>。<br>• 連續 3 天執行：最低休時強制需達 <b>54 小時</b>。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Flight duties starting or ending within, or encompassing 0200L-0500L of the first sector departure airport. 2 consecutive days require 34hrs rest; 3 consecutive days require 54hrs rest.</div>`
         },
-        'prev': { 
-            title: '前趟飛時 (Prev FT)', 
-            text: '用於計算「連續 24 小時內」的飛航時間限制。<br><br>點選此按鈕並輸入前趟航班的抵達時間 (IN) 與飛時 (FT)，系統會自動推算與本次任務的「24小時重疊飛航分鐘數」，並計入 FT 總額審核是否超時。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">Used for calculating "rolling 24-hour" flight time limits.<br><br>Enter the Arrival (IN) and Flight Time (FT) of the previous flight. The system calculates the overlapping FT within the 24h window and adds it to the total FT.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> FOM 3.4.3.1 Max. Flight Time in 24 Consecutive Hours</div>' 
+        'prev': {
+            title: '前趟飛時 (Prev FT)',
+            text: `<div class="info-ref">FOM 3.4.3.1 / 24h Rolling</div>
+                   <div class="info-zh">用於檢查「連續 24 小時內」之最大飛行時間限制。<br>輸入前趟航班之抵達時間 (IN Z) 與飛時 (FT)，系統將自動推算與本次任務的 24 小時重疊分鐘數，並計入 FT 總額審核。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Used to ensure compliance with Max. Flight Time in 24 Consecutive Hours. Input the previous flight's arrival time and flight time to calculate overlapping block time.</div>`
         },
-        'hotel': { 
-            title: '外站休息 (Hotel / Split)', 
-            text: '若兩段派飛中間有提供旅館休息，且休息時間大於 <b>3 小時</b>，系統會自動將其計算為 Split Duty (發生在首段後) 或 FDP Extension (後續段)，並依規定放寬 Max FDP 的時間上限。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">If hotel rest is provided between sectors and exceeds <b>3 hours</b>, it\'s calculated as Split Duty (after 1st sector) or FDP Extension (subsequent sectors), relaxing the Max FDP limit accordingly.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> FOM 3.4.3.3 (A)(B) Extension of Flight Duty Period</div>' 
+        'hotel': {
+            title: '外站休息 (Hotel / Split)',
+            text: `<div class="info-ref">FOM 3.4.3.3 A/B</div>
+                   <div class="info-zh">報到後或首段起飛後，若於適當住宿地點獲得連續 <b>3 小時以上</b> 之休息。<br>該休息時間得依規定計入為 Split Duty (首段後) 或放寬最大飛行任務期間 FDP Extension (後續段)。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">After reporting or after commencement of the first sector, if provided 3 or more consecutive hours of rest at an appropriate accommodation, the FDP may be paused or extended by half of the rest period.</div>`
         },
-        'report': { 
-            title: '報到時間鎖定 (Report Lock)', 
-            text: '遇到航班<b>「延誤 (Delay)」</b>時使用。<br><br>點擊鎖定 🔒 可強制系統記住「原訂的報到時間」。之後即使您往後修改 STD 測試極限，系統仍會以原報到時間為基準來計算 FDP 上限，確保絕對合法。<div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border-light);">Used during <b>Delays</b>.<br><br>Click the lock 🔒 to freeze the "original report time". Subsequent STD changes for limit testing will still use this original report time to calculate Max FDP, ensuring legal compliance.</div><div style="margin-top:12px; padding:8px; background:var(--bg-app); border-radius:6px; font-size:11px; color:var(--text-secondary); border: 1px solid var(--border-light); font-family:var(--font-mono, monospace);">📖 <b>Ref:</b> FOM 3.4.6 Reporting for Duty / 3.4.3.3 (A)</div>' 
+        'report': {
+            title: '報到時間鎖定 (Report Lock)',
+            text: `<div class="info-ref">FOM 3.4.6 / Delay</div>
+                   <div class="info-zh">遇到航班<b>「延誤 (Delay)」</b>時使用。點擊鎖定 🔒 可強制系統記住原訂報到時間。<br>⚠️ 往後修改 STD 測試極限時，系統仍會以<b>原報到時間</b>為基準計算，確保絕對合法。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Use when flight is delayed. Lock the original reporting time, as the FDP limits must be strictly calculated based on the original scheduled reporting time for regulatory compliance.</div>`
         }
     };
 
@@ -1492,6 +1583,7 @@
             const minRestEl = document.getElementById('min-rest-lbl'); if(minRestEl) minRestEl.innerText = "Rest: --";
             document.getElementById('disp-limit-dur').innerText = "--";
             const cardMax = document.getElementById('resMaxFdtCard'); if(cardMax) cardMax.innerText = "--:--";
+            updateDynamicTimeline(null, null, null); // Hide timeline
             return; 
         }
 
@@ -1674,6 +1766,9 @@
             if(landingCount > 6) resLdgEl.classList.add('val-danger'); else resLdgEl.classList.remove('val-danger');
         }
         updateTurns();
+
+        // 🟢 INJECT DYNAMIC TIMELINE UPDATE
+        updateDynamicTimeline(rep, globalMaxFdpMins, estimatedDutyEndTime);
     }
       
     function updateTurns() {
@@ -1686,6 +1781,82 @@
              else if (schedIn !== null && schedOut !== null) { val = diff(schedIn, schedOut); label = "Turn (P)"; }
              div.innerText = val !== null ? `${label}: ${fmt(val, false)}` : `Turn: --:--`;
         }
+    }
+
+    // === NEW FUNCTION: DYNAMIC TIMELINE HANDLER ===
+    function updateDynamicTimeline(rep, maxFdpMins, estEndAbs) {
+        const wrapper = document.getElementById('dutyTimelineWrapper');
+        if (rep === null || estEndAbs === null || !maxFdpMins) {
+            wrapper.style.display = 'none';
+            return;
+        }
+        wrapper.style.display = 'flex';
+
+        // 1. Calculate main fill percentage
+        let actualFdpMins = estEndAbs - rep;
+        if (actualFdpMins < 0) actualFdpMins += 1440;
+
+        let pct = (actualFdpMins / maxFdpMins) * 100;
+        let displayPct = pct > 100 ? 100 : pct;
+
+        // 2. Update UI Elements
+        document.getElementById('dt-rpt-label').innerText = fmt(rep);
+        document.getElementById('dt-max-label').innerText = fmt(rep + maxFdpMins);
+        
+        const pctLabel = document.getElementById('dt-pct-label');
+        pctLabel.innerText = Math.round(pct) + '%';
+        
+        const fillEl = document.getElementById('dtFill');
+        fillEl.style.width = displayPct + '%';
+
+        // 3. Dynamic Warning Colors
+        if (pct >= 95) {
+            fillEl.style.background = 'linear-gradient(90deg, var(--brand-orange), var(--brand-red))';
+            pctLabel.style.color = 'var(--brand-red)';
+        } else if (pct >= 75) {
+            fillEl.style.background = 'linear-gradient(90deg, var(--brand-blue), var(--brand-orange))';
+            pctLabel.style.color = 'var(--brand-orange)';
+        } else {
+            fillEl.style.background = 'linear-gradient(90deg, var(--brand-blue), var(--brand-purple))';
+            pctLabel.style.color = 'var(--brand-blue)';
+        }
+
+        // 4. Draw Flight Segments (Visual mapping of OUT to IN)
+        const segmentsContainer = document.getElementById('dtSegments');
+        segmentsContainer.innerHTML = ''; // Clear old
+
+        app.stations.forEach((st, idx) => {
+            if (idx === app.stations.length - 1) return; // Skip last (dest)
+
+            // Prefer Actual over Sched
+            let outTime = parse(st.out);
+            if (outTime === null) outTime = parse(st.std);
+            
+            let inTime = parse(app.stations[idx+1].in);
+            if (inTime === null) inTime = parse(app.stations[idx+1].sta);
+            
+            // If neither exist, we can't draw the segment accurately
+            if (outTime !== null && inTime !== null) {
+                let outElapsed = outTime - rep; 
+                if (outElapsed < 0) outElapsed += 1440;
+                
+                let inElapsed = inTime - rep; 
+                if (inElapsed < 0) inElapsed += 1440;
+
+                let startPct = (outElapsed / maxFdpMins) * 100;
+                let durationPct = ((inElapsed - outElapsed) / maxFdpMins) * 100;
+
+                // Only draw if it's somewhat within the legal bar window
+                if (startPct >= 0 && startPct <= 100) {
+                    const seg = document.createElement('div');
+                    seg.className = 'dt-segment';
+                    seg.style.left = startPct + '%';
+                    // Cap width so it doesn't overflow the container
+                    seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
+                    segmentsContainer.appendChild(seg);
+                }
+            }
+        });
     }
 
     function updateBar(elId, val, limit) {
