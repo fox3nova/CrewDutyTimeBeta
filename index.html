@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.7.1)</title>
+    <title>CAL Duty (Pro v5.7.2)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -630,7 +630,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.7.1 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.7.2 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -879,7 +879,7 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.7.1 狀態列 Bug 修正版</b><br>• 🐛 <b>修復狀態殘留誤報</b>：解決在載入合法航班資料時，因前次超時航班的紅色警告條寬度未清空，導致全局狀態列錯誤發出 ALERT 的問題。</div><div class="info-divider"></div><div class="info-zh"><b>v5.7.0 單行極致收折版</b><br>• 📐 <b>動態單行佈局 (iPad 首選)</b>：將「日期、時區、存檔、夜間模式」等高頻按鈕，全部上移至標題列。在 iPad 上達成完美的「單行」收折體驗，將原本的兩行高度徹底壓縮，釋放最大化垂直視角！<br>• 📱 <b>自適應排版 (RWD)</b>：在手機或直向窄螢幕下，按鈕群會自動折行至第二行，並保持可橫向滑動。<br>• 🎛️ <b>動態摘要區</b>：巧妙利用按鈕旁的剩餘空間，當工具列收折時，已開啟的例外條件（如 Night, Ext FDT）將化為藍色狀態標籤駐留於此。</div>`
+            text: `<div class="info-zh"><b>v5.7.2 核心計算順序修復版</b><br>• 🐛 <b>修復狀態殘留與錯置</b>：解決因「自動偵測 Night Ops」在計算流程結尾才執行，導致 Max FDP 文字無法同步更新（例如 Multi Crew 夜間航班誤顯示為 14h），進而觸發錯誤 CAUTION 的核心 Bug。<br>• 🔕 <b>降低警告噪音</b>：移除了對 Single Crew "Next > 7h" 提醒的錯誤全局 CAUTION 判定。</div><div class="info-divider"></div><div class="info-zh"><b>v5.7.1 狀態列 Bug 修正版</b><br>• 🐛 <b>修復狀態殘留誤報</b>：解決在載入合法航班資料時，因前次超時航班的紅色警告條寬度未清空，導致全局狀態列錯誤發出 ALERT 的問題。</div>`
         },
         'jz': { title: '聯管通報 JZ LBO', text: `<div class="info-ref">B744 Fleet Notification 2024-14</div><div class="info-zh">當航班延誤時，聯管處將提供最後合法後推時間。</div>` },
         'ext': { title: '延長任務 (Ext. FDT)', text: `<div class="info-ref">FOM 3.4.3.3 C.</div><div class="info-zh">機長裁量權。僅限多重派遣 (M)，最多延長 2 小時。</div>` },
@@ -973,8 +973,8 @@
 
         let hasCaution = false;
         if (!document.getElementById('ulr-alert')?.classList.contains('hidden')) hasCaution = true;
-        if (!document.getElementById('next-leg-check')?.classList.contains('hidden')) hasCaution = true;
-        if (document.getElementById('nightOps')?.checked || document.getElementById('extFdt')?.checked) hasCaution = true;
+        // 修正：不再讓提醒性質的 next-leg-check 觸發 CAUTION
+        if (document.getElementById('nightOps')?.checked || document.getElementById('extFdt')?.checked || document.getElementById('noBunk')?.checked) hasCaution = true;
 
         if (hasDanger) {
             state = 'danger';
@@ -1473,6 +1473,28 @@
     }
 
     function updateResultsOnly() {
+        // --- 1. PRE-CALCULATION & AUTO-DETECT NIGHT OPS ---
+        const s1 = parse(app.stations[0].std); 
+        const code = app.stations[0].code.trim().toUpperCase(); 
+        const dateInput = document.getElementById('flightDate').value; 
+        const refDate = getUtcDate(dateInput) || new Date();
+        
+        const nightContainer = document.getElementById('night-container');
+        if (s1 !== null) {
+            if (code in airportIanaZones) {
+                nightContainer.style.border = "1px solid var(--border-light)";
+                const stdInfo = getLocalInfo(s1, airportIanaZones[code], refDate);
+                if (stdInfo) {
+                    const h = parseInt(stdInfo.timeStr.split(':')[0]); const m = parseInt(stdInfo.timeStr.split(':')[1]);
+                    const isNightTime = (h > 21 || h < 7) || (h === 21 && m > 0);
+                    document.getElementById('nightOps').checked = isNightTime;
+                    const offsetSign = stdInfo.offset >= 0 ? '+' : '';
+                    document.getElementById('loc-time-display').innerText = `${stdInfo.timeStr} L (UTC${offsetSign}${stdInfo.offset})`;
+                }
+            } else { nightContainer.style.border = "2px solid var(--brand-orange)"; document.getElementById('loc-time-display').innerText = `STD: --:-- (Chk Night)`; }
+        } else { document.getElementById('loc-time-display').innerText = `STD: --:--`; nightContainer.style.border = "1px solid var(--border-light)"; }
+
+        // --- 2. GATHER HOTEL EXTENSIONS ---
         let stationLimitExtensions = []; let globalPauseMinutes = 0; 
         app.stations.forEach((s, i) => {
             let extension = 0; let pause = 0;
@@ -1487,6 +1509,7 @@
             stationLimitExtensions.push(extension); if (i === 0) globalPauseMinutes = pause;
         });
 
+        // --- 3. CALCULATE FDP LIMITS ---
         let base = 14; if(app.crew==='M') base=18; if(app.crew==='D') base=24; 
         const isNight = document.getElementById('nightOps').checked; let lim = isNight ? base - 2 : base;
         const totalExtension = stationLimitExtensions.reduce((a, b) => a + b, 0); const isExt = document.getElementById('extFdt').checked; const discretionMins = isExt ? 120 : 0;
@@ -1495,6 +1518,7 @@
         let limitText = `${base}h`; if(isNight) limitText += `-2h`; if(globalPauseMinutes > 0) limitText += `+S`; if(totalExtension > 0) limitText += `+E`; if(isExt) limitText += `+CD`; 
         document.getElementById('disp-limit-dur').innerText = limitText;
 
+        // --- 4. CALCULATE TOTALS & ULR ---
         calcTotals(); 
 
         let totalFtCalc = 0; let isULR = false;
@@ -1516,26 +1540,10 @@
             if (app.stations[k].out || app.stations[k+1].in || app.sfts[k]) hasAnyInput = true;
         }
 
-        const s1 = parse(app.stations[0].std); const code = app.stations[0].code.trim().toUpperCase(); const dateInput = document.getElementById('flightDate').value; const refDate = getUtcDate(dateInput) || new Date();
+        // --- 5. REPORT TIME LOGIC ---
         let rep = null; let reportOffset = (code==='TPE'?90:60); 
-        
         if (app.isLocked && app.lockedReport !== null) { rep = app.lockedReport; document.getElementById('reportLabel').innerText = "LOCKED"; } 
         else if (s1 !== null) { rep = s1 - reportOffset; if(rep<0) rep+=1440; document.getElementById('reportLabel').innerText = code==='TPE'?"STD-90":"STD-60"; }
-
-        const nightContainer = document.getElementById('night-container');
-        if (s1 !== null) {
-            if (code in airportIanaZones) {
-                nightContainer.style.border = "1px solid var(--border-light)";
-                const stdInfo = getLocalInfo(s1, airportIanaZones[code], refDate);
-                if (stdInfo) {
-                    const h = parseInt(stdInfo.timeStr.split(':')[0]); const m = parseInt(stdInfo.timeStr.split(':')[1]);
-                    const isNightTime = (h > 21 || h < 7) || (h === 21 && m > 0);
-                    document.getElementById('nightOps').checked = isNightTime;
-                    const offsetSign = stdInfo.offset >= 0 ? '+' : '';
-                    document.getElementById('loc-time-display').innerText = `${stdInfo.timeStr} L (UTC${offsetSign}${stdInfo.offset})`;
-                }
-            } else { nightContainer.style.border = "2px solid var(--brand-orange)"; document.getElementById('loc-time-display').innerText = `STD: --:-- (Chk Night)`; }
-        } else { document.getElementById('loc-time-display').innerText = `STD: --:--`; nightContainer.style.border = "1px solid var(--border-light)"; }
 
         if (rep === null || (!hasAnyStd && !hasAnyInput)) {
             document.getElementById('resReport').innerText="--:--"; 
@@ -1981,11 +1989,17 @@
                 if(p.isNoBunk) document.getElementById('noBunk').checked=p.isNoBunk;
                 if(p.extFdt) document.getElementById('extFdt').checked=p.extFdt;
                 document.getElementById('prevFt').value=p.prevFt;
-                if(p.pfDate) document.getElementById('pf-date').value = p.pfDate; if(p.pfIn) document.getElementById('pf-in').value = p.pfIn; if(p.pfDur) document.getElementById('pf-dur').value = p.pfDur;
+                if(p.pfDate) document.getElementById('pf-date').value = p.pfDate;
+                if(p.pfIn) document.getElementById('pf-in').value = p.pfIn;
+                if(p.pfDur) document.getElementById('pf-dur').value = p.pfDur;
                 if(p.flightDate) document.getElementById('flightDate').value = p.flightDate;
-                if(p.isLocked !== undefined) app.isLocked = p.isLocked; if(p.lockedReport !== undefined) app.lockedReport = p.lockedReport; if(p.nextLegHeavy !== undefined) app.nextLegHeavy = p.nextLegHeavy;
+                if(p.isLocked !== undefined) app.isLocked = p.isLocked;
+                if(p.lockedReport !== undefined) app.lockedReport = p.lockedReport;
+                if(p.nextLegHeavy !== undefined) app.nextLegHeavy = p.nextLegHeavy;
+                
                 if(p.acarsLbo !== undefined) { app.acarsLbo = p.acarsLbo; document.getElementById('acarsLbo').value = p.acarsLbo; }
                 if(p.earlyMorning !== undefined) { app.earlyMorning = p.earlyMorning; document.getElementById('earlyMorningSel').value = p.earlyMorning; }
+                
             } catch(e){} 
         }
 
