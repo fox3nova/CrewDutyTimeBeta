@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.8.0)</title>
+    <title>CAL Duty (Pro v5.8.1)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -130,12 +130,13 @@
             box-shadow: var(--shadow-sm);
         }
 
+        /* 🚀 v5.7.0 DYNAMIC RESPONSIVE HEADER GRID */
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Allows fallback to second row on mobile */
         }
 
         .app-title {
@@ -156,15 +157,15 @@
             align-items: center;
             gap: 8px;
             flex-shrink: 0;
-            order: 2;
+            order: 2; /* Mobile priority top-right */
         }
 
         .header-primary-group {
             display: flex;
             align-items: center;
             gap: 8px;
-            flex: 1 1 100%; 
-            order: 3; 
+            flex: 1 1 100%; /* Force wrap on mobile to full width */
+            order: 3; /* Render under title on mobile */
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
@@ -174,11 +175,12 @@
         .header-primary-group > * { flex: 0 0 auto !important; }
 
         @media screen and (min-width: 768px) {
+            /* 🚀 iPad & Desktop: Perfect single line layout */
             .header-top { flex-wrap: nowrap; }
-            .header-actions { order: 3; } 
+            .header-actions { order: 3; } /* Move to far right */
             .header-primary-group {
                 flex: 1 1 auto;
-                order: 2; 
+                order: 2; /* Move to center */
                 padding-top: 0;
             }
         }
@@ -624,7 +626,7 @@
         <div class="header-top">
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.8.0 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.8.1 ⓘ</span>
             </div>
 
             <div class="header-primary-group">
@@ -867,7 +869,7 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.8.0 智能預測 HUD (Smart HUD)</b><br>• 🔮 <b>動態接近極限警告</b>：狀態列不再只是單純顯示已勾選條件，而是化身為「預測引擎」。當您的飛時 (FT) 剩下不到 60 分鐘，或任務時間 (FDP) 剩下不到 90 分鐘時，將自動跳出 CAUTION 警告！<br>• ⏱️ <b>現實時間監控 (Live Time)</b>：如果您仍在執勤中，系統會拿您的「當前現實時間」去比對法規下班時間。若現實中距離超時只剩 90 分鐘以內，會直接提出警告，防止因延誤導致的意外超時。<br>• 📐 <b>嚴格 Actual 邏輯</b>：若未輸入實際時間，Actual 不會再拿預估值湊數，維持數據真實性。</div>`
+            text: `<div class="info-zh"><b>v5.8.1 智能感知修復版</b><br>• 🔮 <b>動態執勤窗 (Live Tracking Window)</b>：解決了模擬舊航班時，系統因為計算出「已報到 40,000 分鐘」而誤判超時的問題。現在系統只會在「報到前 12 小時 ～ 極限結束後 12 小時」這段合理的執勤窗內，才會啟動 Live Time 追蹤。如果您測試的是昨天以前的舊資料或未來的預排航班，系統會自動靜音現實時間警告，完美支援模擬試算！<br>• 📐 <b>嚴格 Actual 邏輯</b>：若未輸入實際時間，Actual 不會再拿預估值湊數，維持數據真實性。</div>`
         },
         'jz': { title: '聯管通報 JZ LBO', text: `<div class="info-ref">B744 Fleet Notification 2024-14</div><div class="info-zh">當航班延誤時，聯管處將提供最後合法後推時間。</div>` },
         'ext': { title: '延長任務 (Ext. FDT)', text: `<div class="info-ref">FOM 3.4.3.3 C.</div><div class="info-zh">機長裁量權。僅限多重派遣 (M)，最多延長 2 小時。</div>` },
@@ -1376,7 +1378,7 @@
         location.reload(); 
     }
 
-    // 🚀 v5.8.0 智能預測狀態列 UI 更新引擎
+    // 🚀 v5.8.1 智能預測狀態列 UI 更新引擎
     function refreshLegalStatusStrip() {
         const strip = document.getElementById('legalStatusStrip');
         if (!strip) return;
@@ -1392,6 +1394,7 @@
             if (st.ldg > 6) d_msgs.push('Ldg > 6');
             if (st.isFtExceeded) d_msgs.push('FT Limit');
             if (st.isFdpExceeded) d_msgs.push('FDP Limit');
+            // 只在「Live tracking 期間內」才報錯現實超時，不會對過去/未來航班報警
             if (st.isLiveDutyExceeded) d_msgs.push('Live Duty Exceeded');
 
             if (d_msgs.length > 0) {
@@ -1403,8 +1406,9 @@
                 if (st.ftRem >= 0 && st.ftRem <= 60) c_msgs.push(`FT Rem: ${fmt(st.ftRem, false)}`);
                 // 任務期 (FDP) 剩下 90 分鐘內觸發 Caution
                 if (st.fdpRem >= 0 && st.fdpRem <= 90) c_msgs.push(`FDP Rem: ${fmt(st.fdpRem, false)}`);
-                // 現實時間還在執勤中，且距離極限剩下 90 分鐘以內
-                if (!st.isDutyFinished && st.elapsedSinceRep > 0 && st.rtRem >= 0 && st.rtRem <= 90) {
+                
+                // 🚀 v5.8.1: 現實時間還在執勤中，且距離極限剩下 90 分鐘以內 (僅限合理的現實時間窗)
+                if (st.isLiveTracking && !st.isDutyFinished && st.elapsedSinceRep > 0 && st.rtRem >= 0 && st.rtRem <= 90) {
                     c_msgs.push(`Live FDP Rem: ${Math.floor(st.rtRem)}m`);
                 }
                 
@@ -1548,6 +1552,10 @@
 
         rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0); const nowMs = Date.now(); const repMs = rptDate.getTime(); const elapsedSinceRepMins = (nowMs - repMs) / 60000;
         app._stats.elapsedSinceRep = elapsedSinceRepMins;
+        
+        // 🚀 V5.8.1: Smart Simulation Detection (Live window is Rep - 12h to MaxFDP + 12h)
+        // 只有現實時間介於這個範圍內，系統才會啟動 Live Time 現實追蹤警告，完美解決舊資料誤判的問題
+        app._stats.isLiveTracking = (elapsedSinceRepMins >= -720 && elapsedSinceRepMins <= (globalMaxFdpMins + 720));
 
         let projectedElapsed = 0;
         if (s1 !== null) {
@@ -1621,7 +1629,7 @@
              }
         }
         
-        // 🚀 V5.8.0 Smart HUD FDP States
+        // 🚀 V5.8.1 Smart HUD FDP States
         app._stats.fdpRem = globalMaxFdpMins - Math.max(projectedElapsed, schedElapsed);
         app._stats.rtRem = globalMaxFdpMins - elapsedSinceRepMins;
         app._stats.isFdpExceeded = isActExceeded && hasAnyInput;
@@ -1629,7 +1637,9 @@
         // 檢查是否已抵達最終站
         const lastIn = parse(app.stations[app.stations.length - 1].in);
         app._stats.isDutyFinished = (lastIn !== null);
-        app._stats.isLiveDutyExceeded = (!app._stats.isDutyFinished && elapsedSinceRepMins > globalMaxFdpMins && hasAnyInput);
+        
+        // 只有在現實執勤窗口內，才會觸發 Live 警告 (完美解決舊航班誤判問題)
+        app._stats.isLiveDutyExceeded = (app._stats.isLiveTracking && !app._stats.isDutyFinished && elapsedSinceRepMins > globalMaxFdpMins && hasAnyInput);
 
         let calculatedRestMins = 0; const lastIdx = app.stations.length - 1;
         if (estimatedDutyEndTime === null) {
@@ -1784,7 +1794,7 @@
         }
         
         const nowMarker = document.getElementById('dtNowMarker');
-        if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins && !app._stats.isDutyFinished) { let nowPct = (elapsedSinceRepMins / scaleMins) * 100; nowMarker.style.display = 'block'; nowMarker.style.left = nowPct + '%'; } 
+        if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins && !app._stats.isDutyFinished && app._stats.isLiveTracking) { let nowPct = (elapsedSinceRepMins / scaleMins) * 100; nowMarker.style.display = 'block'; nowMarker.style.left = nowPct + '%'; } 
         else { nowMarker.style.display = 'none'; }
 
         const ruler = document.getElementById('dtRuler'); ruler.innerHTML = '';
