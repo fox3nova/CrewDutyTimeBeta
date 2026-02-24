@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.7.2)</title>
+    <title>CAL Duty (Pro v5.8.0)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -37,7 +37,7 @@
             
             --safe-bottom: env(safe-area-inset-bottom);
 
-            /* Semantic Design Tokens (From V2) */
+            /* Semantic Design Tokens */
             --semantic-danger: var(--brand-red);
             --semantic-warning: var(--brand-orange);
             --semantic-info: var(--brand-blue);
@@ -130,13 +130,12 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* 🚀 v5.7.0 DYNAMIC RESPONSIVE HEADER GRID */
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap; /* Allows fallback to second row on mobile */
+            flex-wrap: wrap;
         }
 
         .app-title {
@@ -157,15 +156,15 @@
             align-items: center;
             gap: 8px;
             flex-shrink: 0;
-            order: 2; /* Mobile priority top-right */
+            order: 2;
         }
 
         .header-primary-group {
             display: flex;
             align-items: center;
             gap: 8px;
-            flex: 1 1 100%; /* Force wrap on mobile to full width */
-            order: 3; /* Render under title on mobile */
+            flex: 1 1 100%; 
+            order: 3; 
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
@@ -175,12 +174,11 @@
         .header-primary-group > * { flex: 0 0 auto !important; }
 
         @media screen and (min-width: 768px) {
-            /* 🚀 iPad & Desktop: Perfect single line layout */
             .header-top { flex-wrap: nowrap; }
-            .header-actions { order: 3; } /* Move to far right */
+            .header-actions { order: 3; } 
             .header-primary-group {
                 flex: 1 1 auto;
-                order: 2; /* Move to center */
+                order: 2; 
                 padding-top: 0;
             }
         }
@@ -611,7 +609,6 @@
 </head>
 <body class="light-mode">
 
-    <!-- GLOBAL INFO MODAL -->
     <div id="infoModal" class="info-modal-overlay">
         <div class="info-modal-card">
             <div class="info-modal-header">
@@ -624,16 +621,12 @@
 
     <header class="app-header">
         
-        <!-- 🚀 v5.7.0 DYNAMIC RESPONSIVE ONE-LINE HEADER TOP -->
         <div class="header-top">
-            
-            <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.7.2 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.8.0 ⓘ</span>
             </div>
 
-            <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
             <div class="header-primary-group">
                 <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
                 <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
@@ -646,11 +639,9 @@
                     <span id="nightBtnIcon">🌙</span>
                 </button>
                 
-                <!-- 動態摘要區 (填補剩餘空白，當收起進階面板時，提示開啟的規則) -->
                 <div class="header-center-zone" id="headerCenterZone"></div>
             </div>
 
-            <!-- 3. Header Actions (Right) -->
             <div class="header-actions">
                 <div class="crew-selector">
                     <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -664,10 +655,8 @@
                     </svg>
                 </button>
             </div>
-
         </div>
 
-        <!-- 🔴 進階與例外區 (預設收折，節省大量垂直空間) -->
         <div class="toolbar-wrapper" id="toolbarWrapper">
             <div class="toolbar-inner">
                 <div class="controls-grid" style="padding-top: 8px; border-top: 1px dashed var(--border-light); margin-top: 4px;">
@@ -797,7 +786,6 @@
 
     <!-- DYNAMIC DUTY LIFECYCLE TIMELINE MINIMAP -->
     <div class="duty-timeline-wrapper" id="dutyTimelineWrapper">
-
         <div id="dtContent" style="display:flex; width: 100%; flex-direction: column;">
             <div class="dt-header">
                 <div class="dt-header-col">
@@ -879,7 +867,7 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.7.2 核心計算順序修復版</b><br>• 🐛 <b>修復狀態殘留與錯置</b>：解決因「自動偵測 Night Ops」在計算流程結尾才執行，導致 Max FDP 文字無法同步更新（例如 Multi Crew 夜間航班誤顯示為 14h），進而觸發錯誤 CAUTION 的核心 Bug。<br>• 🔕 <b>降低警告噪音</b>：移除了對 Single Crew "Next > 7h" 提醒的錯誤全局 CAUTION 判定。</div><div class="info-divider"></div><div class="info-zh"><b>v5.7.1 狀態列 Bug 修正版</b><br>• 🐛 <b>修復狀態殘留誤報</b>：解決在載入合法航班資料時，因前次超時航班的紅色警告條寬度未清空，導致全局狀態列錯誤發出 ALERT 的問題。</div>`
+            text: `<div class="info-zh"><b>v5.8.0 智能預測 HUD (Smart HUD)</b><br>• 🔮 <b>動態接近極限警告</b>：狀態列不再只是單純顯示已勾選條件，而是化身為「預測引擎」。當您的飛時 (FT) 剩下不到 60 分鐘，或任務時間 (FDP) 剩下不到 90 分鐘時，將自動跳出 CAUTION 警告！<br>• ⏱️ <b>現實時間監控 (Live Time)</b>：如果您仍在執勤中，系統會拿您的「當前現實時間」去比對法規下班時間。若現實中距離超時只剩 90 分鐘以內，會直接提出警告，防止因延誤導致的意外超時。<br>• 📐 <b>嚴格 Actual 邏輯</b>：若未輸入實際時間，Actual 不會再拿預估值湊數，維持數據真實性。</div>`
         },
         'jz': { title: '聯管通報 JZ LBO', text: `<div class="info-ref">B744 Fleet Notification 2024-14</div><div class="info-zh">當航班延誤時，聯管處將提供最後合法後推時間。</div>` },
         'ext': { title: '延長任務 (Ext. FDT)', text: `<div class="info-ref">FOM 3.4.3.3 C.</div><div class="info-zh">機長裁量權。僅限多重派遣 (M)，最多延長 2 小時。</div>` },
@@ -900,7 +888,6 @@
     }
     function closeInfo() { document.getElementById('infoModal').classList.remove('show'); }
 
-    // --- TOOLBAR TOGGLE & DYNAMIC SUMMARY ---
     function toggleToolbar() {
         const wrapper = document.getElementById('toolbarWrapper');
         const btn = document.getElementById('headerToggleBtn');
@@ -914,23 +901,18 @@
     function refreshConditionsSummary() {
         const centerZone = document.getElementById('headerCenterZone');
         if (!centerZone) return;
-        
         const isCollapsed = document.getElementById('toolbarWrapper').classList.contains('collapsed');
         centerZone.innerHTML = '';
-        
         if (!isCollapsed) return;
 
         const chips = [];
         if (document.getElementById('extFdt').checked) chips.push('Ext FDT');
         if (document.getElementById('nightOps').checked) chips.push('Night');
         if (document.getElementById('noBunk').checked) chips.push('No Bunk');
-        
         const earlyVal = document.getElementById('earlyMorningSel').value;
         if (earlyVal !== '0') chips.push(`Early ${earlyVal}D`);
-        
         const acars = document.getElementById('acarsLbo').value.trim();
         if (acars) chips.push(`JZ ${acars}`);
-        
         const prev = document.getElementById('prevFt').value.trim();
         if (prev && prev !== '0000') chips.push(`Prev ${prev}`);
 
@@ -942,60 +924,6 @@
         });
     }
 
-    // LEGAL STATUS STRIP UPDATE LOGIC
-    function refreshLegalStatusStrip() {
-        const strip = document.getElementById('legalStatusStrip');
-        if (!strip) return;
-        
-        const title = document.getElementById('legalStatusTitle');
-        const text = document.getElementById('legalStatusText');
-
-        let state = 'info';
-        let t = 'Ready';
-
-        const lockBtn = document.getElementById('lockBtn');
-        const isLocked = !!(lockBtn && lockBtn.textContent.includes('🔒'));
-        const report = (document.getElementById('resReport')?.textContent || '').trim();
-        const maxFdt = (document.getElementById('disp-limit-dur')?.textContent || '').trim();
-        const nextRpt = (document.getElementById('resNextRpt')?.textContent || '').trim();
-        const ldg = (document.getElementById('resLdg')?.textContent || '').trim();
-
-        let hasDanger = false;
-        ['disp-limit-dur','resLdg','resNextRpt','resReport'].forEach(id => {
-            if (document.getElementById(id)?.classList.contains('val-danger')) hasDanger = true;
-        });
-        
-        // 🚨 V5.7.1 FIX: 必須同時檢查 display !== 'none' 避免讀到上一次的隱藏狀態
-        const dangerFill = document.getElementById('dtFillDanger');
-        if (dangerFill && dangerFill.style.display !== 'none' && dangerFill.style.width && parseFloat(dangerFill.style.width) > 0) {
-            hasDanger = true;
-        }
-
-        let hasCaution = false;
-        if (!document.getElementById('ulr-alert')?.classList.contains('hidden')) hasCaution = true;
-        // 修正：不再讓提醒性質的 next-leg-check 觸發 CAUTION
-        if (document.getElementById('nightOps')?.checked || document.getElementById('extFdt')?.checked || document.getElementById('noBunk')?.checked) hasCaution = true;
-
-        if (hasDanger) {
-            state = 'danger';
-            t = `Exceeded / review limits · Max FDT ${maxFdt || '--'} · Ldg ${ldg || '0'}`;
-        } else if (hasCaution) {
-            state = 'caution';
-            t = `Caution conditions active${isLocked ? ' · Report locked' : ''} · Max FDT ${maxFdt || '--'}`;
-        } else if (report && report !== '--:--') {
-            state = 'safe';
-            t = `Legal calculation in range${isLocked ? ' · Report locked' : ''} · Report ${report} · Next ${nextRpt || '--:--'}`;
-        } else {
-            state = 'info';
-            t = 'Set report time / route to begin legal status evaluation';
-        }
-
-        strip.dataset.state = state;
-        if (title) title.textContent = state === 'danger' ? 'ALERT' : state === 'caution' ? 'CAUTION' : state === 'safe' ? 'SAFE' : 'STATUS';
-        if (text) text.textContent = t;
-    }
-
-    // HHMM 輸入自動補零與驗證 UX
     function isHHMMFieldTarget(el) {
         if (!el || el.tagName !== 'INPUT' || el.type !== 'tel' || el.classList.contains('taxi-val') || el.readOnly) return false;
         const id = el.id || '';
@@ -1003,6 +931,7 @@
         if (/^(in|out|ci|co)-\d+$/.test(id)) return true;
         return false;
     }
+    
     function initHHMMUX() {
         document.addEventListener('blur', function(e){
             const el = e.target;
@@ -1037,7 +966,6 @@
         });
     }
 
-    // === CORE LOGIC ===
     const icaoToIata = {
         'RCTP': 'TPE', 'RCSS': 'TSA', 'RCKH': 'KHH', 'VHHH': 'HKG', 'VMMC': 'MFM',
         'ZSPD': 'PVG', 'ZBAA': 'PEK', 'RJAA': 'NRT', 'RJTT': 'HND', 'RJBB': 'KIX',
@@ -1060,7 +988,8 @@
     ];
     let app = { 
         crew: 'S', stations: JSON.parse(JSON.stringify(DEFAULTS)), sfts: ['', ''],
-        lockedReport: null, isLocked: false, nextLegHeavy: false, acarsLbo: '', earlyMorning: '0'
+        lockedReport: null, isLocked: false, nextLegHeavy: false, acarsLbo: '', earlyMorning: '0',
+        _stats: {} // 用於跨函數儲存計算結果，供 Status Strip 讀取
     };
     let savedRoutes = [];
 
@@ -1447,6 +1376,55 @@
         location.reload(); 
     }
 
+    // 🚀 v5.8.0 智能預測狀態列 UI 更新引擎
+    function refreshLegalStatusStrip() {
+        const strip = document.getElementById('legalStatusStrip');
+        if (!strip) return;
+        const title = document.getElementById('legalStatusTitle');
+        const text = document.getElementById('legalStatusText');
+        
+        const st = app._stats;
+        let s_state = 'info';
+        let s_text = 'Set report time / route to begin legal status evaluation';
+
+        if (st.isReady) {
+            let d_msgs = [];
+            if (st.ldg > 6) d_msgs.push('Ldg > 6');
+            if (st.isFtExceeded) d_msgs.push('FT Limit');
+            if (st.isFdpExceeded) d_msgs.push('FDP Limit');
+            if (st.isLiveDutyExceeded) d_msgs.push('Live Duty Exceeded');
+
+            if (d_msgs.length > 0) {
+                s_state = 'danger';
+                s_text = `Exceeded: ${d_msgs.join(', ')}`;
+            } else {
+                let c_msgs = [];
+                // 飛時 (FT) 只剩 60 分鐘內觸發 Caution
+                if (st.ftRem >= 0 && st.ftRem <= 60) c_msgs.push(`FT Rem: ${fmt(st.ftRem, false)}`);
+                // 任務期 (FDP) 剩下 90 分鐘內觸發 Caution
+                if (st.fdpRem >= 0 && st.fdpRem <= 90) c_msgs.push(`FDP Rem: ${fmt(st.fdpRem, false)}`);
+                // 現實時間還在執勤中，且距離極限剩下 90 分鐘以內
+                if (!st.isDutyFinished && st.elapsedSinceRep > 0 && st.rtRem >= 0 && st.rtRem <= 90) {
+                    c_msgs.push(`Live FDP Rem: ${Math.floor(st.rtRem)}m`);
+                }
+                
+                if (c_msgs.length > 0) {
+                    s_state = 'caution';
+                    s_text = `Approaching Limits: ${c_msgs.join(' · ')}`;
+                } else {
+                    s_state = 'safe';
+                    s_text = `Legal & In Range · Max FDT ${fmt(st.maxFdpMins, false)}`;
+                    if (st.ftRem > 0) s_text += ` · FT Rem ${fmt(st.ftRem, false)}`;
+                    if (app.isLocked) s_text += ' · [Locked]';
+                }
+            }
+        }
+
+        strip.dataset.state = s_state;
+        if (title) title.textContent = s_state === 'danger' ? 'ALERT' : s_state === 'caution' ? 'CAUTION' : s_state === 'safe' ? 'SAFE' : 'STATUS';
+        if (text) text.textContent = s_text;
+    }
+
     function runAllCalc(redraw = false) { 
         saveData(); updateResultsOnly(); if (redraw) drawTimeline(); 
         refreshConditionsSummary(); 
@@ -1473,6 +1451,8 @@
     }
 
     function updateResultsOnly() {
+        app._stats.isReady = false; 
+
         // --- 1. PRE-CALCULATION & AUTO-DETECT NIGHT OPS ---
         const s1 = parse(app.stations[0].std); 
         const code = app.stations[0].code.trim().toUpperCase(); 
@@ -1517,6 +1497,7 @@
         let isCapped = false; if (globalMaxFdpMins > 1440) { globalMaxFdpMins = 1440; isCapped = true; } 
         let limitText = `${base}h`; if(isNight) limitText += `-2h`; if(globalPauseMinutes > 0) limitText += `+S`; if(totalExtension > 0) limitText += `+E`; if(isExt) limitText += `+CD`; 
         document.getElementById('disp-limit-dur').innerText = limitText;
+        app._stats.maxFdpMins = globalMaxFdpMins;
 
         // --- 4. CALCULATE TOTALS & ULR ---
         calcTotals(); 
@@ -1555,6 +1536,8 @@
             return; 
         }
 
+        app._stats.isReady = true;
+
         let repHtml = fmt(rep); let rptDate = new Date(refDate);
         if (code in airportIanaZones) {
             if (s1 !== null && (s1 - reportOffset) < 0) rptDate.setUTCDate(rptDate.getUTCDate() - 1);
@@ -1564,6 +1547,7 @@
         document.getElementById('resReport').innerHTML = repHtml;
 
         rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0); const nowMs = Date.now(); const repMs = rptDate.getTime(); const elapsedSinceRepMins = (nowMs - repMs) / 60000;
+        app._stats.elapsedSinceRep = elapsedSinceRepMins;
 
         let projectedElapsed = 0;
         if (s1 !== null) {
@@ -1637,6 +1621,16 @@
              }
         }
         
+        // 🚀 V5.8.0 Smart HUD FDP States
+        app._stats.fdpRem = globalMaxFdpMins - Math.max(projectedElapsed, schedElapsed);
+        app._stats.rtRem = globalMaxFdpMins - elapsedSinceRepMins;
+        app._stats.isFdpExceeded = isActExceeded && hasAnyInput;
+        
+        // 檢查是否已抵達最終站
+        const lastIn = parse(app.stations[app.stations.length - 1].in);
+        app._stats.isDutyFinished = (lastIn !== null);
+        app._stats.isLiveDutyExceeded = (!app._stats.isDutyFinished && elapsedSinceRepMins > globalMaxFdpMins && hasAnyInput);
+
         let calculatedRestMins = 0; const lastIdx = app.stations.length - 1;
         if (estimatedDutyEndTime === null) {
             document.getElementById('resNextRpt').innerHTML = "--:--"; document.getElementById('min-rest-lbl').innerText = "Rest: --"; const tag = document.getElementById('ulr-tag'); if(tag) tag.remove();
@@ -1692,6 +1686,7 @@
         calcLBO(rep, globalMaxFdpMins, stationLimitExtensions, globalPauseMinutes);
         
         let landingCount = 0; for(let k=0; k<app.stations.length-1; k++) { if (!app.stations[k].isAcm) landingCount++; }
+        app._stats.ldg = landingCount;
         const resLdgEl = document.getElementById('resLdg');
         if(resLdgEl) { resLdgEl.innerText = landingCount; if(landingCount > 6) resLdgEl.classList.add('val-danger'); else resLdgEl.classList.remove('val-danger'); }
         updateTurns();
@@ -1789,7 +1784,7 @@
         }
         
         const nowMarker = document.getElementById('dtNowMarker');
-        if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins) { let nowPct = (elapsedSinceRepMins / scaleMins) * 100; nowMarker.style.display = 'block'; nowMarker.style.left = nowPct + '%'; } 
+        if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins && !app._stats.isDutyFinished) { let nowPct = (elapsedSinceRepMins / scaleMins) * 100; nowMarker.style.display = 'block'; nowMarker.style.left = nowPct + '%'; } 
         else { nowMarker.style.display = 'none'; }
 
         const ruler = document.getElementById('dtRuler'); ruler.innerHTML = '';
@@ -1850,18 +1845,32 @@
             if(pEl) { if(std!==null && sta!==null) { let d = diff(std,sta); if (!isAcm) aggPlan += d; pEl.innerText = fmt(d, false); }  else pEl.innerText = "--"; }
             if (sft !== null) { const txOut = app.stations[i].taxiOut !== undefined ? app.stations[i].taxiOut : 15; const txIn = app.stations[i+1].taxiIn !== undefined ? app.stations[i+1].taxiIn : 15; if (!isAcm) aggSched += (sft + txOut + txIn);  }
             
+            // 🚨 V5.7.3 Strict Actual
             let ft = 0; const aEl = document.getElementById(`a-${i}`);
-            if(out!==null && inc!==null) { ft = diff(out,inc); if(aEl) aEl.innerText = fmt(ft, false); if (!isAcm) { totalAct += ft; totalActWithPrev += ft; } }
-            else if(sft!==null) { let estimatedBlock = sft + (app.stations[i].taxiOut||15) + (app.stations[i+1].taxiIn||15); if(aEl) aEl.innerText = fmt(estimatedBlock, false) + "*"; if (!isAcm) { totalAct += estimatedBlock; totalActWithPrev += estimatedBlock; } } 
-            else if (std !== null && sta !== null) { let schedBlock = diff(std, sta); if(aEl) aEl.innerText = fmt(schedBlock, false) + "*"; if (!isAcm) { totalAct += schedBlock; totalActWithPrev += schedBlock; } } 
-            else { if(aEl) aEl.innerText = "--"; }
+            if(out!==null && inc!==null) { 
+                ft = diff(out,inc); 
+                if(aEl) aEl.innerText = fmt(ft, false); 
+                if (!isAcm) { totalAct += ft; totalActWithPrev += ft; } 
+            } else { 
+                if(aEl) aEl.innerText = "--"; 
+            }
         }
         
         let maxFt = 600; if (app.crew === 'M') maxFt = noBunk ? 720 : 960; else if (app.crew === 'D') maxFt = noBunk ? 720 : 1080; 
+        
+        // 🚀 V5.8.0 Smart HUD FT States
+        app._stats.ftRem = maxFt - Math.max(totalActWithPrev, aggSched, aggPlan);
+        app._stats.isFtExceeded = (totalActWithPrev > maxFt && totalAct > 0);
+
         const boxPlan = document.getElementById('box-plan'); const boxSched = document.getElementById('box-sched'); const boxAct = document.getElementById('box-act');
 
         document.getElementById('t-plan').innerHTML = fmt(aggPlan, false); document.getElementById('t-sched').innerHTML = fmt(aggSched, false);
-        let actHtml = fmt(totalAct, false); if (prevVal > 0) actHtml += `<span style="font-size:9px; color:var(--text-tertiary); margin-left:2px;">+${fmt(prevVal,false)}</span>`;
+        
+        let actHtml = "--";
+        if (totalAct > 0 || prevVal > 0) {
+            actHtml = fmt(totalAct, false);
+            if (prevVal > 0) actHtml += `<span style="font-size:9px; color:var(--text-tertiary); margin-left:2px;">+${fmt(prevVal,false)}</span>`;
+        }
         document.getElementById('t-act').innerHTML = actHtml;
         
         const planLabel = document.querySelector('#box-plan .stat-label'); if(planLabel) planLabel.innerText = prevVal > 0 ? "Plan (+Prev)" : "Plan";
@@ -1869,10 +1878,10 @@
         
         if (aggPlan > maxFt) boxPlan.classList.add('stat-alert'); else boxPlan.classList.remove('stat-alert');
         if (aggSched > maxFt) boxSched.classList.add('stat-alert'); else boxSched.classList.remove('stat-alert');
-        if (totalActWithPrev > maxFt) { boxAct.classList.add('stat-alert'); let alertMsg = " ⚠️"; if (noBunk && (app.crew === 'M' || app.crew === 'D') && totalActWithPrev > 720) alertMsg = "*"; document.getElementById('t-act').innerHTML += alertMsg; } 
+        if (app._stats.isFtExceeded) { boxAct.classList.add('stat-alert'); let alertMsg = " ⚠️"; if (noBunk && (app.crew === 'M' || app.crew === 'D') && totalActWithPrev > 720) alertMsg = "*"; document.getElementById('t-act').innerHTML += alertMsg; } 
         else { boxAct.classList.remove('stat-alert'); }
         
-        updateBar('bar-plan', aggPlan, maxFt); updateBar('bar-sched', aggSched, maxFt); updateBar('bar-act', totalActWithPrev, maxFt);
+        updateBar('bar-plan', aggPlan, maxFt); updateBar('bar-sched', aggSched, maxFt); updateBar('bar-act', totalActWithPrev > prevVal ? totalActWithPrev : 0, maxFt);
         document.getElementById('limits-out').innerText = `FT Limit: ${fmt(maxFt, false)}`;
     }
     
@@ -1968,6 +1977,7 @@
     window.addEventListener('click', hideGlobalElements);
     window.addEventListener('touchstart', hideGlobalElements, {passive: true});
 
+    // 每 60 秒背景更新一次，驅動 Live Time 檢查
     setInterval(() => { if(app.stations[0].std) runAllCalc(false); }, 60000); 
 
     window.onload = () => { 
@@ -1996,10 +2006,8 @@
                 if(p.isLocked !== undefined) app.isLocked = p.isLocked;
                 if(p.lockedReport !== undefined) app.lockedReport = p.lockedReport;
                 if(p.nextLegHeavy !== undefined) app.nextLegHeavy = p.nextLegHeavy;
-                
                 if(p.acarsLbo !== undefined) { app.acarsLbo = p.acarsLbo; document.getElementById('acarsLbo').value = p.acarsLbo; }
                 if(p.earlyMorning !== undefined) { app.earlyMorning = p.earlyMorning; document.getElementById('earlyMorningSel').value = p.earlyMorning; }
-                
             } catch(e){} 
         }
 
