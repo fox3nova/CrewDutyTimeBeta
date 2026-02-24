@@ -166,10 +166,19 @@
         /* Responsive Controls Grid */
         .controls-grid {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap; /* 強制全域不換行 */
+            overflow-x: auto;  /* 啟用橫向滑動 */
+            -webkit-overflow-scrolling: touch; /* iOS 順滑捲動 */
+            scrollbar-width: none;
             gap: 8px;
             align-items: center;
             justify-content: flex-start;
+            width: 100%;
+            padding-bottom: 4px;
+        }
+        .controls-grid::-webkit-scrollbar { display: none; }
+        .controls-grid > * {
+            flex: 0 0 auto !important; /* 強制子元素不壓縮變形 */
         }
 
         .date-trigger {
@@ -694,39 +703,8 @@
 
         /* 🚨 Specific adjustments just for Landscape Row Flow 🚨 */
         @media screen and (max-height: 600px) and (orientation: landscape),
-               screen and (max-width: 932px) and (orientation: landscape) {
+               screen and (max-width: 1024px) and (orientation: landscape) {
             #timeline-container { flex-direction: row; align-items: center; padding-top: 16px;} 
-            
-            /* 🚨 針對 iOS Safari 的橫向滑動徹底修正 🚨 */
-            .controls-grid {
-                display: flex !important;
-                flex-wrap: nowrap !important;
-                overflow-x: auto !important;
-                overflow-y: hidden !important;
-                -webkit-overflow-scrolling: touch !important;
-                scrollbar-width: none;
-                width: 100%;
-                /* 強制限制最大寬度，確保 overflow 能在 iOS 上正確觸發 */
-                max-width: calc(100vw - 32px) !important;
-                padding-bottom: 4px;
-                gap: 6px !important;
-                /* 修復 iOS flex 容器高度計算問題 */
-                align-items: stretch !important; 
-            }
-            .controls-grid::-webkit-scrollbar { display: none; }
-            
-            /* 強制所有子元素保持原始寬度，不准縮放或自動填滿 */
-            .controls-grid > * { 
-                flex: 0 0 auto !important; 
-                flex-shrink: 0 !important;
-                max-width: none !important;
-            }
-            
-            /* 微調寬度以在有限空間內塞入更多東西 */
-            .date-trigger { min-width: 105px !important; flex: 0 0 auto !important; }
-            .badge-input-wrapper { min-width: 95px !important; flex: 0 0 auto !important; }
-            .toggle-wrapper { min-width: 70px !important; flex: 0 0 auto !important; padding: 0 6px; }
-            #early-container, #prev-container { min-width: 105px !important; flex: 0 0 auto !important;}
         }
 
     </style>
