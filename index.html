@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.7.0)</title>
+    <title>CAL Duty (Pro v5.7.1)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -630,7 +630,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.7.0 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.7.1 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -879,7 +879,7 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.7.0 單行極致收折版</b><br>• 📐 <b>動態單行佈局 (iPad 首選)</b>：將「日期、時區、存檔、夜間模式」等高頻按鈕，全部上移至標題列。在 iPad 上達成完美的「單行」收折體驗，將原本的兩行高度徹底壓縮，釋放最大化垂直視角！<br>• 📱 <b>自適應排版 (RWD)</b>：在手機或直向窄螢幕下，按鈕群會自動折行至第二行，並保持可橫向滑動。<br>• 🎛️ <b>動態摘要區</b>：巧妙利用按鈕旁的剩餘空間，當工具列收折時，已開啟的例外條件（如 Night, Ext FDT）將化為藍色狀態標籤駐留於此。</div><div class="info-divider"></div><div class="info-zh"><b>v5.6.0 iPad HUD 終極版</b><br>• 引進 V2 廣受好評的全局狀態列（Safe / Caution / Alert），一眼掌握排班合法性。<br>• HHMM 自動補零防呆（打 930 離開焦點自動變 0930）。</div>`
+            text: `<div class="info-zh"><b>v5.7.1 狀態列 Bug 修正版</b><br>• 🐛 <b>修復狀態殘留誤報</b>：解決在載入合法航班資料時，因前次超時航班的紅色警告條寬度未清空，導致全局狀態列錯誤發出 ALERT 的問題。</div><div class="info-divider"></div><div class="info-zh"><b>v5.7.0 單行極致收折版</b><br>• 📐 <b>動態單行佈局 (iPad 首選)</b>：將「日期、時區、存檔、夜間模式」等高頻按鈕，全部上移至標題列。在 iPad 上達成完美的「單行」收折體驗，將原本的兩行高度徹底壓縮，釋放最大化垂直視角！<br>• 📱 <b>自適應排版 (RWD)</b>：在手機或直向窄螢幕下，按鈕群會自動折行至第二行，並保持可橫向滑動。<br>• 🎛️ <b>動態摘要區</b>：巧妙利用按鈕旁的剩餘空間，當工具列收折時，已開啟的例外條件（如 Night, Ext FDT）將化為藍色狀態標籤駐留於此。</div>`
         },
         'jz': { title: '聯管通報 JZ LBO', text: `<div class="info-ref">B744 Fleet Notification 2024-14</div><div class="info-zh">當航班延誤時，聯管處將提供最後合法後推時間。</div>` },
         'ext': { title: '延長任務 (Ext. FDT)', text: `<div class="info-ref">FOM 3.4.3.3 C.</div><div class="info-zh">機長裁量權。僅限多重派遣 (M)，最多延長 2 小時。</div>` },
@@ -964,8 +964,12 @@
         ['disp-limit-dur','resLdg','resNextRpt','resReport'].forEach(id => {
             if (document.getElementById(id)?.classList.contains('val-danger')) hasDanger = true;
         });
+        
+        // 🚨 V5.7.1 FIX: 必須同時檢查 display !== 'none' 避免讀到上一次的隱藏狀態
         const dangerFill = document.getElementById('dtFillDanger');
-        if (dangerFill && dangerFill.style.width && parseFloat(dangerFill.style.width) > 0) hasDanger = true;
+        if (dangerFill && dangerFill.style.display !== 'none' && dangerFill.style.width && parseFloat(dangerFill.style.width) > 0) {
+            hasDanger = true;
+        }
 
         let hasCaution = false;
         if (!document.getElementById('ulr-alert')?.classList.contains('hidden')) hasCaution = true;
@@ -1725,7 +1729,7 @@
         else { ghostEl.style.display = 'none'; document.getElementById('dt-sch-val').innerText = '--:--'; }
 
         const fillEl = document.getElementById('dtFill'); const fillDangerEl = document.getElementById('dtFillDanger'); const pctLabel = document.getElementById('dt-pct-label'); const titleAct = document.getElementById('dt-act-title'); const segmentsContainer = document.getElementById('dtSegments'); const postDutyEl = document.getElementById('dtPostDuty'); const restEl = document.getElementById('dtRest'); const segmentInfoBar = document.getElementById('dtSegmentInfo');
-        segmentsContainer.innerHTML = ''; fillDangerEl.style.display = 'none'; segmentInfoBar.innerHTML = ''; segmentInfoBar.style.opacity = 0;
+        segmentsContainer.innerHTML = ''; fillDangerEl.style.display = 'none'; fillDangerEl.style.width = '0%'; segmentInfoBar.innerHTML = ''; segmentInfoBar.style.opacity = 0;
 
         if (!hasAnyInput) {
             fillEl.style.width = '0%'; pctLabel.innerText = '0%'; pctLabel.style.color = 'var(--text-tertiary)'; titleAct.style.color = 'var(--text-tertiary)'; document.getElementById('dt-act-val').innerText = '--:--';
@@ -1735,7 +1739,7 @@
         } else {
             let safeSolidMins = Math.min(solidBarElapsed, maxFdpMins); let displaySafePct = (safeSolidMins / scaleMins) * 100; fillEl.style.width = displaySafePct + '%';
             if (solidBarElapsed > maxFdpMins) { let overflowMins = solidBarElapsed - maxFdpMins; fillDangerEl.style.display = 'block'; fillDangerEl.style.left = (maxFdpMins / scaleMins) * 100 + '%'; fillDangerEl.style.width = (overflowMins / scaleMins) * 100 + '%'; fillEl.style.borderRadius = 'var(--radius-full) 0 0 var(--radius-full)'; } 
-            else { fillDangerEl.style.display = 'none'; fillEl.style.borderRadius = 'var(--radius-full)'; }
+            else { fillDangerEl.style.display = 'none'; fillDangerEl.style.width = '0%'; fillEl.style.borderRadius = 'var(--radius-full)'; }
             
             let fdpHealthPct = (projElapsed / maxFdpMins) * 100;
             if (fdpHealthPct > 100) { fillEl.style.background = 'linear-gradient(90deg, var(--brand-orange), var(--brand-red))'; pctLabel.style.color = 'var(--brand-red)'; titleAct.style.color = 'var(--brand-red)'; } 
