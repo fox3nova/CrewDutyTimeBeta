@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.2)</title>
+    <title>CAL Duty (Pro v5.4.3)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -262,12 +262,24 @@
             justify-content: center;
             position: relative;
             border: 1px solid var(--border-light);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
+        /* 🚨 PROPOSAL 2: VISUAL HIERARCHY FOR STATUS CARDS */
+        .stat-card.act-focus {
+            border: 2px solid var(--brand-blue);
+            box-shadow: 0 4px 12px rgba(0,122,255,0.15);
+            transform: translateY(-2px);
+            z-index: 2;
+        }
+        body.dark-mode .stat-card.act-focus { box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+        .stat-card.dimmed { opacity: 0.6; transform: scale(0.98); }
+
         .stat-label { font-size: 9px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 2px; }
         .stat-value { font-size: 14px; font-weight: 700; font-family: "SF Mono", monospace; }
         .progress-bar-bg { width: 100%; height: 4px; background: var(--border-light); border-radius: 2px; margin-top: 4px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
-        .stat-alert { border: 1px solid var(--brand-red); background: rgba(255, 59, 48, 0.05); }
+        .stat-alert { border: 1px solid var(--brand-red); background: rgba(255, 59, 48, 0.05); opacity: 1 !important; transform: scale(1) !important;}
         .stat-alert .stat-value { color: var(--brand-red); }
 
         /* === DYNAMIC DUTY LIFECYCLE TIMELINE === */
@@ -277,11 +289,23 @@
             left: 16px;
             right: 16px;
             z-index: 90;
-            display: none;
+            display: flex;
             flex-direction: column;
             gap: 4px;
             animation: fadeIn 0.3s ease;
         }
+        
+        /* 🚨 PROPOSAL 4: EMPTY STATE */
+        .dt-empty-state {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px 0; color: var(--text-tertiary); font-weight: 700; font-size: 12px;
+            border: 1px dashed var(--border-light); border-radius: var(--radius-md);
+            background: rgba(0,0,0,0.02); margin-top: 8px;
+        }
+        body.dark-mode .dt-empty-state { background: rgba(255,255,255,0.02); }
+
+        .dt-content { display: none; width: 100%; }
+
         .dt-header {
             display: flex;
             justify-content: space-between;
@@ -358,32 +382,30 @@
             display: none; transition: width 0.5s ease;
         }
 
+        /* 🚨 PROPOSAL 1: CURRENT TIME "NOW" INDICATOR */
+        .dt-now-marker {
+            position: absolute; top: -6px; bottom: -6px; width: 2px;
+            background: #06b6d4; box-shadow: 0 0 6px #06b6d4;
+            z-index: 20; display: none; transition: left 1s ease; pointer-events: none;
+        }
+        .dt-now-marker::before {
+            content: 'NOW'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+            font-size: 8px; font-weight: 900; color: #083344; background: #cffafe;
+            padding: 1px 4px; border-radius: 4px; border: 1px solid #06b6d4; letter-spacing: 0.5px;
+        }
+        body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
+
         /* Micro-interaction Segments */
         .dt-segment {
             position: absolute; top: 1px; bottom: 1px;
             background: rgba(255, 255, 255, 0.3); border-radius: 4px;
-            z-index: 10; box-shadow: 1px 0 0 rgba(0,0,0,0.1); /* Ensure it's above the track inner elements */
-            cursor: pointer;
+            z-index: 10; box-shadow: 1px 0 0 rgba(0,0,0,0.1); 
+            cursor: pointer; transition: background 0.2s, border 0.2s;
         }
         body.dark-mode .dt-segment { background: rgba(0, 0, 0, 0.25); }
-        
-        /* Segment Tooltip Popover */
-        .dt-segment-tooltip {
-            position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%) translateY(4px);
-            background: var(--text-primary); color: var(--bg-app); padding: 6px 10px; border-radius: 6px;
-            font-size: 10px; white-space: nowrap; opacity: 0; visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-float); z-index: 200; text-align: center;
-            line-height: 1.3; pointer-events: none;
-        }
-        .dt-segment-tooltip::after {
-            content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            border-width: 5px; border-style: solid; border-color: var(--text-primary) transparent transparent transparent;
-        }
-        /* Touch / Hover Activation */
-        @media (hover: hover) { .dt-segment:hover .dt-segment-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); } }
-        .dt-segment:active .dt-segment-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        .dt-segment.selected { background: rgba(255, 255, 255, 0.6); border: 2px solid white; box-shadow: 0 0 6px rgba(255,255,255,0.8); }
+        body.dark-mode .dt-segment.selected { background: rgba(255, 255, 255, 0.4); border: 2px solid white; }
 
-        /* Floating MAX FDP Marker (Redesigned in v5.4.2) */
         .dt-limit-marker {
             position: absolute; top: -16px; bottom: -4px; width: 0px;
             border-left: 2px dashed rgba(255, 59, 48, 0.4); z-index: 15;
@@ -402,7 +424,7 @@
         }
         body.dark-mode .dt-limit-text { border-color: rgba(255, 59, 48, 0.3); background: #2a1111;}
         
-        /* TIMELINE RULER FOR TIMESTAMPS (Taller for staggering) */
+        /* TIMELINE RULER FOR TIMESTAMPS */
         .dt-ruler {
             position: relative;
             width: 100%;
@@ -431,6 +453,14 @@
         .dt-tick.actual-out span:first-child { color: var(--brand-green); font-size: 10px; font-weight: 800;}
         .dt-tick.actual-in span:first-child { color: var(--brand-blue); font-size: 10px; font-weight: 800;}
 
+        /* 🚨 PROPOSAL 3: FAT FINGER INFO BAR */
+        .dt-segment-info {
+            text-align: center; height: 16px; margin-top: 4px; font-size: 10px; font-weight: 800;
+            color: var(--brand-blue); opacity: 0; transition: opacity 0.3s;
+            background: rgba(0,122,255,0.05); border-radius: 4px; padding: 2px 0; display:flex; justify-content:center; align-items:center;
+        }
+        body.dark-mode .dt-segment-info { background: rgba(59,130,246,0.15); color: #60a5fa; }
+
         /* === TIMELINE === */
         #timeline-container {
             display: flex;
@@ -444,7 +474,7 @@
             align-items: center; 
             
             position: absolute;
-            top: 310px; /* Pushed down to accommodate the expanded timeline bar & staggered labels */
+            top: 315px; /* Adjust for taller timeline area */
             bottom: 80px; /* Above footer */
             left: 0;
             width: 100%;
@@ -662,7 +692,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.2 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.3 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -800,52 +830,66 @@
 
     <!-- NEW: DYNAMIC DUTY LIFECYCLE TIMELINE MINIMAP -->
     <div class="duty-timeline-wrapper" id="dutyTimelineWrapper">
-        <div class="dt-header">
-            <div class="dt-header-col">
-                <span class="dt-title">REPORT</span>
-                <span class="dt-val" id="dt-rpt-label">--:--</span>
-            </div>
-            
-            <!-- Center FDP Display -->
-            <div class="dt-header-col" style="align-items:center;">
-                <span style="font-size:9px; font-weight:bold;">
-                    <span style="color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace;">--:--</span></span>
-                    <span style="margin:0 4px; color:var(--border-light);">|</span>
-                    <span style="color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
-                </span>
-                <span style="color:var(--brand-blue); font-size:14px; font-weight:800; font-family:monospace;" id="dt-pct-label">0%</span>
-            </div>
+        
+        <!-- Empty State UI -->
+        <div id="dtEmptyState" class="dt-empty-state">
+            ✈️ 請輸入航班時間以產生生命週期軌跡 (Awaiting Flight Data)
+        </div>
 
-            <div class="dt-header-col" style="align-items:flex-end;">
-                <span class="dt-title" id="dt-end-title">MAX LIMIT</span>
-                <span class="dt-val" id="dt-end-val">--:--</span>
-            </div>
-        </div>
-        
-        <div class="dt-track">
-            <!-- inner track holds progressive elements with overflow hidden -->
-            <div class="dt-track-inner">
-                <div class="dt-rest" id="dtRest" title="Rest Period"></div>
-                <div class="dt-post-duty" id="dtPostDuty" title="Post-flight Duty (30m)"></div>
-                <div class="dt-ghost" id="dtGhost" title="Scheduled FDP"></div>
+        <div id="dtContent" style="display:none; width: 100%; flex-direction: column;">
+            <div class="dt-header">
+                <div class="dt-header-col">
+                    <span class="dt-title">REPORT</span>
+                    <span class="dt-val" id="dt-rpt-label">--:--</span>
+                </div>
                 
-                <!-- Main Safe Fill -->
-                <div class="dt-fill" id="dtFill"></div>
-                <!-- Danger Overflow Fill (Hatched) -->
-                <div class="dt-fill-danger" id="dtFillDanger"></div>
+                <!-- Center FDP Display -->
+                <div class="dt-header-col" style="align-items:center;">
+                    <span style="font-size:9px; font-weight:bold;">
+                        <span style="color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace;">--:--</span></span>
+                        <span style="margin:0 4px; color:var(--border-light);">|</span>
+                        <span style="color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
+                    </span>
+                    <span style="color:var(--brand-blue); font-size:14px; font-weight:800; font-family:monospace;" id="dt-pct-label">0%</span>
+                </div>
+
+                <div class="dt-header-col" style="align-items:flex-end;">
+                    <span class="dt-title" id="dt-end-title">MAX LIMIT</span>
+                    <span class="dt-val" id="dt-end-val">--:--</span>
+                </div>
             </div>
             
-            <!-- Flight segments moved OUTSIDE overflow:hidden so tooltips aren't clipped -->
-            <div id="dtSegments"></div>
-            
-            <!-- v5.4.2 REDESIGNED: Floating Reference Marker -->
-            <div class="dt-limit-marker" id="dtMaxMarker">
-                <span class="dt-limit-text">MAX</span>
+            <div class="dt-track">
+                <!-- inner track holds progressive elements with overflow hidden -->
+                <div class="dt-track-inner">
+                    <div class="dt-rest" id="dtRest" title="Rest Period"></div>
+                    <div class="dt-post-duty" id="dtPostDuty" title="Post-flight Duty (30m)"></div>
+                    <div class="dt-ghost" id="dtGhost" title="Scheduled FDP"></div>
+                    
+                    <!-- Main Safe Fill -->
+                    <div class="dt-fill" id="dtFill"></div>
+                    <!-- Danger Overflow Fill (Hatched) -->
+                    <div class="dt-fill-danger" id="dtFillDanger"></div>
+                </div>
+                
+                <!-- Flight segments moved OUTSIDE overflow:hidden -->
+                <div id="dtSegments"></div>
+                
+                <!-- Floating Reference Marker -->
+                <div class="dt-limit-marker" id="dtMaxMarker">
+                    <span class="dt-limit-text">MAX</span>
+                </div>
+                
+                <!-- 🚨 PROPOSAL 1: NOW INDICATOR -->
+                <div class="dt-now-marker" id="dtNowMarker"></div>
             </div>
+            
+            <!-- RULER FOR TIMESTAMPS -->
+            <div class="dt-ruler" id="dtRuler"></div>
+
+            <!-- 🚨 PROPOSAL 3: SEGMENT INFO BAR -->
+            <div id="dtSegmentInfo" class="dt-segment-info"></div>
         </div>
-        
-        <!-- RULER FOR TIMESTAMPS -->
-        <div class="dt-ruler" id="dtRuler"></div>
     </div>
 
     <div id="timeline-container"></div>
@@ -890,9 +934,9 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.2 視覺心理學優化</b><br>• 🧭 <b>懸浮參考指標 (Floating Reference)</b>：解決「提早下班」時，MAX 紅線會切割綠色休時區塊的視覺衝突。將 MAX 紅線改為懸浮指向式的半透明虛線，既保留法規基準，又完美符合時間軸的認知體驗。</div>
+            text: `<div class="info-zh"><b>v5.4.3 終極儀表板版 (UI/UX 頂峰)</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接，瞬間建立時空掌控感。<br>• 📊 <b>視覺層級強化</b>：實際數據 (Actual) 卡片自動放大並發光聚焦，降低計畫數據干擾。<br>• 👆 <b>根除胖手指效應 (Fat Finger Fix)</b>：航段詳細數據改為「點擊鎖定式動態資訊列」，不再被手指遮擋氣泡。<br>• 🕳️ <b>優雅空白狀態</b>：無資料時顯示引導佔位符，穩定介面空間感。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.1</b><br>• 🐛 微互動圖層修復：點擊白色航段方塊時，氣泡能完美浮現。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.2</b><br>• 🧭 懸浮 MAX 參考指標，解決提早下班的視覺衝突。</div>
                    <div class="info-divider"></div>
                    <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.0</b><br>• ✂️ <b>非線性比例尺</b>：智慧壓縮超長休時，確保飛行區段寬敞。<br>• 🔀 <b>防重疊交錯刻度</b>：自動處理相近時間標籤。<br>• 🚨 <b>超時斜紋警示</b>：突破紅線時展現強烈警告。</div>`
         },
@@ -1665,10 +1709,11 @@
 
         // Check if ANY actual data is provided to trigger the solid bar
         let hasAnyInput = false;
+        let hasAnyStd = false;
         for (let k = 0; k < app.stations.length - 1; k++) {
+            if (app.stations[k].std) hasAnyStd = true;
             if (app.stations[k].out || app.stations[k+1].in || app.sfts[k]) {
                 hasAnyInput = true;
-                break;
             }
         }
 
@@ -1706,24 +1751,30 @@
             document.getElementById('loc-time-display').innerText = `STD: --:--`; nightContainer.style.border = "1px solid var(--border-light)";
         }
 
-        if (rep === null) {
+        if (rep === null || (!hasAnyStd && !hasAnyInput)) {
             document.getElementById('resReport').innerText="--:--"; 
             const nextRptEl = document.getElementById('resNextRpt'); if(nextRptEl) nextRptEl.innerHTML = "--:--";
             const minRestEl = document.getElementById('min-rest-lbl'); if(minRestEl) minRestEl.innerText = "Rest: --";
             document.getElementById('disp-limit-dur').innerText = "--";
             const cardMax = document.getElementById('resMaxFdtCard'); if(cardMax) cardMax.innerText = "--:--";
-            updateDynamicTimeline(null, null, 0, 0, 0, 0, false); 
+            updateDynamicTimeline(null, null, 0, 0, 0, 0, false, null); // Hide timeline, show empty state
             return; 
         }
 
         let repHtml = fmt(rep);
+        let rptDate = new Date(refDate);
         if (code in airportIanaZones) {
-            let rptDate = new Date(refDate);
             if (s1 !== null && (s1 - reportOffset) < 0) rptDate.setUTCDate(rptDate.getUTCDate() - 1);
             const rptLoc = getLocalInfo(rep, airportIanaZones[code], rptDate);
             if (rptLoc) repHtml += ` <span style="font-size:10px; color:var(--text-secondary); font-weight:normal;">(${rptLoc.timeStr}L)</span>`;
         }
         document.getElementById('resReport').innerHTML = repHtml;
+
+        // 🚨 PROPOSAL 1: Calculate Elapsed Minutes for NOW Marker
+        rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0);
+        const nowMs = Date.now();
+        const repMs = rptDate.getTime();
+        const elapsedSinceRepMins = (nowMs - repMs) / 60000;
 
         // 1. PROJECTED FDP (Based on Act + Sched combo for final anticipation)
         let projectedElapsed = 0;
@@ -1777,7 +1828,6 @@
 
         // 2. SOLID BAR ELAPSED (Strictly current progress up to OUT or IN)
         let solidBarElapsed = 0;
-        let hasSolidData = false;
         if (s1 !== null) {
             let lastSolid = reportOffset;
             for (let i = 0; i < app.stations.length - 1; i++) {
@@ -1790,7 +1840,6 @@
                 if (out === null && inc === null) {
                     break;
                 }
-                hasSolidData = true;
                 
                 let outRel = lastSolid;
                 if (out !== null) {
@@ -2043,7 +2092,7 @@
         updateTurns();
 
         // 🟢 INJECT DYNAMIC LIFECYCLE TIMELINE
-        updateDynamicTimeline(rep, globalMaxFdpMins, projectedElapsed, schedElapsed, calculatedRestMins, solidBarElapsed, hasAnyInput);
+        updateDynamicTimeline(rep, globalMaxFdpMins, projectedElapsed, schedElapsed, calculatedRestMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins);
     }
       
     function updateTurns() {
@@ -2059,13 +2108,39 @@
     }
 
     // === NEW FUNCTION: PROGRESSIVE DYNAMIC LIFECYCLE TIMELINE HANDLER ===
-    function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restMins, solidBarElapsed, hasAnyInput) {
+    function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins) {
         const wrapper = document.getElementById('dutyTimelineWrapper');
-        if (rep === null || !maxFdpMins) {
-            wrapper.style.display = 'none';
+        const emptyState = document.getElementById('dtEmptyState');
+        const content = document.getElementById('dtContent');
+
+        // 🚨 PROPOSAL 4: EMPTY STATE HANDLING
+        if (rep === null || !maxFdpMins || (schedElapsed === 0 && !hasAnyInput)) {
+            wrapper.style.display = 'flex';
+            emptyState.style.display = 'flex';
+            content.style.display = 'none';
+            
+            // Remove Act Focus if Empty
+            document.getElementById('box-act').classList.remove('act-focus');
+            document.getElementById('box-plan').classList.remove('dimmed');
+            document.getElementById('box-sched').classList.remove('dimmed');
             return;
         }
+
+        // Has Data -> Show Content
         wrapper.style.display = 'flex';
+        emptyState.style.display = 'none';
+        content.style.display = 'flex';
+
+        // 🚨 PROPOSAL 2: VISUAL HIERARCHY FOR CARDS
+        if (hasAnyInput) {
+            document.getElementById('box-act').classList.add('act-focus');
+            document.getElementById('box-plan').classList.add('dimmed');
+            document.getElementById('box-sched').classList.add('dimmed');
+        } else {
+            document.getElementById('box-act').classList.remove('act-focus');
+            document.getElementById('box-plan').classList.remove('dimmed');
+            document.getElementById('box-sched').classList.remove('dimmed');
+        }
 
         // Base Data
         let postDutyMins = 0;
@@ -2073,7 +2148,7 @@
 
         let fdpToUse = hasAnyInput ? projElapsed : schedElapsed;
         
-        // 🚨 Proposal 1: Non-linear Scale for Rest (Cap Visual Rest so FDP doesn't shrink to zero)
+        // 🚨 Proposal 1/4: Non-linear Scale for Rest
         let visualRestMins = restMins;
         let isRestTruncated = false;
         let maxVisualRest = Math.max(maxFdpMins * 0.4, 180); // Rest visually takes up to 40% of FDP
@@ -2083,8 +2158,8 @@
         }
         
         let visualTotalCycleMins = fdpToUse + postDutyMins + visualRestMins;
-        let totalCycleMins = fdpToUse + postDutyMins + restMins; // actual logic time
-        let scaleMins = Math.max(maxFdpMins, visualTotalCycleMins) * 1.05; // 5% visual padding
+        let totalCycleMins = fdpToUse + postDutyMins + restMins; 
+        let scaleMins = Math.max(maxFdpMins, visualTotalCycleMins) * 1.05; 
 
         // 1. Update Fixed Labels
         document.getElementById('dt-rpt-label').innerText = fmt(rep);
@@ -2097,14 +2172,14 @@
             document.getElementById('dt-end-val').innerText = fmt(rep + maxFdpMins);
         }
 
-        // 2. Absolute Max Marker (v5.4.2 REDESIGNED)
+        // 2. Absolute Max Marker
         const maxMarker = document.getElementById('dtMaxMarker');
         maxMarker.style.display = 'block';
         maxMarker.style.left = (maxFdpMins / scaleMins) * 100 + '%';
         const maxMarkerText = document.querySelector('.dt-limit-text');
         maxMarkerText.innerText = 'MAX ' + fmt(rep + maxFdpMins);
 
-        // 3. Handle Sched Ghost Overlay (The Plan Container)
+        // 3. Handle Sched Ghost Overlay
         const ghostEl = document.getElementById('dtGhost');
         if (schedElapsed > 0) {
             document.getElementById('dt-sch-val').innerText = fmt(schedElapsed, false);
@@ -2124,9 +2199,12 @@
         const segmentsContainer = document.getElementById('dtSegments');
         const postDutyEl = document.getElementById('dtPostDuty');
         const restEl = document.getElementById('dtRest');
+        const segmentInfoBar = document.getElementById('dtSegmentInfo');
         
         segmentsContainer.innerHTML = '';
         fillDangerEl.style.display = 'none';
+        segmentInfoBar.innerHTML = '';
+        segmentInfoBar.style.opacity = 0;
 
         if (!hasAnyInput) {
             // Sched Only: Hide the progressive solid bar entirely
@@ -2157,12 +2235,12 @@
                 restEl.innerHTML = '';
             }
         } else {
-            // Act Data exists -> Progressive Solid Fill (Stops at OUT or IN)
+            // Act Data exists -> Progressive Solid Fill
             let safeSolidMins = Math.min(solidBarElapsed, maxFdpMins);
             let displaySafePct = (safeSolidMins / scaleMins) * 100;
             fillEl.style.width = displaySafePct + '%';
             
-            // 🚨 Proposal 3: Danger Zone Hatching
+            // 🚨 Danger Zone Hatching
             if (solidBarElapsed > maxFdpMins) {
                 let overflowMins = solidBarElapsed - maxFdpMins;
                 fillDangerEl.style.display = 'block';
@@ -2174,7 +2252,7 @@
                 fillEl.style.borderRadius = 'var(--radius-full)';
             }
             
-            // Health color & text is based on the final PROJECTED FDP
+            // Health color & text
             let fdpHealthPct = (projElapsed / maxFdpMins) * 100;
             if (fdpHealthPct > 100) {
                 fillEl.style.background = 'linear-gradient(90deg, var(--brand-orange), var(--brand-red))';
@@ -2192,12 +2270,12 @@
             document.getElementById('dt-act-val').innerText = fmt(projElapsed, false);
             pctLabel.innerText = Math.round(fdpHealthPct) + '%'; 
 
-            // Post Duty block rendering
+            // Post Duty block
             postDutyEl.style.display = 'block';
             postDutyEl.style.left = (projElapsed / scaleMins) * 100 + '%';
             postDutyEl.style.width = (postDutyMins / scaleMins) * 100 + '%';
 
-            // Rest block rendering
+            // Rest block
             if (restMins > 0) {
                 restEl.style.display = 'flex';
                 restEl.style.left = ((projElapsed + postDutyMins) / scaleMins) * 100 + '%';
@@ -2210,7 +2288,7 @@
                 restEl.innerHTML = '';
             }
 
-            // Draw Flight Segments (Future/Projected slots waiting to be filled)
+            // Draw Flight Segments (Future/Projected slots)
             let lastProgElapsed = (app.stations[0].code.trim().toUpperCase() === 'TPE') ? 90 : 60;
             for (let i = 0; i < app.stations.length - 1; i++) {
                 let st = app.stations[i];
@@ -2248,7 +2326,7 @@
                     legInRel = legOutRel + txOut + txIn; // fallback
                 }
                 
-                // 👆 Proposal 4: Micro-interactions
+                // 🚨 PROPOSAL 3: Micro-interactions (Click to lock Info Bar)
                 let blockStr = "00:00";
                 if (out !== null && inc !== null) blockStr = fmt(diff(out, inc), false);
                 else if (ft !== null) blockStr = fmt(ft + txOut + txIn, false) + '*';
@@ -2267,15 +2345,32 @@
                 if (startPct >= 0 && startPct <= 100 && (out !== null || std !== null)) {
                     const seg = document.createElement('div');
                     seg.className = 'dt-segment';
-                    seg.tabIndex = 0; // Make focusable for touch
                     seg.style.left = startPct + '%';
                     seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
-                    seg.innerHTML = `<div class="dt-segment-tooltip"><b>${segLabel}</b><br>Block: ${blockStr}</div>`;
+                    
+                    // Click Event for Info Bar
+                    seg.onclick = () => {
+                        document.querySelectorAll('.dt-segment').forEach(s => s.classList.remove('selected'));
+                        seg.classList.add('selected');
+                        segmentInfoBar.innerHTML = `📍 ${segLabel} &nbsp;|&nbsp; ⏱️ Block: ${blockStr}`;
+                        segmentInfoBar.style.opacity = 1;
+                    };
+                    
                     segmentsContainer.appendChild(seg);
                 }
             }
         }
         
+        // 🚨 PROPOSAL 1: CURRENT TIME "NOW" INDICATOR
+        const nowMarker = document.getElementById('dtNowMarker');
+        if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins) {
+            let nowPct = (elapsedSinceRepMins / scaleMins) * 100;
+            nowMarker.style.display = 'block';
+            nowMarker.style.left = nowPct + '%';
+        } else {
+            nowMarker.style.display = 'none';
+        }
+
         // 5. Update Timeline Ruler (SMART REPLACEMENT + STAGGERED)
         const ruler = document.getElementById('dtRuler');
         ruler.innerHTML = '';
@@ -2359,7 +2454,7 @@
                 tickLastProgElapsed = inRel + turn;
             }
             
-            // 🔀 Proposal 2: Anti-overlap Staggering Algorithm
+            // Anti-overlap Staggering Algorithm
             rawTicks.sort((a, b) => a.pct - b.pct);
             let lastRenderedPct = -100;
             let isStaggered = false;
@@ -2634,6 +2729,11 @@
         const infoModal = document.getElementById('infoModal');
         if (e.target === infoModal) closeInfo();
     });
+
+    // Start a timer for NOW indicator updates
+    setInterval(() => {
+        if(app.stations[0].std) runAllCalc(false);
+    }, 60000); // Check every minute
 
     window.onload = () => { 
         const isDark = localStorage.getItem('nightMode') === 'true';
