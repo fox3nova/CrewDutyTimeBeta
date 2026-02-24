@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.1)</title>
+    <title>CAL Duty (Pro v5.4.2)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -296,7 +296,7 @@
             position: relative;
             width: 100%;
             height: 14px; 
-            margin-top: 8px;
+            margin-top: 18px; /* Taller margin to accommodate floating marker */
         }
         .dt-track-inner {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -383,17 +383,24 @@
         @media (hover: hover) { .dt-segment:hover .dt-segment-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); } }
         .dt-segment:active .dt-segment-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
+        /* Floating MAX FDP Marker (Redesigned in v5.4.2) */
         .dt-limit-marker {
-            position: absolute; top: -4px; bottom: -4px; width: 2px;
-            background: var(--brand-red); z-index: 5;
-            box-shadow: 0 0 4px rgba(255, 59, 48, 0.6);
-            display: none; transition: left 0.5s ease;
+            position: absolute; top: -16px; bottom: -4px; width: 0px;
+            border-left: 2px dashed rgba(255, 59, 48, 0.4); z-index: 15;
+            transition: left 0.5s ease;
             pointer-events: none;
+        }
+        .dt-limit-marker::before {
+            content: '▼'; position: absolute; top: 0px; left: -4px;
+            font-size: 8px; color: var(--brand-red); line-height: 1;
         }
         .dt-limit-text {
             position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-            font-size: 8px; font-weight: 900; color: var(--brand-red); letter-spacing: 0.5px; white-space: nowrap;
+            font-size: 9px; font-weight: 900; color: var(--brand-red); letter-spacing: 0.5px; white-space: nowrap;
+            background: var(--bg-card); padding: 1px 4px; border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(255, 59, 48, 0.2); border: 1px solid rgba(255, 59, 48, 0.1);
         }
+        body.dark-mode .dt-limit-text { border-color: rgba(255, 59, 48, 0.3); background: #2a1111;}
         
         /* TIMELINE RULER FOR TIMESTAMPS (Taller for staggering) */
         .dt-ruler {
@@ -655,7 +662,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.1 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.2 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -831,7 +838,7 @@
             <!-- Flight segments moved OUTSIDE overflow:hidden so tooltips aren't clipped -->
             <div id="dtSegments"></div>
             
-            <!-- Marker sits outside overflow hidden so the text isn't clipped -->
+            <!-- v5.4.2 REDESIGNED: Floating Reference Marker -->
             <div class="dt-limit-marker" id="dtMaxMarker">
                 <span class="dt-limit-text">MAX</span>
             </div>
@@ -883,11 +890,11 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.1 微互動優化</b><br>• 🐛 <b>氣泡圖層修復 (Z-index/Clipping Fix)</b>：解除時間軌上的剪裁限制，現在點擊白色航段方塊，微互動氣泡能完美浮現不受遮擋！</div>
+            text: `<div class="info-zh"><b>v5.4.2 視覺心理學優化</b><br>• 🧭 <b>懸浮參考指標 (Floating Reference)</b>：解決「提早下班」時，MAX 紅線會切割綠色休時區塊的視覺衝突。將 MAX 紅線改為懸浮指向式的半透明虛線，既保留法規基準，又完美符合時間軸的認知體驗。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.0</b><br>• ✂️ <b>非線性比例尺</b>：智慧壓縮超長休時，確保飛行區段寬敞。<br>• 🔀 <b>防重疊交錯刻度</b>：自動處理相近時間標籤。<br>• 🚨 <b>超時斜紋警示</b>：突破紅線時展現強烈警告。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.1</b><br>• 🐛 微互動圖層修復：點擊白色航段方塊時，氣泡能完美浮現。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.3.6</b><br>• 🐛 精準進度修復：實心藍條嚴格遵循目前實際進度。</div>`
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.0</b><br>• ✂️ <b>非線性比例尺</b>：智慧壓縮超長休時，確保飛行區段寬敞。<br>• 🔀 <b>防重疊交錯刻度</b>：自動處理相近時間標籤。<br>• 🚨 <b>超時斜紋警示</b>：突破紅線時展現強烈警告。</div>`
         },
         'jz': {
             title: '聯管通報 JZ LBO',
@@ -2090,7 +2097,7 @@
             document.getElementById('dt-end-val').innerText = fmt(rep + maxFdpMins);
         }
 
-        // 2. Absolute Max Marker
+        // 2. Absolute Max Marker (v5.4.2 REDESIGNED)
         const maxMarker = document.getElementById('dtMaxMarker');
         maxMarker.style.display = 'block';
         maxMarker.style.left = (maxFdpMins / scaleMins) * 100 + '%';
