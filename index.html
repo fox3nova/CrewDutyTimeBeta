@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.4)</title>
+    <title>CAL Duty (Pro v5.4.4) - iPad Optimized</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -116,8 +116,10 @@
             background: var(--bg-glass);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
+            /* Safari 硬體加速，確保模糊效果不卡頓 */
+            -webkit-transform: translateZ(0); 
+            transform: translateZ(0); 
             
-            /* 改為相對定位，自動成為第一層區塊 */
             position: relative;
             flex-shrink: 0;
             width: 100%;
@@ -170,9 +172,9 @@
         /* Responsive Controls Grid */
         .controls-grid {
             display: flex;
-            flex-wrap: nowrap; /* 強制全域不換行 */
-            overflow-x: auto;  /* 啟用橫向滑動 */
-            -webkit-overflow-scrolling: touch; /* iOS 順滑捲動 */
+            flex-wrap: nowrap; /* 手機版預設不換行 */
+            overflow-x: auto;  /* 手機版橫向滑動 */
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             gap: 8px;
             align-items: center;
@@ -258,8 +260,6 @@
             gap: 8px;
             padding: 8px 16px;
             background: var(--bg-app);
-            
-            /* 改為相對佈局，緊跟 Header 之後 */
             position: relative;
             flex-shrink: 0;
             width: 100%;
@@ -279,7 +279,6 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* VISUAL HIERARCHY FOR STATUS CARDS */
         .stat-card.act-focus {
             border: 2px solid var(--brand-blue);
             box-shadow: 0 4px 12px rgba(0,122,255,0.15);
@@ -298,15 +297,14 @@
 
         /* === DYNAMIC DUTY LIFECYCLE TIMELINE === */
         .duty-timeline-wrapper {
-            /* 🚨 瘦身：壓縮時間條的外圍高度與間距 */
             position: relative;
             flex-shrink: 0;
-            margin: 2px 16px 0 16px; /* 從 8px 縮減 */
+            margin: 2px 16px 0 16px;
             width: calc(100% - 32px);
             z-index: 80; 
             display: flex;
             flex-direction: column;
-            gap: 2px; /* 從 4px 縮減 */
+            gap: 2px; 
             animation: fadeIn 0.3s ease;
         }
 
@@ -316,7 +314,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 2px; /* 從 4px 縮減 */
+            margin-top: 2px;
         }
         .dt-header-col { display: flex; flex-direction: column; gap: 2px; }
         .dt-title { font-size: 9px; color: var(--text-tertiary); font-weight: bold; }
@@ -325,8 +323,8 @@
         .dt-track {
             position: relative;
             width: 100%;
-            height: 10px; /* 🚨 變細：從 14px 縮減 */
-            margin-top: 14px; /* 🚨 壓縮：從 18px 縮減 */
+            height: 10px;
+            margin-top: 14px;
         }
         .dt-track-inner {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -337,7 +335,6 @@
             overflow: hidden;
         }
 
-        /* Lifecycle Zones */
         .dt-ghost {
             position: absolute; top: -1px; bottom: -1px; left: 0;
             border: 1px dashed var(--text-tertiary);
@@ -373,7 +370,6 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 2;
         }
         
-        /* Danger Zone Hatching for Overflow */
         @keyframes pulseHatch {
             0% { opacity: 0.8; }
             50% { opacity: 1; box-shadow: 0 0 10px rgba(255,59,48,0.8); }
@@ -388,7 +384,6 @@
             display: none; transition: width 0.5s ease;
         }
 
-        /* CURRENT TIME "NOW" INDICATOR */
         .dt-now-marker {
             position: absolute; top: -4px; bottom: -4px; width: 2px;
             background: #06b6d4; box-shadow: 0 0 6px #06b6d4;
@@ -401,7 +396,6 @@
         }
         body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
 
-        /* Micro-interaction Segments (iOS Touch Fixed) */
         .dt-segment {
             position: absolute; top: 1px; bottom: 1px;
             background: rgba(255, 255, 255, 0.3); border-radius: 4px;
@@ -431,11 +425,10 @@
         }
         body.dark-mode .dt-limit-text { border-color: rgba(255, 59, 48, 0.3); background: #2a1111;}
         
-        /* TIMELINE RULER FOR TIMESTAMPS */
         .dt-ruler {
             position: relative;
             width: 100%;
-            height: 24px; /* 🚨 壓縮：從 32px 縮減 */
+            height: 24px;
             margin-top: 2px;
         }
         .dt-tick {
@@ -451,16 +444,11 @@
             transition: left 0.5s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .dt-tick span:first-child { font-family: monospace; font-size: 10px; }
-        
-        /* Stagger modifier 配合高度壓縮 */
         .dt-tick.stagger { transform: translateX(-50%) translateY(12px); } 
-        
-        /* Sub-markers */
         .dt-tick.minor span:first-child { color: var(--text-tertiary); font-size: 9px; }
         .dt-tick.actual-out span:first-child { color: var(--brand-green); font-size: 10px; font-weight: 800;}
         .dt-tick.actual-in span:first-child { color: var(--brand-blue); font-size: 10px; font-weight: 800;}
 
-        /* FAT FINGER INFO BAR */
         .dt-segment-info {
             text-align: center; height: 16px; margin-top: 4px; font-size: 10px; font-weight: 800;
             color: var(--brand-blue); opacity: 0; transition: opacity 0.3s;
@@ -470,28 +458,20 @@
 
         /* === TIMELINE CONTAINERS === */
         #timeline-container {
-            /* 導入 Flex: 1 動態填滿剩下空間 */
             position: relative;
             flex: 1;
             min-height: 0; 
             width: 100%;
             z-index: 85; 
-            
             display: flex;
             overflow-x: auto;
-            
-            /* 🚨 鎖死上下滑動 🚨 */
             overflow-y: hidden !important; 
-            
             scroll-snap-type: x mandatory;
-            padding: 16px 16px 65px 16px; /* 🚨 配合底部欄位瘦身，下方留白從 90px 極致壓縮到 65px */
+            padding: 16px 16px 65px 16px; 
             gap: 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            
-            /* 🚨 安全置中魔法：取消 center 以防止 Safari 強制往上切，改靠子元件的 margin auto 控制 🚨 */
             align-items: flex-start; 
-            
             overscroll-behavior-y: none;
             overscroll-behavior-x: auto;
         }
@@ -499,13 +479,11 @@
 
         .station-wrapper { 
             scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; 
-            /* 🚨 取代 align-items: center，優雅置中且絕不切斷頂部空間 🚨 */
             margin-top: auto;
             margin-bottom: auto;
         }
         .leg-connector {
             display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0;
-            /* 🚨 優雅置中 🚨 */
             margin-top: auto;
             margin-bottom: auto;
         }
@@ -617,20 +595,12 @@
         .btn-div { background: var(--brand-orange); }
         
         .btn-del { 
-            position: absolute; 
-            top: -10px; 
-            right: -10px; 
-            background: var(--brand-red); 
-            width: 24px; 
-            height: 24px; 
-            font-size: 12px; 
-            z-index: 50; 
-            border: 2px solid var(--bg-card);
-            border-radius: 50%;
+            position: absolute; top: -10px; right: -10px; background: var(--brand-red); 
+            width: 24px; height: 24px; font-size: 12px; z-index: 50; 
+            border: 2px solid var(--bg-card); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             color: white; font-weight: bold; cursor: pointer;
-            box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); 
-            transition: transform 0.2s;
+            box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); transition: transform 0.2s;
         }
         .btn-del:active { transform: scale(0.9); }
 
@@ -638,15 +608,19 @@
         .hud-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            /* Safari 硬體加速，確保模糊效果不卡頓 */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+
             border-top: 1px solid var(--border-light); 
-            padding: 4px 16px calc(env(safe-area-inset-bottom) + 4px) 16px; /* 🚨 極致壓縮上下 Padding */
+            padding: 4px 16px calc(var(--safe-bottom) + 4px) 16px; 
             z-index: 200; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
         }
         .hud-grid { display: grid; grid-template-columns: 1fr 1fr 0.8fr 1.2fr; gap: 8px; align-items: center; }
         .hud-item { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; }
-        .hud-label { font-size: 9px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0px; display:flex; align-items:center;} /* 🚨 縮減字體與底部間距 */
-        .hud-value { font-size: 16px; font-weight: 800; color: var(--text-primary); line-height: 1.1; font-family: "SF Mono", monospace; margin: 1px 0; } /* 🚨 縮小數值字體並壓縮行高 */
-        .hud-sub { font-size: 9px; color: var(--text-secondary); margin-top: 0px; display: flex; align-items: center; gap: 2px; text-align: center;} /* 🚨 縮減字體與頂部間距 */
+        .hud-label { font-size: 9px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0px; display:flex; align-items:center;}
+        .hud-value { font-size: 16px; font-weight: 800; color: var(--text-primary); line-height: 1.1; font-family: "SF Mono", monospace; margin: 1px 0; }
+        .hud-sub { font-size: 9px; color: var(--text-secondary); margin-top: 0px; display: flex; align-items: center; gap: 2px; text-align: center;}
         
         .val-danger { color: var(--brand-red) !important; }
         .val-safe { color: var(--brand-green) !important; }
@@ -656,11 +630,10 @@
         .hud-item.locked .hud-value { color: var(--brand-red); }
         .lock-icon { font-size: 10px; margin-left: 4px; padding: 2px 4px; background: var(--bg-input); border-radius: 4px; cursor: pointer; }
         
-        /* 🚨 終極修復 Popover：脫離受限佈局，改用全局相對定位 🚨 */
         .popover {
             position: absolute; 
-            top: calc(100% + 4px); /* 位於 header 正下方 */
-            right: 16px;           /* 對齊右側 */
+            top: calc(100% + 4px);
+            right: 16px;           
             background: var(--bg-card); border: 1px solid var(--border-light);
             border-radius: 12px; padding: 12px; box-shadow: var(--shadow-float);
             z-index: 300; width: 250px; display: none; animation: fadeIn 0.2s ease;
@@ -671,8 +644,11 @@
         /* === INFO MODAL === */
         .info-modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            /* Safari 硬體加速，確保模糊效果不卡頓 */
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+
             z-index: 1000; display: none; align-items: center; justify-content: center;
             opacity: 0; transition: opacity 0.2s ease;
         }
@@ -687,36 +663,90 @@
         .info-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-light);}
         .info-modal-body { padding: 20px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); max-height: 70vh; overflow-y: auto;}
         
-        /* Modal Typography Utilities */
         .info-ref { display: inline-block; background: var(--bg-accent); color: var(--brand-blue); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; letter-spacing: 0.5px; border: 1px solid rgba(0,122,255,0.1); }
         .info-zh { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; line-height: 1.5; letter-spacing: 0.02em; }
         .info-en { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; letter-spacing: 0.01em; }
         .info-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
 
-        /* 🚨 RESPONSIVE RESET for ALL Mobile Scenarios */
-        @media screen and (max-width: 820px) and (orientation: portrait), 
-               screen and (max-height: 600px) and (orientation: landscape) {
+        /* 🚨 階段一 & 階段二 & 階段三 & 四 & 五：IPAD & TABLET OPTIMIZATIONS 🚨 */
+        @media screen and (min-width: 768px) {
+            .app-header { padding: 16px 24px; }
+            .controls-grid {
+                flex-wrap: wrap; /* 取消強制單行，允許自動換行 */
+                justify-content: flex-start;
+                overflow-x: visible;
+                padding-bottom: 8px;
+                gap: 12px;
+            }
+            .controls-grid > * { flex: 0 1 auto !important; }
             
-            /* 行動版直向：解除 Flex 改為傳統區塊，允許無限長度向下捲動 */
+            /* 觸控熱區放大至 Apple HIG 標準 42px */
+            .date-trigger, .toggle-wrapper, .badge-input-wrapper { height: 42px; font-size: 14px; }
+            .toggle-label { font-size: 13px; }
+            .switch { width: 40px; height: 24px; }
+            .slider:before { height: 20px; width: 20px; left: 2px; bottom: 2px; }
+            input:checked + .slider:before { transform: translateX(16px); }
+
+            /* 面板寬度與間距放寬 */
+            .stats-dashboard { padding: 12px 24px; gap: 16px; }
+            .stat-card { padding: 12px; }
+            .stat-label { font-size: 10px; margin-bottom: 4px; }
+            .stat-value { font-size: 16px; }
+
+            .duty-timeline-wrapper { margin: 16px 24px 0 24px; width: calc(100% - 48px); }
+            .dt-track { height: 14px; margin-top: 18px; } /* 恢復大螢幕時間軸粗細 */
+            
+            /* 【防推擠機制】大幅增加底部 Padding，避免 iPad 虛擬鍵盤彈出時遮擋輸入框 */
+            #timeline-container { padding: 24px 24px 100px 24px; }
+            
+            /* 【視覺美化】航段卡片空間釋放：320px 更舒適的輸入體驗，並加入立體深陰影 */
+            .station-card { 
+                width: 320px; 
+                padding: 20px; 
+                box-shadow: 0 12px 32px -8px rgba(0,0,0,0.12);
+            } 
+            body.dark-mode .station-card {
+                box-shadow: 0 12px 32px -8px rgba(0,0,0,0.5);
+            }
+
+            .glass-input { height: 42px; font-size: 18px; line-height: 40px; }
+            .taxi-badge { height: 42px; padding: 0 8px; }
+            .taxi-val { width: 28px; font-size: 14px; }
+            
+            .hud-footer { padding: 12px 24px calc(var(--safe-bottom) + 12px) 24px; }
+            .hud-value { font-size: 18px; }
+            .hud-label, .hud-sub { font-size: 11px; }
+
+            /* 【視覺美化】Popover 微調適應大螢幕，增加陰影深度與圓角 */
+            .popover { 
+                width: 320px; 
+                right: 24px; 
+                top: calc(100% + 12px); 
+                border-radius: 16px;
+                box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            }
+            body.dark-mode .popover {
+                box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
+            }
+        }
+
+        /* 🚨 RESPONSIVE RESET for ALL Mobile Scenarios */
+        /* 將斷點從 820px 下修至 767px，避免 iPad 被誤判為直向手機 */
+        @media screen and (max-width: 767px) and (orientation: portrait), 
+               screen and (max-height: 600px) and (orientation: landscape) {
             html, body { position: static; overflow-y: auto; overflow-x: hidden; display: block; height: auto; }
             .app-header { position: sticky; top: 0; z-index: 1000;}
             .stats-dashboard { position: static; margin-top: 12px; }
-            
             .duty-timeline-wrapper { position: relative; margin: 12px 16px 0 16px; z-index: 80; width: calc(100% - 32px);}
-            
             #timeline-container {
-                position: relative; height: auto; 
-                overflow-x: auto; overflow-y: visible; 
-                padding-top: 16px; padding-bottom: 65px; /* 🚨 配合底部欄位瘦身，從 120px 壓縮至 65px */
-                gap: 0; min-height: auto; 
-                z-index: 85; 
-                display: flex; 
+                position: relative; height: auto; overflow-x: auto; overflow-y: visible; 
+                padding-top: 16px; padding-bottom: 65px; gap: 0; min-height: auto; 
+                z-index: 85; display: flex; 
             }
             body::-webkit-scrollbar { display: none; }
         }
 
-        /* Specific adjustments just for Portrait Column Flow */
-        @media screen and (max-width: 820px) and (orientation: portrait) {
+        @media screen and (max-width: 767px) and (orientation: portrait) {
             #timeline-container { flex-direction: column; align-items: center; padding-top: 24px;} 
             .leg-connector { width: 100%; height: 110px; flex-direction: column; margin-top: 0; }
             .flight-line { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); }
@@ -725,7 +755,6 @@
             .station-card { width: 92%; max-width: 380px; }
         }
 
-        /* Specific adjustments just for Landscape Row Flow */
         @media screen and (max-height: 600px) and (orientation: landscape),
                screen and (max-width: 1024px) and (orientation: landscape) {
             #timeline-container { flex-direction: row; padding-top: 16px;} 
@@ -769,7 +798,7 @@
                 ALL UTC
             </button>
 
-            <!-- ACARS LBO Input (Fleet Notification 2024-14) -->
+            <!-- ACARS LBO Input -->
             <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
                 <span style="display:flex; align-items:center; font-size:10px;">
                     JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
@@ -801,7 +830,7 @@
                 </label>
             </div>
             
-            <!-- Early Morning CAPSULE UI (3.4.3.4) -->
+            <!-- Early Morning CAPSULE -->
             <div class="toggle-wrapper" id="early-container" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
                 <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
                 <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
@@ -812,7 +841,6 @@
                 <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
             </div>
 
-            <!-- 🚨 取消了內部的 relative 定位與多餘的 stopPropagation 🚨 -->
             <div id="prev-container" style="flex: 1 1 auto; min-width:125px;">
                 <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup(event)">
                     <span style="display:flex; align-items:center; font-size:10px;">
@@ -827,11 +855,9 @@
             
             <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
             
-            <!-- 🚨 透過獨立的 JS Handler 防止穿透，不再直接寫 inline 邏輯 🚨 -->
             <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
         </div>
 
-        <!-- 🚨 【重大修復】這兩個面板被移出 controls-grid，直接放在 app-header 中，徹底解決被裁切隱藏的問題 🚨 -->
         <div id="prevPopup" class="popover" onclick="event.stopPropagation();">
             <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
             <div class="flex flex-col gap-2">
@@ -891,7 +917,7 @@
         </div>
     </div>
 
-    <!-- NEW: DYNAMIC DUTY LIFECYCLE TIMELINE MINIMAP -->
+    <!-- DYNAMIC DUTY LIFECYCLE TIMELINE MINIMAP -->
     <div class="duty-timeline-wrapper" id="dutyTimelineWrapper">
 
         <div id="dtContent" style="display:flex; width: 100%; flex-direction: column;">
@@ -901,7 +927,6 @@
                     <span class="dt-val" id="dt-rpt-label">--:--</span>
                 </div>
                 
-                <!-- 🚨 Center FDP Display: 扁平化單行設計，直接節省行高空間 🚨 -->
                 <div style="display:flex; align-items:baseline; gap: 8px; transform: translateY(1px);">
                     <span style="font-size:9px; font-weight:700; color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
                     <span style="color:var(--brand-blue); font-size:15px; font-weight:800; font-family:monospace; letter-spacing:-0.5px;" id="dt-pct-label">0%</span>
@@ -915,34 +940,26 @@
             </div>
             
             <div class="dt-track">
-                <!-- inner track holds progressive elements with overflow hidden -->
                 <div class="dt-track-inner">
                     <div class="dt-rest" id="dtRest" title="Rest Period"></div>
                     <div class="dt-post-duty" id="dtPostDuty" title="Post-flight Duty (30m)"></div>
                     <div class="dt-ghost" id="dtGhost" title="Scheduled FDP"></div>
                     
-                    <!-- Main Safe Fill -->
                     <div class="dt-fill" id="dtFill"></div>
-                    <!-- Danger Overflow Fill (Hatched) -->
                     <div class="dt-fill-danger" id="dtFillDanger"></div>
                 </div>
                 
-                <!-- Flight segments moved OUTSIDE overflow:hidden -->
                 <div id="dtSegments"></div>
                 
-                <!-- Floating Reference Marker -->
                 <div class="dt-limit-marker" id="dtMaxMarker">
                     <span class="dt-limit-text">MAX</span>
                 </div>
                 
-                <!-- NOW INDICATOR -->
                 <div class="dt-now-marker" id="dtNowMarker"></div>
             </div>
             
-            <!-- RULER FOR TIMESTAMPS -->
             <div class="dt-ruler" id="dtRuler"></div>
 
-            <!-- SEGMENT INFO BAR -->
             <div id="dtSegmentInfo" class="dt-segment-info"></div>
         </div>
     </div>
@@ -1121,7 +1138,6 @@
         return new Date(Date.UTC(y, m - 1, d)); 
     }
 
-    /* 🧠 Smart Input Logic 🧠 */
     function getDisplayValue(i, field, mode) {
         const utcVal = app.stations[i][field];
         if (!utcVal) return '';
@@ -1435,7 +1451,6 @@
         runAllCalc();
     }
 
-    // --- ACARS & EARLY MORNING UPDATERS ---
     function updAcarsLbo(v) {
         app.acarsLbo = v;
         saveData();
@@ -1448,12 +1463,11 @@
         runAllCalc();
     }
 
-    // 🚨 透過 JS Handler 防止事件穿透，並加入防呆互斥邏輯
     function togglePrevPopup(e) {
         if(e) e.stopPropagation();
         const el = document.getElementById('prevPopup');
         const isClosed = !el.classList.contains('show');
-        document.querySelectorAll('.popover').forEach(p => p.classList.remove('show')); // Auto-close others
+        document.querySelectorAll('.popover').forEach(p => p.classList.remove('show')); 
         if (isClosed) {
             const curDateVal = document.getElementById('flightDate').value;
             if (curDateVal) {
@@ -1473,7 +1487,7 @@
         if(e) e.stopPropagation();
         const el = document.getElementById('routePopup');
         const isClosed = !el.classList.contains('show');
-        document.querySelectorAll('.popover').forEach(p => p.classList.remove('show')); // Auto-close others
+        document.querySelectorAll('.popover').forEach(p => p.classList.remove('show')); 
         if(isClosed) {
             el.classList.add('show');
             renderRouteList();
@@ -1744,7 +1758,6 @@
 
         calcTotals(); 
 
-        // Block Time / ULR Detect
         let totalFtCalc = 0; let isULR = false;
         for(let k=0; k<app.stations.length-1; k++) {
              if (app.stations[k].isAcm) continue;
@@ -1767,7 +1780,6 @@
         if (isULR && app.crew !== 'D') alertOverlay.classList.remove('hidden');
         else alertOverlay.classList.add('hidden');
 
-        // Check if ANY actual data is provided to trigger the solid bar
         let hasAnyInput = false;
         let hasAnyStd = false;
         for (let k = 0; k < app.stations.length - 1; k++) {
@@ -1817,7 +1829,7 @@
             const minRestEl = document.getElementById('min-rest-lbl'); if(minRestEl) minRestEl.innerText = "Rest: --";
             document.getElementById('disp-limit-dur').innerText = "--";
             const cardMax = document.getElementById('resMaxFdtCard'); if(cardMax) cardMax.innerText = "--:--";
-            updateDynamicTimeline(null, null, 0, 0, 0, 0, false, null); // Hide timeline entirely
+            updateDynamicTimeline(null, null, 0, 0, 0, 0, false, null); 
             return; 
         }
 
@@ -1830,13 +1842,11 @@
         }
         document.getElementById('resReport').innerHTML = repHtml;
 
-        // Calculate Elapsed Minutes for NOW Marker
         rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0);
         const nowMs = Date.now();
         const repMs = rptDate.getTime();
         const elapsedSinceRepMins = (nowMs - repMs) / 60000;
 
-        // 1. PROJECTED FDP (Based on Act + Sched combo for final anticipation)
         let projectedElapsed = 0;
         if (s1 !== null) {
             let lastProjDepartureElapsed = reportOffset; 
@@ -1852,7 +1862,6 @@
                 let txOut = st.taxiOut !== undefined ? st.taxiOut : 15;
                 let txIn = nextSt.taxiIn !== undefined ? nextSt.taxiIn : 15;
 
-                // Calc OUT
                 let outElapsed = lastProjDepartureElapsed;
                 if (out !== null) {
                     outElapsed = out - rep;
@@ -1865,7 +1874,6 @@
                     outElapsed = Math.max(lastProjDepartureElapsed, stdElapsed);
                 }
 
-                // Calc IN
                 let inElapsed = outElapsed;
                 if (inc !== null) {
                     let rawInElapsed = inc - rep;
@@ -1882,11 +1890,10 @@
                 }
 
                 projectedElapsed = inElapsed;
-                lastProjDepartureElapsed = inElapsed + 45; // turn
+                lastProjDepartureElapsed = inElapsed + 45; 
             }
         }
 
-        // 2. SOLID BAR ELAPSED (Strictly current progress up to OUT or IN)
         let solidBarElapsed = 0;
         if (s1 !== null) {
             let lastSolid = reportOffset;
@@ -1896,7 +1903,6 @@
                 let out = parse(st.out);
                 let inc = parse(nextSt.in);
                 
-                // If this leg hasn't even started (no out, no in), STOP solid bar entirely.
                 if (out === null && inc === null) {
                     break;
                 }
@@ -1916,13 +1922,11 @@
                     }
                 }
                 
-                // If only OUT was inputted but no IN, the solid bar STOPS exactly at OUT!
                 if (inc === null) {
                     solidBarElapsed = outRel;
                     break; 
                 }
                 
-                // If IN was inputted, extend solid bar to IN.
                 let inRel = inc - rep;
                 if (inRel < 0) inRel += 1440;
                 while (inRel < outRel) inRel += 1440;
@@ -1970,7 +1974,6 @@
             if (actualElapsed > effectiveLimit) isActExceeded = true;
         }
 
-        // Sched Cumulative Engine
         let schedElapsed = 0;
         if (s1 !== null) {
             let lastSchedDepartureElapsed = reportOffset; 
@@ -2033,7 +2036,6 @@
              }
         }
         
-        // --- REST CALCULATION ---
         let calculatedRestMins = 0;
         const lastIdx = app.stations.length - 1;
         if (estimatedDutyEndTime === null) {
@@ -2047,7 +2049,7 @@
             if (isULR) {
                 const destCode = app.stations[lastIdx].code.toUpperCase().trim();
                 destIsHome = ['TPE', 'TSA', 'KHH'].includes(destCode);
-                tableRest = destIsHome ? 96 : 48; // 96h is a safe 4-day approx to ensure 4 local nights
+                tableRest = destIsHome ? 96 : 48; 
                 
                 if(!document.getElementById('ulr-tag')) {
                     const tag = document.createElement('span'); tag.id = 'ulr-tag';
@@ -2079,11 +2081,9 @@
                 }
             }
             
-            // --- EARLY MORNING OVERRIDE ---
             if (app.earlyMorning === '2') tableRest = Math.max(tableRest, 34);
             else if (app.earlyMorning === '3') tableRest = Math.max(tableRest, 54);
 
-            // --- NEXT LEG LOGIC (Single) ---
             const nextLegCheck = document.getElementById('next-leg-check'); const nextLegLabel = document.getElementById('nextLegLabel'); const nextLegInput = document.getElementById('nextLegHigh');
             if (app.crew === 'S') {
                 const remaining24 = 600 - (ftHours * 60); 
@@ -2093,7 +2093,6 @@
                 } else { nextLegCheck.classList.add('hidden'); }
             } else { nextLegCheck.classList.add('hidden'); }
             
-            // Limit Extension check
             let finalRestHours = tableRest;
             let actualFdpMins = estimatedDutyEndTime - rep; if (actualFdpMins < 0) actualFdpMins += 1440;
             if (actualFdpMins > globalMaxFdpMins && !isULR) {
@@ -2151,7 +2150,6 @@
         }
         updateTurns();
 
-        // 🟢 INJECT DYNAMIC LIFECYCLE TIMELINE
         updateDynamicTimeline(rep, globalMaxFdpMins, projectedElapsed, schedElapsed, calculatedRestMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins);
     }
       
@@ -2167,7 +2165,6 @@
         }
     }
 
-    // === NEW FUNCTION: PROGRESSIVE DYNAMIC LIFECYCLE TIMELINE HANDLER ===
     function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins) {
         const wrapper = document.getElementById('dutyTimelineWrapper');
         const content = document.getElementById('dtContent');
@@ -2362,7 +2359,7 @@
                 } else if (std !== null && sta !== null) {
                     legInRel = legOutRel + diff(std, sta);
                 } else {
-                    legInRel = legOutRel + txOut + txIn; // fallback
+                    legInRel = legOutRel + txOut + txIn; 
                 }
                 
                 let blockStr = "00:00";
