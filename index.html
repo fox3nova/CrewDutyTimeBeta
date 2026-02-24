@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.4) - iPad Optimized</title>
+    <title>CAL Duty (Pro v5.5.0)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -116,15 +116,11 @@
             background: var(--bg-glass);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            /* Safari 硬體加速，確保模糊效果不卡頓 */
-            -webkit-transform: translateZ(0); 
-            transform: translateZ(0); 
-            
             position: relative;
             flex-shrink: 0;
             width: 100%;
             z-index: 100;
-            padding: 12px 16px;
+            padding: 12px 16px 8px 16px;
             border-bottom: 1px solid var(--border-light);
             box-shadow: var(--shadow-sm);
         }
@@ -133,7 +129,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
         }
 
         .app-title {
@@ -145,6 +140,12 @@
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .crew-selector {
@@ -169,12 +170,51 @@
             box-shadow: var(--shadow-sm);
         }
 
+        /* iPad / Tablet Toolbar Collapse Toggle */
+        .header-toggle-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .header-toggle-btn:active { transform: scale(0.95); }
+        .header-toggle-btn svg { transition: transform 0.3s; }
+        .header-toggle-btn.collapsed svg { transform: rotate(-180deg); }
+
+        /* Modern CSS Grid Collapse Wrapper */
+        .toolbar-wrapper {
+            display: grid;
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 12px;
+        }
+        .toolbar-wrapper.collapsed {
+            grid-template-rows: 0fr;
+            margin-top: 0;
+        }
+        .toolbar-inner {
+            min-height: 0; /* Critical for grid collapse */
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+        .toolbar-wrapper.collapsed .toolbar-inner {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         /* Responsive Controls Grid */
         .controls-grid {
             display: flex;
-            flex-wrap: nowrap; /* 手機版預設不換行 */
-            overflow-x: auto;  /* 手機版橫向滑動 */
-            -webkit-overflow-scrolling: touch;
+            flex-wrap: nowrap; /* 強制全域不換行 */
+            overflow-x: auto;  /* 啟用橫向滑動 */
+            -webkit-overflow-scrolling: touch; /* iOS 順滑捲動 */
             scrollbar-width: none;
             gap: 8px;
             align-items: center;
@@ -260,6 +300,7 @@
             gap: 8px;
             padding: 8px 16px;
             background: var(--bg-app);
+            
             position: relative;
             flex-shrink: 0;
             width: 100%;
@@ -299,7 +340,7 @@
         .duty-timeline-wrapper {
             position: relative;
             flex-shrink: 0;
-            margin: 2px 16px 0 16px;
+            margin: 2px 16px 0 16px; 
             width: calc(100% - 32px);
             z-index: 80; 
             display: flex;
@@ -314,7 +355,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 2px;
+            margin-top: 2px; 
         }
         .dt-header-col { display: flex; flex-direction: column; gap: 2px; }
         .dt-title { font-size: 9px; color: var(--text-tertiary); font-weight: bold; }
@@ -323,8 +364,8 @@
         .dt-track {
             position: relative;
             width: 100%;
-            height: 10px;
-            margin-top: 14px;
+            height: 10px; 
+            margin-top: 14px; 
         }
         .dt-track-inner {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -428,7 +469,7 @@
         .dt-ruler {
             position: relative;
             width: 100%;
-            height: 24px;
+            height: 24px; 
             margin-top: 2px;
         }
         .dt-tick {
@@ -595,12 +636,20 @@
         .btn-div { background: var(--brand-orange); }
         
         .btn-del { 
-            position: absolute; top: -10px; right: -10px; background: var(--brand-red); 
-            width: 24px; height: 24px; font-size: 12px; z-index: 50; 
-            border: 2px solid var(--bg-card); border-radius: 50%;
+            position: absolute; 
+            top: -10px; 
+            right: -10px; 
+            background: var(--brand-red); 
+            width: 24px; 
+            height: 24px; 
+            font-size: 12px; 
+            z-index: 50; 
+            border: 2px solid var(--bg-card);
+            border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             color: white; font-weight: bold; cursor: pointer;
-            box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); transition: transform 0.2s;
+            box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); 
+            transition: transform 0.2s;
         }
         .btn-del:active { transform: scale(0.9); }
 
@@ -608,19 +657,15 @@
         .hud-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            /* Safari 硬體加速，確保模糊效果不卡頓 */
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-
             border-top: 1px solid var(--border-light); 
-            padding: 4px 16px calc(var(--safe-bottom) + 4px) 16px; 
+            padding: 4px 16px calc(env(safe-area-inset-bottom) + 4px) 16px; 
             z-index: 200; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
         }
         .hud-grid { display: grid; grid-template-columns: 1fr 1fr 0.8fr 1.2fr; gap: 8px; align-items: center; }
         .hud-item { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; }
-        .hud-label { font-size: 9px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0px; display:flex; align-items:center;}
-        .hud-value { font-size: 16px; font-weight: 800; color: var(--text-primary); line-height: 1.1; font-family: "SF Mono", monospace; margin: 1px 0; }
-        .hud-sub { font-size: 9px; color: var(--text-secondary); margin-top: 0px; display: flex; align-items: center; gap: 2px; text-align: center;}
+        .hud-label { font-size: 9px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0px; display:flex; align-items:center;} 
+        .hud-value { font-size: 16px; font-weight: 800; color: var(--text-primary); line-height: 1.1; font-family: "SF Mono", monospace; margin: 1px 0; } 
+        .hud-sub { font-size: 9px; color: var(--text-secondary); margin-top: 0px; display: flex; align-items: center; gap: 2px; text-align: center;} 
         
         .val-danger { color: var(--brand-red) !important; }
         .val-safe { color: var(--brand-green) !important; }
@@ -632,7 +677,7 @@
         
         .popover {
             position: absolute; 
-            top: calc(100% + 4px);
+            top: calc(100% + 4px); 
             right: 16px;           
             background: var(--bg-card); border: 1px solid var(--border-light);
             border-radius: 12px; padding: 12px; box-shadow: var(--shadow-float);
@@ -644,11 +689,8 @@
         /* === INFO MODAL === */
         .info-modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            /* Safari 硬體加速，確保模糊效果不卡頓 */
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
             z-index: 1000; display: none; align-items: center; justify-content: center;
             opacity: 0; transition: opacity 0.2s ease;
         }
@@ -663,90 +705,35 @@
         .info-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-light);}
         .info-modal-body { padding: 20px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); max-height: 70vh; overflow-y: auto;}
         
+        /* Modal Typography Utilities */
         .info-ref { display: inline-block; background: var(--bg-accent); color: var(--brand-blue); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; letter-spacing: 0.5px; border: 1px solid rgba(0,122,255,0.1); }
         .info-zh { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; line-height: 1.5; letter-spacing: 0.02em; }
         .info-en { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; letter-spacing: 0.01em; }
         .info-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
 
-        /* 🚨 階段一 & 階段二 & 階段三 & 四 & 五：IPAD & TABLET OPTIMIZATIONS 🚨 */
-        @media screen and (min-width: 768px) {
-            .app-header { padding: 16px 24px; }
-            .controls-grid {
-                flex-wrap: wrap; /* 取消強制單行，允許自動換行 */
-                justify-content: flex-start;
-                overflow-x: visible;
-                padding-bottom: 8px;
-                gap: 12px;
-            }
-            .controls-grid > * { flex: 0 1 auto !important; }
-            
-            /* 觸控熱區放大至 Apple HIG 標準 42px */
-            .date-trigger, .toggle-wrapper, .badge-input-wrapper { height: 42px; font-size: 14px; }
-            .toggle-label { font-size: 13px; }
-            .switch { width: 40px; height: 24px; }
-            .slider:before { height: 20px; width: 20px; left: 2px; bottom: 2px; }
-            input:checked + .slider:before { transform: translateX(16px); }
-
-            /* 面板寬度與間距放寬 */
-            .stats-dashboard { padding: 12px 24px; gap: 16px; }
-            .stat-card { padding: 12px; }
-            .stat-label { font-size: 10px; margin-bottom: 4px; }
-            .stat-value { font-size: 16px; }
-
-            .duty-timeline-wrapper { margin: 16px 24px 0 24px; width: calc(100% - 48px); }
-            .dt-track { height: 14px; margin-top: 18px; } /* 恢復大螢幕時間軸粗細 */
-            
-            /* 【防推擠機制】大幅增加底部 Padding，避免 iPad 虛擬鍵盤彈出時遮擋輸入框 */
-            #timeline-container { padding: 24px 24px 100px 24px; }
-            
-            /* 【視覺美化】航段卡片空間釋放：320px 更舒適的輸入體驗，並加入立體深陰影 */
-            .station-card { 
-                width: 320px; 
-                padding: 20px; 
-                box-shadow: 0 12px 32px -8px rgba(0,0,0,0.12);
-            } 
-            body.dark-mode .station-card {
-                box-shadow: 0 12px 32px -8px rgba(0,0,0,0.5);
-            }
-
-            .glass-input { height: 42px; font-size: 18px; line-height: 40px; }
-            .taxi-badge { height: 42px; padding: 0 8px; }
-            .taxi-val { width: 28px; font-size: 14px; }
-            
-            .hud-footer { padding: 12px 24px calc(var(--safe-bottom) + 12px) 24px; }
-            .hud-value { font-size: 18px; }
-            .hud-label, .hud-sub { font-size: 11px; }
-
-            /* 【視覺美化】Popover 微調適應大螢幕，增加陰影深度與圓角 */
-            .popover { 
-                width: 320px; 
-                right: 24px; 
-                top: calc(100% + 12px); 
-                border-radius: 16px;
-                box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
-            }
-            body.dark-mode .popover {
-                box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6);
-            }
-        }
-
         /* 🚨 RESPONSIVE RESET for ALL Mobile Scenarios */
-        /* 將斷點從 820px 下修至 767px，避免 iPad 被誤判為直向手機 */
-        @media screen and (max-width: 767px) and (orientation: portrait), 
+        @media screen and (max-width: 820px) and (orientation: portrait), 
                screen and (max-height: 600px) and (orientation: landscape) {
+            
             html, body { position: static; overflow-y: auto; overflow-x: hidden; display: block; height: auto; }
             .app-header { position: sticky; top: 0; z-index: 1000;}
             .stats-dashboard { position: static; margin-top: 12px; }
+            
             .duty-timeline-wrapper { position: relative; margin: 12px 16px 0 16px; z-index: 80; width: calc(100% - 32px);}
+            
             #timeline-container {
-                position: relative; height: auto; overflow-x: auto; overflow-y: visible; 
-                padding-top: 16px; padding-bottom: 65px; gap: 0; min-height: auto; 
-                z-index: 85; display: flex; 
+                position: relative; height: auto; 
+                overflow-x: auto; overflow-y: visible; 
+                padding-top: 16px; padding-bottom: 65px; 
+                gap: 0; min-height: auto; 
+                z-index: 85; 
+                display: flex; 
             }
             body::-webkit-scrollbar { display: none; }
         }
 
-        @media screen and (max-width: 767px) and (orientation: portrait) {
+        /* Specific adjustments just for Portrait Column Flow */
+        @media screen and (max-width: 820px) and (orientation: portrait) {
             #timeline-container { flex-direction: column; align-items: center; padding-top: 24px;} 
             .leg-connector { width: 100%; height: 110px; flex-direction: column; margin-top: 0; }
             .flight-line { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); }
@@ -755,6 +742,7 @@
             .station-card { width: 92%; max-width: 380px; }
         }
 
+        /* Specific adjustments just for Landscape Row Flow */
         @media screen and (max-height: 600px) and (orientation: landscape),
                screen and (max-width: 1024px) and (orientation: landscape) {
             #timeline-container { flex-direction: row; padding-top: 16px;} 
@@ -778,84 +766,98 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.4 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.5.0 ⓘ</span>
             </div>
-            <div class="crew-selector">
-                <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
-                <div class="crew-btn" id="btn-M" onclick="setCrew('M')">Multi</div>
-                <div class="crew-btn" id="btn-D" onclick="setCrew('D')">Double</div>
+            <div class="header-actions">
+                <div class="crew-selector">
+                    <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
+                    <div class="crew-btn" id="btn-M" onclick="setCrew('M')">Multi</div>
+                    <div class="crew-btn" id="btn-D" onclick="setCrew('D')">Double</div>
+                </div>
+                
+                <!-- 🚀 頂部工具列收折按鈕 (iPad 最愛) -->
+                <button id="headerToggleBtn" class="header-toggle-btn" onclick="toggleToolbar()" title="Toggle Toolbar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m18 15-6-6-6 6"/>
+                    </svg>
+                </button>
             </div>
         </div>
 
-        <div class="controls-grid">
-            <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;">
-                <span id="nightBtnIcon">🌙</span>
-            </button>
-            
-            <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
-            
-            <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
-                ALL UTC
-            </button>
+        <!-- 🚀 平滑收折包裝層 (CSS Grid Trick) -->
+        <div class="toolbar-wrapper" id="toolbarWrapper">
+            <div class="toolbar-inner">
+                <div class="controls-grid">
+                    <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;">
+                        <span id="nightBtnIcon">🌙</span>
+                    </button>
+                    
+                    <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
+                    
+                    <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
+                        ALL UTC
+                    </button>
 
-            <!-- ACARS LBO Input -->
-            <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
-                <span style="display:flex; align-items:center; font-size:10px;">
-                    JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
-                </span>
-                <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
-            </div>
-
-            <div class="toggle-wrapper" id="extFdtContainer">
-                <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="extFdt" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <div class="toggle-wrapper" id="night-container">
-                <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="nightOps" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-wrapper">
-                <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
-                <label class="switch">
-                    <input type="checkbox" id="noBunk" onchange="runAllCalc()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            
-            <!-- Early Morning CAPSULE -->
-            <div class="toggle-wrapper" id="early-container" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
-                <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
-                <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
-                    <option value="0">None</option>
-                    <option value="2">2 Days</option>
-                    <option value="3">3 Days</option>
-                </select>
-                <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
-            </div>
-
-            <div id="prev-container" style="flex: 1 1 auto; min-width:125px;">
-                <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup(event)">
-                    <span style="display:flex; align-items:center; font-size:10px;">
-                        PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
-                    </span>
-                    <div style="display:flex; align-items:center;">
-                        <input type="tel" id="prevFt" value="0000" readonly style="background:transparent; text-align:right; font-weight:bold; width:40px; color:inherit; pointer-events:none;">
-                        <span style="font-size:8px; margin-left:4px;">▼</span>
+                    <!-- ACARS LBO Input -->
+                    <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
+                        <span style="display:flex; align-items:center; font-size:10px;">
+                            JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
+                        </span>
+                        <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
                     </div>
+
+                    <div class="toggle-wrapper" id="extFdtContainer">
+                        <span class="toggle-label">Ext FDT <span class="info-icon" onclick="showInfo('ext')">i</span></span>
+                        <label class="switch">
+                            <input type="checkbox" id="extFdt" onchange="runAllCalc()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-wrapper" id="night-container">
+                        <span class="toggle-label">Night <span class="info-icon" onclick="showInfo('night')">i</span></span>
+                        <label class="switch">
+                            <input type="checkbox" id="nightOps" onchange="runAllCalc()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="toggle-wrapper">
+                        <span class="toggle-label">No Bunk <span class="info-icon" onclick="showInfo('nobunk')">i</span></span>
+                        <label class="switch">
+                            <input type="checkbox" id="noBunk" onchange="runAllCalc()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <!-- Early Morning CAPSULE -->
+                    <div class="toggle-wrapper" id="early-container" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
+                        <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
+                        <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
+                            <option value="0">None</option>
+                            <option value="2">2 Days</option>
+                            <option value="3">3 Days</option>
+                        </select>
+                        <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
+                    </div>
+
+                    <div id="prev-container" style="flex: 1 1 auto; min-width:125px;">
+                        <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup(event)">
+                            <span style="display:flex; align-items:center; font-size:10px;">
+                                PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
+                            </span>
+                            <div style="display:flex; align-items:center;">
+                                <input type="tel" id="prevFt" value="0000" readonly style="background:transparent; text-align:right; font-weight:bold; width:40px; color:inherit; pointer-events:none;">
+                                <span style="font-size:8px; margin-left:4px;">▼</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
+                    
+                    <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
                 </div>
             </div>
-            
-            <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
-            
-            <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
         </div>
 
         <div id="prevPopup" class="popover" onclick="event.stopPropagation();">
@@ -917,7 +919,7 @@
         </div>
     </div>
 
-    <!-- DYNAMIC DUTY LIFECYCLE TIMELINE MINIMAP -->
+    <!-- NEW: DYNAMIC DUTY LIFECYCLE TIMELINE MINIMAP -->
     <div class="duty-timeline-wrapper" id="dutyTimelineWrapper">
 
         <div id="dtContent" style="display:flex; width: 100%; flex-direction: column;">
@@ -944,22 +946,17 @@
                     <div class="dt-rest" id="dtRest" title="Rest Period"></div>
                     <div class="dt-post-duty" id="dtPostDuty" title="Post-flight Duty (30m)"></div>
                     <div class="dt-ghost" id="dtGhost" title="Scheduled FDP"></div>
-                    
                     <div class="dt-fill" id="dtFill"></div>
                     <div class="dt-fill-danger" id="dtFillDanger"></div>
                 </div>
-                
                 <div id="dtSegments"></div>
-                
                 <div class="dt-limit-marker" id="dtMaxMarker">
                     <span class="dt-limit-text">MAX</span>
                 </div>
-                
                 <div class="dt-now-marker" id="dtNowMarker"></div>
             </div>
             
             <div class="dt-ruler" id="dtRuler"></div>
-
             <div id="dtSegmentInfo" class="dt-segment-info"></div>
         </div>
     </div>
@@ -1006,9 +1003,9 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.4 Z-Index 圖層終極修復版</b><br>• 🛡️ <b>防剪裁終極佈局 (Anti-Clip Layout)</b>：修復 iOS 橫向模式下，因為上方時間條區塊 (Timeline Wrapper) 的底層透明圖層 (Z-index: 90) 覆蓋到下方航段卡片，導致刪除按鈕 (X) 無法點擊或被物理遮擋的視錯覺 Bug。<br>• 🕳️ <b>空間極致精簡</b>：依據建議，完全移除「Awaiting Flight Data」空白狀態，釋放更多垂直空間給核心卡片區域。</div>
+            text: `<div class="info-zh"><b>v5.5.0 iPad 全螢幕極致優化版</b><br>• 🚀 <b>頂部工具列收折功能</b>：專為 iPad 橫向/直向螢幕設計，一鍵收起上方控制面板，完全釋放垂直空間，最大化中央航班視角。<br>• 📱 <b>Safai/Chrome 相容提升</b>：優化平板瀏覽器底部/頂部導覽列捲動時的視窗高度佔用問題。<br>• 💾 <b>狀態記憶</b>：系統會自動記住您對工具列的收折偏好。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.3</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接。<br>• 📊 <b>視覺層級強化</b>：實際數據卡片自動放大並發光聚焦。<br>• 👆 <b>根除胖手指效應</b>：改為「點擊鎖定式動態資訊列」。</div>`
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.4 Z-Index 圖層終極修復版</b><br>• 🛡️ 防剪裁終極佈局：修復橫向模式下按鈕被物理遮擋的 Bug。<br>• 🕳️ 空間極致精簡：移除空白狀態，釋放更多高度。</div>`
         },
         'jz': {
             title: '聯管通報 JZ LBO',
@@ -1081,6 +1078,21 @@
         document.getElementById('infoModal').classList.remove('show');
     }
 
+    // --- TOOLBAR TOGGLE LOGIC ---
+    function toggleToolbar() {
+        const wrapper = document.getElementById('toolbarWrapper');
+        const btn = document.getElementById('headerToggleBtn');
+        const isCollapsed = wrapper.classList.toggle('collapsed');
+        btn.classList.toggle('collapsed', isCollapsed);
+        
+        // Auto close popovers to prevent floating ghost UI
+        if(isCollapsed) {
+            document.querySelectorAll('.popover').forEach(p => p.classList.remove('show'));
+        }
+        
+        localStorage.setItem('toolbarCollapsed', isCollapsed);
+    }
+
 
     const icaoToIata = {
         'RCTP': 'TPE', 'RCSS': 'TSA', 'RCKH': 'KHH', 'VHHH': 'HKG', 'VMMC': 'MFM',
@@ -1138,6 +1150,7 @@
         return new Date(Date.UTC(y, m - 1, d)); 
     }
 
+    /* 🧠 Smart Input Logic 🧠 */
     function getDisplayValue(i, field, mode) {
         const utcVal = app.stations[i][field];
         if (!utcVal) return '';
@@ -1451,6 +1464,7 @@
         runAllCalc();
     }
 
+    // --- ACARS & EARLY MORNING UPDATERS ---
     function updAcarsLbo(v) {
         app.acarsLbo = v;
         saveData();
@@ -1650,9 +1664,11 @@
     function resetData() { 
         const saved = localStorage.getItem('calSavedRoutes');
         const night = localStorage.getItem('nightMode');
+        const headerState = localStorage.getItem('toolbarCollapsed');
         localStorage.removeItem('calData158'); 
         if(saved) localStorage.setItem('calSavedRoutes', saved);
         if(night) localStorage.setItem('nightMode', night);
+        if(headerState) localStorage.setItem('toolbarCollapsed', headerState);
         location.reload(); 
     }
 
@@ -2036,6 +2052,7 @@
              }
         }
         
+        // --- REST CALCULATION ---
         let calculatedRestMins = 0;
         const lastIdx = app.stations.length - 1;
         if (estimatedDutyEndTime === null) {
@@ -2786,6 +2803,13 @@
         if(isDark) { document.body.classList.add('dark-mode'); document.getElementById('nightBtnIcon').innerText = '☀️'; }
         const routes = localStorage.getItem('calSavedRoutes');
         if(routes) { try { savedRoutes = JSON.parse(routes); } catch(e) {} }
+        
+        // 恢復 Toolbar 收折狀態
+        if(localStorage.getItem('toolbarCollapsed') === 'true') {
+            document.getElementById('toolbarWrapper').classList.add('collapsed');
+            document.getElementById('headerToggleBtn').classList.add('collapsed');
+        }
+
         const d = localStorage.getItem('calData158'); 
         let savedCrew = 'S';
         const today = new Date().toISOString().split('T')[0];
