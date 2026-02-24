@@ -891,14 +891,11 @@
                     <span class="dt-val" id="dt-rpt-label">--:--</span>
                 </div>
                 
-                <!-- Center FDP Display -->
-                <div class="dt-header-col" style="align-items:center;">
-                    <span style="font-size:9px; font-weight:bold;">
-                        <span style="color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace;">--:--</span></span>
-                        <span style="margin:0 4px; color:var(--border-light);">|</span>
-                        <span style="color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
-                    </span>
-                    <span style="color:var(--brand-blue); font-size:14px; font-weight:800; font-family:monospace;" id="dt-pct-label">0%</span>
+                <!-- 🚨 Center FDP Display: 扁平化單行設計，直接節省行高空間 🚨 -->
+                <div style="display:flex; align-items:baseline; gap: 8px; transform: translateY(1px);">
+                    <span style="font-size:9px; font-weight:700; color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
+                    <span style="color:var(--brand-blue); font-size:15px; font-weight:800; font-family:monospace; letter-spacing:-0.5px;" id="dt-pct-label">0%</span>
+                    <span style="font-size:9px; font-weight:700; color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
                 </div>
 
                 <div class="dt-header-col" style="align-items:flex-end;">
