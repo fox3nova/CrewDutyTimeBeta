@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.6)</title>
+    <title>CAL Duty (Pro v5.4.7)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -395,7 +395,7 @@
         }
         body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
 
-        /* Micro-interaction Segments */
+        /* Micro-interaction Segments (iOS Touch Fixed) */
         .dt-segment {
             position: absolute; top: 1px; bottom: 1px;
             background: rgba(255, 255, 255, 0.3); border-radius: 4px;
@@ -466,9 +466,10 @@
         #timeline-container {
             display: flex;
             overflow-x: auto;
-            overflow-y: visible; /* 🚨 FIXED: Prevent vertical clipping of X button */
+            /* 🚨 FIXED: Allow vertical overflow out of container natively */
+            overflow-y: visible; 
             scroll-snap-type: x mandatory;
-            padding: 24px 16px; /* 🚨 FIXED: Added robust top/bottom padding to absorb floating elements */
+            padding: 0 16px; 
             gap: 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -479,14 +480,21 @@
             bottom: 80px; 
             left: 0;
             width: 100%;
-            
             overscroll-behavior-y: none;
             overscroll-behavior-x: auto;
         }
         #timeline-container::-webkit-scrollbar { display: none; }
 
-        .station-wrapper { scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; }
-        
+        /* 🚨 PROPOSAL 4 (FIXED): Padding Buffer to protect the Delete Button */
+        .station-wrapper { 
+            scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; 
+            padding: 16px 0; /* Creates an invisible buffer inside the scrolling area */
+        }
+        .leg-connector {
+            display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0;
+            padding: 16px 0; /* Keeps connector centered with the buffered wrapper */
+        }
+
         .station-card {
             background: var(--bg-card);
             border: 1px solid var(--border-light);
@@ -577,9 +585,6 @@
         .hotel-inputs { display: flex; gap: 4px; }
         .hotel-time { width: 50px; height: 28px; font-size: 13px; text-align: center; border-radius: 4px; border: 1px solid rgba(0,0,0,0.05); }
 
-        .leg-connector {
-            display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0;
-        }
         .flight-line { height: 2px; background: var(--text-tertiary); width: 100%; position: absolute; top: 50%; z-index: -1; }
         .flight-pill {
             background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px;
@@ -596,8 +601,8 @@
         .btn-add { background: var(--brand-green); }
         .btn-div { background: var(--brand-orange); }
         
-        /* 🚨 FIXED: Modified position and sizing slightly to prevent any cut-offs */
-        .btn-del { position: absolute; top: -12px; right: -12px; background: var(--brand-red); width: 28px; height: 28px; font-size: 14px; z-index: 20; border: 2px solid var(--bg-app); }
+        /* The button sits visually outside, but the wrapper padding prevents clipping */
+        .btn-del { position: absolute; top: -12px; right: -12px; background: var(--brand-red); width: 28px; height: 28px; font-size: 14px; z-index: 20; border: 2px solid var(--bg-app); box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); }
 
         /* === FOOTER HUD === */
         .hud-footer {
@@ -654,7 +659,7 @@
         .info-en { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; letter-spacing: 0.01em; }
         .info-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
 
-        /* 🚨 RESPONSIVE RESET for ALL Mobile Scenarios (Portrait Narrow AND Landscape Short) */
+        /* 🚨 RESPONSIVE RESET for ALL Mobile Scenarios */
         @media screen and (max-width: 820px) and (orientation: portrait), 
                screen and (max-height: 600px) and (orientation: landscape) {
             
@@ -665,17 +670,16 @@
             
             #timeline-container {
                 position: static; height: auto; 
-                overflow-x: auto; overflow-y: visible; 
-                padding-top: 24px; padding-bottom: 120px; 
-                align-items: flex-start; gap: 0; min-height: auto; 
+                overflow-x: auto; overflow-y: visible; /* Forced to auto by browsers, hence the padding buffer */
+                padding-top: 4px; padding-bottom: 120px; 
+                gap: 0; min-height: auto; 
             }
-            .station-wrapper { scroll-snap-align: start; }
             body::-webkit-scrollbar { display: none; }
         }
 
         /* Specific adjustments just for Portrait Column Flow */
         @media screen and (max-width: 820px) and (orientation: portrait) {
-            #timeline-container { flex-direction: column; align-items: center; }
+            #timeline-container { flex-direction: column; align-items: center; } /* cross-axis horizontal align */
             .leg-connector { width: 100%; height: 110px; flex-direction: column; margin-top: 0; }
             .flight-line { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); }
             .stats-dashboard { grid-template-columns: 1fr 1fr; }
@@ -685,7 +689,7 @@
 
         /* Specific adjustments just for Landscape Row Flow */
         @media screen and (max-height: 600px) and (orientation: landscape) {
-            #timeline-container { flex-direction: row; }
+            #timeline-container { flex-direction: row; align-items: center; } /* cross-axis vertical align perfectly centered */
         }
 
     </style>
@@ -706,7 +710,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.6 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.7 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -948,9 +952,9 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.6 橫向佈局防剪裁修復</b><br>• 🛡️ <b>防遮擋引擎 (Clipping Prevention)</b>：為底部卡片容器注入專屬緩衝空間，並解鎖了 iOS 橫向模式 (Landscape) 的頁面垂直捲動權限。徹底解決卡片上方「刪除 (X) 按鈕」在窄螢幕橫移時被無情切斷的痛點！</div>
+            text: `<div class="info-zh"><b>v5.4.7 引擎防剪裁終極修復</b><br>• 🛡️ <b>防遮擋引擎 (Clipping Prevention)</b>：重新架構橫向滑動容器的物理邊界 (Bounding Box)，透過內部預留緩衝區 (Padding Buffer)，徹底消除 iOS 橫向模式下背景色蓋住刪除按鈕的問題。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.5 UI 優化與修復</b><br>• 🕳️ <b>極致空間優化</b>：針對 iOS 橫向模式，進一步將空白狀態 (Awaiting Flight Data) 的間距與字體極小化。<br>• 🐛 <b>iOS 觸控引擎修正</b>：為航段方塊加上 touchstart 雙重監聽，解決行動裝置點擊無反應問題。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.5 UI 優化與修復</b><br>• 🕳️ <b>極致空間優化</b>：針對 iOS 橫向模式，進一步將空白狀態的間距與字體極小化。<br>• 🐛 <b>iOS 觸控引擎修正</b>：解決行動裝置點擊無反應問題。</div>
                    <div class="info-divider"></div>
                    <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.3</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接。<br>• 📊 <b>視覺層級強化</b>：實際數據卡片自動放大並發光聚焦。<br>• 👆 <b>根除胖手指效應</b>：改為「點擊鎖定式動態資訊列」。</div>`
         },
