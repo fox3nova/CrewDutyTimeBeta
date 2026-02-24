@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.3)</title>
+    <title>CAL Duty (Pro v5.4.4)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -265,7 +265,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* 🚨 PROPOSAL 2: VISUAL HIERARCHY FOR STATUS CARDS */
+        /* VISUAL HIERARCHY FOR STATUS CARDS */
         .stat-card.act-focus {
             border: 2px solid var(--brand-blue);
             box-shadow: 0 4px 12px rgba(0,122,255,0.15);
@@ -295,10 +295,10 @@
             animation: fadeIn 0.3s ease;
         }
         
-        /* 🚨 PROPOSAL 4: EMPTY STATE */
+        /* 🚨 OPTIMIZED EMPTY STATE: Reduced height, English text */
         .dt-empty-state {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 30px 0; color: var(--text-tertiary); font-weight: 700; font-size: 12px;
+            padding: 16px 0; color: var(--text-tertiary); font-weight: 700; font-size: 12px;
             border: 1px dashed var(--border-light); border-radius: var(--radius-md);
             background: rgba(0,0,0,0.02); margin-top: 8px;
         }
@@ -382,7 +382,7 @@
             display: none; transition: width 0.5s ease;
         }
 
-        /* 🚨 PROPOSAL 1: CURRENT TIME "NOW" INDICATOR */
+        /* CURRENT TIME "NOW" INDICATOR */
         .dt-now-marker {
             position: absolute; top: -6px; bottom: -6px; width: 2px;
             background: #06b6d4; box-shadow: 0 0 6px #06b6d4;
@@ -395,12 +395,13 @@
         }
         body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
 
-        /* Micro-interaction Segments */
+        /* Micro-interaction Segments (iOS Touch Fixed) */
         .dt-segment {
             position: absolute; top: 1px; bottom: 1px;
             background: rgba(255, 255, 255, 0.3); border-radius: 4px;
             z-index: 10; box-shadow: 1px 0 0 rgba(0,0,0,0.1); 
             cursor: pointer; transition: background 0.2s, border 0.2s;
+            -webkit-tap-highlight-color: transparent; /* Prevent iOS default highlight */
         }
         body.dark-mode .dt-segment { background: rgba(0, 0, 0, 0.25); }
         .dt-segment.selected { background: rgba(255, 255, 255, 0.6); border: 2px solid white; box-shadow: 0 0 6px rgba(255,255,255,0.8); }
@@ -453,7 +454,7 @@
         .dt-tick.actual-out span:first-child { color: var(--brand-green); font-size: 10px; font-weight: 800;}
         .dt-tick.actual-in span:first-child { color: var(--brand-blue); font-size: 10px; font-weight: 800;}
 
-        /* 🚨 PROPOSAL 3: FAT FINGER INFO BAR */
+        /* FAT FINGER INFO BAR */
         .dt-segment-info {
             text-align: center; height: 16px; margin-top: 4px; font-size: 10px; font-weight: 800;
             color: var(--brand-blue); opacity: 0; transition: opacity 0.3s;
@@ -692,7 +693,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.3 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.4 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -833,7 +834,7 @@
         
         <!-- Empty State UI -->
         <div id="dtEmptyState" class="dt-empty-state">
-            ✈️ 請輸入航班時間以產生生命週期軌跡 (Awaiting Flight Data)
+            ✈️ Awaiting Flight Data
         </div>
 
         <div id="dtContent" style="display:none; width: 100%; flex-direction: column;">
@@ -934,11 +935,11 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.3 終極儀表板版 (UI/UX 頂峰)</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接，瞬間建立時空掌控感。<br>• 📊 <b>視覺層級強化</b>：實際數據 (Actual) 卡片自動放大並發光聚焦，降低計畫數據干擾。<br>• 👆 <b>根除胖手指效應 (Fat Finger Fix)</b>：航段詳細數據改為「點擊鎖定式動態資訊列」，不再被手指遮擋氣泡。<br>• 🕳️ <b>優雅空白狀態</b>：無資料時顯示引導佔位符，穩定介面空間感。</div>
+            text: `<div class="info-zh"><b>v5.4.4 效能與相容性修復</b><br>• 🐛 <b>iOS 觸控引擎修正</b>：為航段方塊加上 touchstart 雙重監聽，解決行動裝置點擊無反應或被遮擋的問題。<br>• 🕳️ <b>空白狀態高度優化</b>：縮減無資料時的預設高度，避免在小螢幕上產生排版擠壓，並調整為英文顯示。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.2</b><br>• 🧭 懸浮 MAX 參考指標，解決提早下班的視覺衝突。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.3</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接。<br>• 📊 <b>視覺層級強化</b>：實際數據 (Actual) 卡片自動放大並發光聚焦。<br>• 👆 <b>根除胖手指效應</b>：航段詳細數據改為「點擊鎖定式動態資訊列」。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.0</b><br>• ✂️ <b>非線性比例尺</b>：智慧壓縮超長休時，確保飛行區段寬敞。<br>• 🔀 <b>防重疊交錯刻度</b>：自動處理相近時間標籤。<br>• 🚨 <b>超時斜紋警示</b>：突破紅線時展現強烈警告。</div>`
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.2</b><br>• 🧭 懸浮 MAX 參考指標，解決提早下班的視覺衝突。</div>`
         },
         'jz': {
             title: '聯管通報 JZ LBO',
@@ -2113,7 +2114,7 @@
         const emptyState = document.getElementById('dtEmptyState');
         const content = document.getElementById('dtContent');
 
-        // 🚨 PROPOSAL 4: EMPTY STATE HANDLING
+        // 🚨 PROPOSAL 4 (FIXED): EMPTY STATE HANDLING with Reduced Height
         if (rep === null || !maxFdpMins || (schedElapsed === 0 && !hasAnyInput)) {
             wrapper.style.display = 'flex';
             emptyState.style.display = 'flex';
@@ -2326,7 +2327,7 @@
                     legInRel = legOutRel + txOut + txIn; // fallback
                 }
                 
-                // 🚨 PROPOSAL 3: Micro-interactions (Click to lock Info Bar)
+                // 🚨 PROPOSAL 3: Micro-interactions (iOS Touch Fix)
                 let blockStr = "00:00";
                 if (out !== null && inc !== null) blockStr = fmt(diff(out, inc), false);
                 else if (ft !== null) blockStr = fmt(ft + txOut + txIn, false) + '*';
@@ -2348,13 +2349,17 @@
                     seg.style.left = startPct + '%';
                     seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
                     
-                    // Click Event for Info Bar
-                    seg.onclick = () => {
+                    // Click & Touch Event for Info Bar (Fixing iOS Fat Finger & Ignored Clicks)
+                    const handleSegInteraction = (e) => {
+                        e.stopPropagation(); // Prevent global dismiss
                         document.querySelectorAll('.dt-segment').forEach(s => s.classList.remove('selected'));
                         seg.classList.add('selected');
                         segmentInfoBar.innerHTML = `📍 ${segLabel} &nbsp;|&nbsp; ⏱️ Block: ${blockStr}`;
                         segmentInfoBar.style.opacity = 1;
                     };
+                    
+                    seg.addEventListener('click', handleSegInteraction);
+                    seg.addEventListener('touchstart', handleSegInteraction, {passive: true});
                     
                     segmentsContainer.appendChild(seg);
                 }
@@ -2371,7 +2376,7 @@
             nowMarker.style.display = 'none';
         }
 
-        // 5. Update Timeline Ruler (SMART REPLACEMENT + STAGGERED)
+        // 5. Update Timeline Ruler
         const ruler = document.getElementById('dtRuler');
         ruler.innerHTML = '';
         
@@ -2718,17 +2723,31 @@
         localStorage.setItem('calData158', JSON.stringify(data));
     }
 
-    // Global Click Listener to Close Popups & Modals
-    window.addEventListener('click', function(e) {
+    // Global Click Listener to Close Popups & Modals & Segment Tooltips
+    const hideGlobalElements = (e) => {
+        // Prev Popup
         const prevPopup = document.getElementById('prevPopup'); const prevBadge = document.querySelector('.badge-prev-ft');
-        if (prevPopup.classList.contains('show')) { if (!prevPopup.contains(e.target) && !prevBadge.contains(e.target)) prevPopup.classList.remove('show'); }
+        if (prevPopup && prevPopup.classList.contains('show')) { if (!prevPopup.contains(e.target) && !prevBadge.contains(e.target)) prevPopup.classList.remove('show'); }
 
+        // Route Popup
         const routePopup = document.getElementById('routePopup'); const routeBtn = document.getElementById('routeBtn');
-        if (routePopup.classList.contains('show')) { if (!routePopup.contains(e.target) && !routeBtn.contains(e.target)) routePopup.classList.remove('show'); }
+        if (routePopup && routePopup.classList.contains('show')) { if (!routePopup.contains(e.target) && !routeBtn.contains(e.target)) routePopup.classList.remove('show'); }
         
+        // Info Modal
         const infoModal = document.getElementById('infoModal');
         if (e.target === infoModal) closeInfo();
-    });
+        
+        // 🚨 Segment Info Bar (Hide on outside click)
+        const isSegment = e.target.closest('.dt-segment');
+        if (!isSegment) {
+            document.querySelectorAll('.dt-segment').forEach(s => s.classList.remove('selected'));
+            const infoBar = document.getElementById('dtSegmentInfo');
+            if(infoBar) infoBar.style.opacity = 0;
+        }
+    };
+    
+    window.addEventListener('click', hideGlobalElements);
+    window.addEventListener('touchstart', hideGlobalElements, {passive: true});
 
     // Start a timer for NOW indicator updates
     setInterval(() => {
