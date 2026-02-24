@@ -484,7 +484,7 @@
             overflow-y: hidden !important; 
             
             scroll-snap-type: x mandatory;
-            padding: 16px 16px 90px 16px; /* 下方留 90px 空間給固定在底部的 Footer */
+            padding: 16px 16px 65px 16px; /* 🚨 配合底部欄位瘦身，下方留白從 90px 極致壓縮到 65px */
             gap: 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -638,14 +638,15 @@
         .hud-footer {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border-top: 1px solid var(--border-light); padding: 10px 16px var(--safe-bottom) 16px;
+            border-top: 1px solid var(--border-light); 
+            padding: 4px 16px calc(env(safe-area-inset-bottom) + 4px) 16px; /* 🚨 極致壓縮上下 Padding */
             z-index: 200; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
         }
-        .hud-grid { display: grid; grid-template-columns: 1fr 1fr 0.8fr 1.2fr; gap: 8px; }
+        .hud-grid { display: grid; grid-template-columns: 1fr 1fr 0.8fr 1.2fr; gap: 8px; align-items: center; }
         .hud-item { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; }
-        .hud-label { font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 2px; display:flex; align-items:center;}
-        .hud-value { font-size: 18px; font-weight: 800; color: var(--text-primary); line-height: 1; font-family: "SF Mono", monospace; }
-        .hud-sub { font-size: 10px; color: var(--text-secondary); margin-top: 2px; display: flex; align-items: center; gap: 2px; text-align: center;}
+        .hud-label { font-size: 9px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; margin-bottom: 0px; display:flex; align-items:center;} /* 🚨 縮減字體與底部間距 */
+        .hud-value { font-size: 16px; font-weight: 800; color: var(--text-primary); line-height: 1.1; font-family: "SF Mono", monospace; margin: 1px 0; } /* 🚨 縮小數值字體並壓縮行高 */
+        .hud-sub { font-size: 9px; color: var(--text-secondary); margin-top: 0px; display: flex; align-items: center; gap: 2px; text-align: center;} /* 🚨 縮減字體與頂部間距 */
         
         .val-danger { color: var(--brand-red) !important; }
         .val-safe { color: var(--brand-green) !important; }
@@ -703,7 +704,7 @@
             #timeline-container {
                 position: relative; height: auto; 
                 overflow-x: auto; overflow-y: visible; 
-                padding-top: 16px; padding-bottom: 120px; 
+                padding-top: 16px; padding-bottom: 65px; /* 🚨 配合底部欄位瘦身，從 120px 壓縮至 65px */
                 gap: 0; min-height: auto; 
                 z-index: 85; 
                 display: flex; 
