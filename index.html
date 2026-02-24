@@ -75,7 +75,7 @@
             overscroll-behavior-y: none;
             -webkit-overflow-scrolling: touch;
             
-            /* 🚨 新增：全域 Flexbox 動態堆疊佈局 🚨 */
+            /* 全域 Flexbox 動態堆疊佈局 */
             display: flex;
             flex-direction: column;
         }
@@ -298,15 +298,15 @@
 
         /* === DYNAMIC DUTY LIFECYCLE TIMELINE === */
         .duty-timeline-wrapper {
-            /* 改為相對佈局，緊貼 Stats 之後 */
+            /* 🚨 瘦身：壓縮時間條的外圍高度與間距 */
             position: relative;
             flex-shrink: 0;
-            margin: 8px 16px 0 16px;
+            margin: 2px 16px 0 16px; /* 從 8px 縮減 */
             width: calc(100% - 32px);
             z-index: 80; 
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 2px; /* 從 4px 縮減 */
             animation: fadeIn 0.3s ease;
         }
 
@@ -316,7 +316,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 4px;
+            margin-top: 2px; /* 從 4px 縮減 */
         }
         .dt-header-col { display: flex; flex-direction: column; gap: 2px; }
         .dt-title { font-size: 9px; color: var(--text-tertiary); font-weight: bold; }
@@ -325,8 +325,8 @@
         .dt-track {
             position: relative;
             width: 100%;
-            height: 14px; 
-            margin-top: 18px; 
+            height: 10px; /* 🚨 變細：從 14px 縮減 */
+            margin-top: 14px; /* 🚨 壓縮：從 18px 縮減 */
         }
         .dt-track-inner {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -390,14 +390,14 @@
 
         /* CURRENT TIME "NOW" INDICATOR */
         .dt-now-marker {
-            position: absolute; top: -6px; bottom: -6px; width: 2px;
+            position: absolute; top: -4px; bottom: -4px; width: 2px;
             background: #06b6d4; box-shadow: 0 0 6px #06b6d4;
             z-index: 20; display: none; transition: left 1s ease; pointer-events: none;
         }
         .dt-now-marker::before {
-            content: 'NOW'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-            font-size: 8px; font-weight: 900; color: #083344; background: #cffafe;
-            padding: 1px 4px; border-radius: 4px; border: 1px solid #06b6d4; letter-spacing: 0.5px;
+            content: 'NOW'; position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+            font-size: 7px; font-weight: 900; color: #083344; background: #cffafe;
+            padding: 1px 3px; border-radius: 4px; border: 1px solid #06b6d4; letter-spacing: 0.5px;
         }
         body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
 
@@ -414,7 +414,7 @@
         body.dark-mode .dt-segment.selected { background: rgba(255, 255, 255, 0.4); border: 2px solid white; }
 
         .dt-limit-marker {
-            position: absolute; top: -16px; bottom: -4px; width: 0px;
+            position: absolute; top: -14px; bottom: -2px; width: 0px;
             border-left: 2px dashed rgba(255, 59, 48, 0.4); z-index: 15;
             transition: left 0.5s ease;
             pointer-events: none;
@@ -424,9 +424,9 @@
             font-size: 8px; color: var(--brand-red); line-height: 1;
         }
         .dt-limit-text {
-            position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-            font-size: 9px; font-weight: 900; color: var(--brand-red); letter-spacing: 0.5px; white-space: nowrap;
-            background: var(--bg-card); padding: 1px 4px; border-radius: 4px;
+            position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+            font-size: 8px; font-weight: 900; color: var(--brand-red); letter-spacing: 0.5px; white-space: nowrap;
+            background: var(--bg-card); padding: 1px 3px; border-radius: 4px;
             box-shadow: 0 1px 2px rgba(255, 59, 48, 0.2); border: 1px solid rgba(255, 59, 48, 0.1);
         }
         body.dark-mode .dt-limit-text { border-color: rgba(255, 59, 48, 0.3); background: #2a1111;}
@@ -435,8 +435,8 @@
         .dt-ruler {
             position: relative;
             width: 100%;
-            height: 32px; 
-            margin-top: 4px;
+            height: 24px; /* 🚨 壓縮：從 32px 縮減 */
+            margin-top: 2px;
         }
         .dt-tick {
             position: absolute;
@@ -452,8 +452,8 @@
         }
         .dt-tick span:first-child { font-family: monospace; font-size: 10px; }
         
-        /* Stagger modifier */
-        .dt-tick.stagger { transform: translateX(-50%) translateY(16px); }
+        /* Stagger modifier 配合高度壓縮 */
+        .dt-tick.stagger { transform: translateX(-50%) translateY(12px); } 
         
         /* Sub-markers */
         .dt-tick.minor span:first-child { color: var(--text-tertiary); font-size: 9px; }
@@ -470,22 +470,27 @@
 
         /* === TIMELINE CONTAINERS === */
         #timeline-container {
-            /* 導入 Flex: 1 動態填滿剩下空間，完全捨棄絕對定位 */
+            /* 導入 Flex: 1 動態填滿剩下空間 */
             position: relative;
             flex: 1;
-            min-height: 0; /* 強制允許內部捲動 */
+            min-height: 0; 
             width: 100%;
             z-index: 85; 
             
             display: flex;
             overflow-x: auto;
-            overflow-y: visible; /* Prevent clipping */
+            
+            /* 🚨 鎖死上下滑動 🚨 */
+            overflow-y: hidden !important; 
+            
             scroll-snap-type: x mandatory;
             padding: 16px 16px 90px 16px; /* 下方留 90px 空間給固定在底部的 Footer */
             gap: 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            align-items: center; /* 讓內部卡片完美置中 */
+            
+            /* 🚨 安全置中魔法：取消 center 以防止 Safari 強制往上切，改靠子元件的 margin auto 控制 🚨 */
+            align-items: flex-start; 
             
             overscroll-behavior-y: none;
             overscroll-behavior-x: auto;
@@ -494,9 +499,15 @@
 
         .station-wrapper { 
             scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; 
+            /* 🚨 取代 align-items: center，優雅置中且絕不切斷頂部空間 🚨 */
+            margin-top: auto;
+            margin-bottom: auto;
         }
         .leg-connector {
             display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0;
+            /* 🚨 優雅置中 🚨 */
+            margin-top: auto;
+            margin-bottom: auto;
         }
 
         .station-card {
@@ -713,7 +724,7 @@
         /* Specific adjustments just for Landscape Row Flow */
         @media screen and (max-height: 600px) and (orientation: landscape),
                screen and (max-width: 1024px) and (orientation: landscape) {
-            #timeline-container { flex-direction: row; align-items: center; padding-top: 16px;} 
+            #timeline-container { flex-direction: row; padding-top: 16px;} 
         }
 
     </style>
