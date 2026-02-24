@@ -810,7 +810,8 @@
             </div>
 
             <div id="prev-container" style="position: relative; flex: 1 1 auto; min-width:125px;">
-                <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup()">
+                <!-- 🚨 加入 event.stopPropagation() 防止 Chrome 點擊穿透 🚨 -->
+                <div class="badge-input-wrapper badge-prev-ft" onclick="event.stopPropagation(); togglePrevPopup()">
                     <span style="display:flex; align-items:center; font-size:10px;">
                         PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
                     </span>
@@ -819,7 +820,8 @@
                         <span style="font-size:8px; margin-left:4px;">▼</span>
                     </div>
                 </div>
-                <div id="prevPopup" class="popover">
+                <!-- 🚨 面板本身也阻擋事件，防止點擊內部時誤關 🚨 -->
+                <div id="prevPopup" class="popover" onclick="event.stopPropagation();">
                     <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
                     <div class="flex flex-col gap-2">
                         <div class="flex justify-between items-center">
@@ -842,9 +844,12 @@
             </div>
             
             <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
-            <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
             
-             <div id="routePopup" class="popover">
+            <!-- 🚨 加入 event.stopPropagation() 防止 Chrome 點擊穿透 🚨 -->
+            <button class="toggle-wrapper" id="routeBtn" onclick="event.stopPropagation(); toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
+            
+             <!-- 🚨 面板本身也阻擋事件 🚨 -->
+             <div id="routePopup" class="popover" onclick="event.stopPropagation();">
                 <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
                 <div class="flex gap-2 mb-2">
                     <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
