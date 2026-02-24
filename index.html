@@ -288,7 +288,6 @@
             top: 220px;
             left: 16px;
             right: 16px;
-            /* 🚨 FIX: Lower Z-index so it doesn't blanket the cards in landscape */
             z-index: 80; 
             display: flex;
             flex-direction: column;
@@ -460,21 +459,19 @@
             overflow-x: auto;
             overflow-y: visible; /* Prevent clipping */
             scroll-snap-type: x mandatory;
-            padding: 16px 16px; /* Reduced vertical padding since Z-index fix applies */
+            padding: 16px 16px; 
             gap: 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
             align-items: center; 
             
             position: absolute;
-            top: 295px; /* Moved up slightly since Empty State is gone */
+            top: 295px; 
             bottom: 80px; 
             left: 0;
             width: 100%;
             overscroll-behavior-y: none;
             overscroll-behavior-x: auto;
-            
-            /* 🚨 FIX: Higher Z-index so it slides OVER the timeline wrapper */
             z-index: 85; 
         }
         #timeline-container::-webkit-scrollbar { display: none; }
@@ -592,7 +589,6 @@
         .btn-add { background: var(--brand-green); }
         .btn-div { background: var(--brand-orange); }
         
-        /* 🚨 RESTORED: Classic Floating X Button with proper card-color border */
         .btn-del { 
             position: absolute; 
             top: -10px; 
@@ -674,10 +670,8 @@
             .app-header { position: sticky; top: 0; z-index: 1000;}
             .stats-dashboard { position: static; margin-top: 0; }
             
-            /* 🚨 THE Z-INDEX FIX: Ensures wrapper sits strictly BELOW the cards container */
             .duty-timeline-wrapper { position: relative; margin: 12px 16px 0 16px; z-index: 80; }
             
-            /* 🚨 THE Z-INDEX FIX: Elevate cards container so it slides over the timeline background */
             #timeline-container {
                 position: relative; height: auto; 
                 overflow-x: auto; overflow-y: visible; 
@@ -698,9 +692,28 @@
             .station-card { width: 92%; max-width: 380px; }
         }
 
-        /* Specific adjustments just for Landscape Row Flow */
-        @media screen and (max-height: 600px) and (orientation: landscape) {
+        /* 🚨 Specific adjustments just for Landscape Row Flow 🚨 */
+        @media screen and (max-height: 600px) and (orientation: landscape),
+               screen and (max-width: 932px) and (orientation: landscape) {
             #timeline-container { flex-direction: row; align-items: center; padding-top: 16px;} 
+            
+            /* 強制將控制列擠在同一橫排，若超出螢幕寬度則允許平滑橫向滑動 */
+            .controls-grid {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding-bottom: 4px;
+                gap: 6px;
+            }
+            .controls-grid::-webkit-scrollbar { display: none; }
+            .controls-grid > * { flex-shrink: 0; } /* 防止按鈕被壓扁破版 */
+            
+            /* 適度壓縮元件的寬度，讓 iPhone Max 幾乎不用滑動就能看到存檔按鈕 */
+            .date-trigger { min-width: 95px !important; }
+            .badge-input-wrapper { min-width: 90px !important; padding: 0 6px; }
+            .toggle-wrapper { min-width: 72px !important; padding: 0 6px; }
+            #early-container, #prev-container { min-width: 105px !important; }
         }
 
     </style>
@@ -774,7 +787,7 @@
             </div>
             
             <!-- Early Morning CAPSULE UI (3.4.3.4) -->
-            <div class="toggle-wrapper" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
+            <div class="toggle-wrapper" id="early-container" style="padding:0 8px; flex: 1 1 auto; min-width: 125px;">
                 <span class="toggle-label" style="margin-right:2px;">Early <span class="info-icon" onclick="showInfo('early')">i</span></span>
                 <select id="earlyMorningSel" onchange="updEarlyMorning(this.value)" style="background:transparent; border:none; color:var(--brand-blue); font-weight:700; font-size:11px; outline:none; text-align:right; flex-grow:1; cursor:pointer; -webkit-appearance:none;">
                     <option value="0">None</option>
@@ -784,7 +797,7 @@
                 <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
             </div>
 
-            <div style="position: relative; flex: 1 1 auto; min-width:125px;">
+            <div id="prev-container" style="position: relative; flex: 1 1 auto; min-width:125px;">
                 <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup()">
                     <span style="display:flex; align-items:center; font-size:10px;">
                         PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
@@ -860,7 +873,6 @@
     <!-- NEW: DYNAMIC DUTY LIFECYCLE TIMELINE MINIMAP -->
     <div class="duty-timeline-wrapper" id="dutyTimelineWrapper">
 
-        <!-- 🚨 FIX: Removed Empty State to save space as requested -->
         <div id="dtContent" style="display:flex; width: 100%; flex-direction: column;">
             <div class="dt-header">
                 <div class="dt-header-col">
@@ -1705,7 +1717,7 @@
 
         document.getElementById('disp-limit-dur').innerText = limitText;
 
-        calcTotals(); // This handles FT Warning logic
+        calcTotals(); 
 
         // Block Time / ULR Detect
         let totalFtCalc = 0; let isULR = false;
@@ -2135,22 +2147,18 @@
         const wrapper = document.getElementById('dutyTimelineWrapper');
         const content = document.getElementById('dtContent');
 
-        // 🚨 PROPOSAL 4 (FIXED): REMOVED EMPTY STATE ENTIRELY
         if (rep === null || !maxFdpMins || (schedElapsed === 0 && !hasAnyInput)) {
-            wrapper.style.display = 'none'; // Completely hide the timeline if no data
+            wrapper.style.display = 'none'; 
             
-            // Remove Act Focus if Empty
             document.getElementById('box-act').classList.remove('act-focus');
             document.getElementById('box-plan').classList.remove('dimmed');
             document.getElementById('box-sched').classList.remove('dimmed');
             return;
         }
 
-        // Has Data -> Show Content
         wrapper.style.display = 'flex';
         content.style.display = 'flex';
 
-        // 🚨 PROPOSAL 2: VISUAL HIERARCHY FOR CARDS
         if (hasAnyInput) {
             document.getElementById('box-act').classList.add('act-focus');
             document.getElementById('box-plan').classList.add('dimmed');
@@ -2161,16 +2169,14 @@
             document.getElementById('box-sched').classList.remove('dimmed');
         }
 
-        // Base Data
         let postDutyMins = 0;
         if (hasAnyInput || schedElapsed > 0) postDutyMins = 30;
 
         let fdpToUse = hasAnyInput ? projElapsed : schedElapsed;
         
-        // 🚨 Proposal 1/4: Non-linear Scale for Rest
         let visualRestMins = restMins;
         let isRestTruncated = false;
-        let maxVisualRest = Math.max(maxFdpMins * 0.4, 180); // Rest visually takes up to 40% of FDP
+        let maxVisualRest = Math.max(maxFdpMins * 0.4, 180); 
         if (restMins > maxVisualRest) {
             visualRestMins = maxVisualRest;
             isRestTruncated = true;
@@ -2180,7 +2186,6 @@
         let totalCycleMins = fdpToUse + postDutyMins + restMins; 
         let scaleMins = Math.max(maxFdpMins, visualTotalCycleMins) * 1.05; 
 
-        // 1. Update Fixed Labels
         document.getElementById('dt-rpt-label').innerText = fmt(rep);
         
         if (restMins > 0) {
@@ -2191,14 +2196,12 @@
             document.getElementById('dt-end-val').innerText = fmt(rep + maxFdpMins);
         }
 
-        // 2. Absolute Max Marker
         const maxMarker = document.getElementById('dtMaxMarker');
         maxMarker.style.display = 'block';
         maxMarker.style.left = (maxFdpMins / scaleMins) * 100 + '%';
         const maxMarkerText = document.querySelector('.dt-limit-text');
         maxMarkerText.innerText = 'MAX ' + fmt(rep + maxFdpMins);
 
-        // 3. Handle Sched Ghost Overlay
         const ghostEl = document.getElementById('dtGhost');
         if (schedElapsed > 0) {
             document.getElementById('dt-sch-val').innerText = fmt(schedElapsed, false);
@@ -2210,7 +2213,6 @@
             document.getElementById('dt-sch-val').innerText = '--:--';
         }
 
-        // 4. Fill Elements & Segments
         const fillEl = document.getElementById('dtFill');
         const fillDangerEl = document.getElementById('dtFillDanger');
         const pctLabel = document.getElementById('dt-pct-label');
@@ -2226,7 +2228,6 @@
         segmentInfoBar.style.opacity = 0;
 
         if (!hasAnyInput) {
-            // Sched Only: Hide the progressive solid bar entirely
             fillEl.style.width = '0%';
             pctLabel.innerText = '0%';
             pctLabel.style.color = 'var(--text-tertiary)';
@@ -2254,12 +2255,10 @@
                 restEl.innerHTML = '';
             }
         } else {
-            // Act Data exists -> Progressive Solid Fill
             let safeSolidMins = Math.min(solidBarElapsed, maxFdpMins);
             let displaySafePct = (safeSolidMins / scaleMins) * 100;
             fillEl.style.width = displaySafePct + '%';
             
-            // 🚨 Danger Zone Hatching
             if (solidBarElapsed > maxFdpMins) {
                 let overflowMins = solidBarElapsed - maxFdpMins;
                 fillDangerEl.style.display = 'block';
@@ -2271,7 +2270,6 @@
                 fillEl.style.borderRadius = 'var(--radius-full)';
             }
             
-            // Health color & text
             let fdpHealthPct = (projElapsed / maxFdpMins) * 100;
             if (fdpHealthPct > 100) {
                 fillEl.style.background = 'linear-gradient(90deg, var(--brand-orange), var(--brand-red))';
@@ -2289,12 +2287,10 @@
             document.getElementById('dt-act-val').innerText = fmt(projElapsed, false);
             pctLabel.innerText = Math.round(fdpHealthPct) + '%'; 
 
-            // Post Duty block
             postDutyEl.style.display = 'block';
             postDutyEl.style.left = (projElapsed / scaleMins) * 100 + '%';
             postDutyEl.style.width = (postDutyMins / scaleMins) * 100 + '%';
 
-            // Rest block
             if (restMins > 0) {
                 restEl.style.display = 'flex';
                 restEl.style.left = ((projElapsed + postDutyMins) / scaleMins) * 100 + '%';
@@ -2307,7 +2303,6 @@
                 restEl.innerHTML = '';
             }
 
-            // Draw Flight Segments (Future/Projected slots)
             let lastProgElapsed = (app.stations[0].code.trim().toUpperCase() === 'TPE') ? 90 : 60;
             for (let i = 0; i < app.stations.length - 1; i++) {
                 let st = app.stations[i];
@@ -2345,7 +2340,6 @@
                     legInRel = legOutRel + txOut + txIn; // fallback
                 }
                 
-                // 🚨 PROPOSAL 3: Micro-interactions (iOS Touch Fix)
                 let blockStr = "00:00";
                 if (out !== null && inc !== null) blockStr = fmt(diff(out, inc), false);
                 else if (ft !== null) blockStr = fmt(ft + txOut + txIn, false) + '*';
@@ -2364,13 +2358,12 @@
                 if (startPct >= 0 && startPct <= 100 && (out !== null || std !== null)) {
                     const seg = document.createElement('div');
                     seg.className = 'dt-segment';
-                    seg.tabIndex = 0; // Make focusable for touch
+                    seg.tabIndex = 0; 
                     seg.style.left = startPct + '%';
                     seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
                     
-                    // Click & Touch Event for Info Bar (Fixing iOS Fat Finger & Ignored Clicks)
                     const handleSegInteraction = (e) => {
-                        e.stopPropagation(); // Prevent global dismiss
+                        e.stopPropagation(); 
                         document.querySelectorAll('.dt-segment').forEach(s => s.classList.remove('selected'));
                         seg.classList.add('selected');
                         segmentInfoBar.innerHTML = `📍 ${segLabel} &nbsp;|&nbsp; ⏱️ Block: ${blockStr}`;
@@ -2385,7 +2378,6 @@
             }
         }
         
-        // 🚨 PROPOSAL 1: CURRENT TIME "NOW" INDICATOR
         const nowMarker = document.getElementById('dtNowMarker');
         if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins) {
             let nowPct = (elapsedSinceRepMins / scaleMins) * 100;
@@ -2395,7 +2387,6 @@
             nowMarker.style.display = 'none';
         }
 
-        // 5. Update Timeline Ruler
         const ruler = document.getElementById('dtRuler');
         ruler.innerHTML = '';
         
@@ -2414,7 +2405,6 @@
 
                 let outRel = tickLastProgElapsed;
                 
-                // OUT/STD Tick
                 if (out !== null) {
                     outRel = out - rep;
                     if (outRel < 0) outRel += 1440;
@@ -2435,7 +2425,6 @@
                     }
                 }
 
-                // IN/STA Tick
                 let inRel = outRel;
                 if (inc !== null) {
                     let actualInRel = inc - rep;
@@ -2478,14 +2467,13 @@
                 tickLastProgElapsed = inRel + turn;
             }
             
-            // Anti-overlap Staggering Algorithm
             rawTicks.sort((a, b) => a.pct - b.pct);
             let lastRenderedPct = -100;
             let isStaggered = false;
             let rulerHtml = '';
             
             rawTicks.forEach(tick => {
-                if (tick.pct - lastRenderedPct < 8) { // 8% visual collision threshold
+                if (tick.pct - lastRenderedPct < 8) { 
                     isStaggered = !isStaggered;
                 } else {
                     isStaggered = false;
@@ -2608,7 +2596,6 @@
                 let seg = 0;
                 const s_sft=parse(app.sfts[j]), s_std=parse(app.stations[j].std), s_sta=parse(app.stations[j+1].sta);
                 
-                // NOTIFICATION 2024-14: Force 15+15 for LBO Calculation
                 const lboTaxiOut = 15; const lboTaxiIn = 15;
 
                 if(s_sft!==null) seg = s_sft + lboTaxiOut + lboTaxiIn;
@@ -2629,11 +2616,10 @@
              const lboFromReport = currentLimit - timeNeeded;
              let lboAbs = rep + lboFromReport;
 
-             // ACARS LBO Application
              let usedAcars = false;
              if (acarsLboMins !== null) {
                  let acarsElapsed = acarsLboMins - rep;
-                 if (acarsElapsed < -720) acarsElapsed += 1440; // Next day
+                 if (acarsElapsed < -720) acarsElapsed += 1440; 
                  if (acarsElapsed > 0) {
                      let absoluteAcars = rep + acarsElapsed;
                      if (absoluteAcars < lboAbs) {
@@ -2742,21 +2728,16 @@
         localStorage.setItem('calData158', JSON.stringify(data));
     }
 
-    // Global Click Listener to Close Popups & Modals & Segment Tooltips
     const hideGlobalElements = (e) => {
-        // Prev Popup
         const prevPopup = document.getElementById('prevPopup'); const prevBadge = document.querySelector('.badge-prev-ft');
         if (prevPopup && prevPopup.classList.contains('show')) { if (!prevPopup.contains(e.target) && !prevBadge.contains(e.target)) prevPopup.classList.remove('show'); }
 
-        // Route Popup
         const routePopup = document.getElementById('routePopup'); const routeBtn = document.getElementById('routeBtn');
         if (routePopup && routePopup.classList.contains('show')) { if (!routePopup.contains(e.target) && !routeBtn.contains(e.target)) routePopup.classList.remove('show'); }
         
-        // Info Modal
         const infoModal = document.getElementById('infoModal');
         if (e.target === infoModal) closeInfo();
         
-        // 🚨 Segment Info Bar (Hide on outside click)
         const isSegment = e.target.closest('.dt-segment');
         if (!isSegment) {
             document.querySelectorAll('.dt-segment').forEach(s => s.classList.remove('selected'));
@@ -2768,10 +2749,9 @@
     window.addEventListener('click', hideGlobalElements);
     window.addEventListener('touchstart', hideGlobalElements, {passive: true});
 
-    // Start a timer for NOW indicator updates
     setInterval(() => {
         if(app.stations[0].std) runAllCalc(false);
-    }, 60000); // Check every minute
+    }, 60000); 
 
     window.onload = () => { 
         const isDark = localStorage.getItem('nightMode') === 'true';
