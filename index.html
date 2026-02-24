@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.0)</title>
+    <title>CAL Duty (Pro v5.4.1)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -362,22 +362,22 @@
         .dt-segment {
             position: absolute; top: 1px; bottom: 1px;
             background: rgba(255, 255, 255, 0.3); border-radius: 4px;
-            z-index: 3; box-shadow: 1px 0 0 rgba(0,0,0,0.1);
+            z-index: 10; box-shadow: 1px 0 0 rgba(0,0,0,0.1); /* Ensure it's above the track inner elements */
             cursor: pointer;
         }
         body.dark-mode .dt-segment { background: rgba(0, 0, 0, 0.25); }
         
         /* Segment Tooltip Popover */
         .dt-segment-tooltip {
-            position: absolute; bottom: 130%; left: 50%; transform: translateX(-50%) translateY(4px);
-            background: var(--text-primary); color: var(--bg-app); padding: 4px 8px; border-radius: 6px;
-            font-size: 9px; white-space: nowrap; opacity: 0; visibility: hidden;
+            position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%) translateY(4px);
+            background: var(--text-primary); color: var(--bg-app); padding: 6px 10px; border-radius: 6px;
+            font-size: 10px; white-space: nowrap; opacity: 0; visibility: hidden;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--shadow-float); z-index: 200; text-align: center;
             line-height: 1.3; pointer-events: none;
         }
         .dt-segment-tooltip::after {
             content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            border-width: 4px; border-style: solid; border-color: var(--text-primary) transparent transparent transparent;
+            border-width: 5px; border-style: solid; border-color: var(--text-primary) transparent transparent transparent;
         }
         /* Touch / Hover Activation */
         @media (hover: hover) { .dt-segment:hover .dt-segment-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); } }
@@ -655,7 +655,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.0 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.1 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -826,10 +826,11 @@
                 <div class="dt-fill" id="dtFill"></div>
                 <!-- Danger Overflow Fill (Hatched) -->
                 <div class="dt-fill-danger" id="dtFillDanger"></div>
-                
-                <!-- Flight segments will be injected here by JS -->
-                <div id="dtSegments"></div>
             </div>
+            
+            <!-- Flight segments moved OUTSIDE overflow:hidden so tooltips aren't clipped -->
+            <div id="dtSegments"></div>
+            
             <!-- Marker sits outside overflow hidden so the text isn't clipped -->
             <div class="dt-limit-marker" id="dtMaxMarker">
                 <span class="dt-limit-text">MAX</span>
@@ -882,11 +883,11 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.0 重大更新</b><br>• ✂️ <b>非線性比例尺 (Non-linear Scale)</b>：智慧壓縮超長休時 (Rest) 的視覺佔比，確保核心的飛行區段 (FDP) 永遠寬敞清晰。<br>• 🔀 <b>防重疊交錯刻度 (Staggered Ticks)</b>：若相鄰時間刻度過近，將自動採用高低交錯排版，完美解決字體重疊問題。<br>• 🚨 <b>超時斜紋警示 (Danger Zone Hatching)</b>：實際工時若突破 MAX 紅線，超時部分將以專屬的「紅色脈衝斜紋」呈現強烈警示。<br>• 👆 <b>微互動觸控 (Micro-interactions)</b>：點擊或長按時間軌上的白色航段方塊，即可查看該航段的詳細起降站點與區間工時。</div>
+            text: `<div class="info-zh"><b>v5.4.1 微互動優化</b><br>• 🐛 <b>氣泡圖層修復 (Z-index/Clipping Fix)</b>：解除時間軌上的剪裁限制，現在點擊白色航段方塊，微互動氣泡能完美浮現不受遮擋！</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.3.6</b><br>• 🐛 精準進度修復：實心藍條現在嚴格遵循目前實際的進度點，不再因輸入 FT 而提早畫滿未來航程。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.0</b><br>• ✂️ <b>非線性比例尺</b>：智慧壓縮超長休時，確保飛行區段寬敞。<br>• 🔀 <b>防重疊交錯刻度</b>：自動處理相近時間標籤。<br>• 🚨 <b>超時斜紋警示</b>：突破紅線時展現強烈警告。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.3.3</b><br>• 🎨 色彩優化與降噪：智慧型實際時間取代 (Smart Actuals Replacement)，去除多餘刻度。</div>`
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.3.6</b><br>• 🐛 精準進度修復：實心藍條嚴格遵循目前實際進度。</div>`
         },
         'jz': {
             title: '聯管通報 JZ LBO',
@@ -1588,7 +1589,7 @@
         app.stations.forEach((s, i) => {
             let extension = 0; let pause = 0;
             if (s.hotel && i < app.stations.length - 1) {
-                const hTime = calcRest(s.ci, co);
+                const hTime = calcRest(s.ci, s.co);
                 const badge = document.getElementById(`rest-badge-${i}`);
                 if(badge) {
                     badge.style.display = 'block';
@@ -2526,8 +2527,8 @@
              const lboEl = document.getElementById(`lbo-${i}`); const lboDet = document.getElementById(`lbo-detail-${i}`); const lboBox = document.getElementById(`lbo-box-${i}`);
              let isImpossible = false;
              if (app.stations[i].hotel) {
-                const co = parse(app.stations[i].co);
-                if (co !== null) {
+                 const co = parse(app.stations[i].co);
+                 if (co !== null) {
                     let coElapsed = co - rep; if (coElapsed < 0) coElapsed += 1440;
                     if (lboFromReport < coElapsed) isImpossible = true;
                 }
