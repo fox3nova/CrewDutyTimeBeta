@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.5.0)</title>
+    <title>CAL Duty (Pro v5.5.1)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -192,15 +192,16 @@
         .toolbar-wrapper {
             display: grid;
             grid-template-rows: 1fr;
-            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-top: 12px;
+            transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-top 0.3s ease;
+            margin-top: 4px;
         }
         .toolbar-wrapper.collapsed {
             grid-template-rows: 0fr;
             margin-top: 0;
         }
         .toolbar-inner {
-            min-height: 0; /* Critical for grid collapse */
+            min-height: 0; 
+            overflow: hidden; /* Critical to prevent content bleeding when collapsed */
             opacity: 1;
             transition: opacity 0.2s ease;
         }
@@ -220,7 +221,6 @@
             align-items: center;
             justify-content: flex-start;
             width: 100%;
-            padding-bottom: 4px;
         }
         .controls-grid::-webkit-scrollbar { display: none; }
         .controls-grid > * {
@@ -766,7 +766,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.5.0 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.5.1 ⓘ</span>
             </div>
             <div class="header-actions">
                 <div class="crew-selector">
@@ -775,8 +775,7 @@
                     <div class="crew-btn" id="btn-D" onclick="setCrew('D')">Double</div>
                 </div>
                 
-                <!-- 🚀 頂部工具列收折按鈕 (iPad 最愛) -->
-                <button id="headerToggleBtn" class="header-toggle-btn" onclick="toggleToolbar()" title="Toggle Toolbar">
+                <button id="headerToggleBtn" class="header-toggle-btn" onclick="toggleToolbar()" title="Toggle Settings">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m18 15-6-6-6 6"/>
                     </svg>
@@ -784,20 +783,24 @@
             </div>
         </div>
 
-        <!-- 🚀 平滑收折包裝層 (CSS Grid Trick) -->
+        <!-- 🟢 第一層：常駐核心區 (絕不收折，放置高頻操作) -->
+        <div class="controls-grid" style="padding-top: 8px; padding-bottom: 4px;">
+            <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
+            <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
+                ALL UTC
+            </button>
+            <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;" title="Saved Routes">
+                📂
+            </button>
+            <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;" title="Night Mode">
+                <span id="nightBtnIcon">🌙</span>
+            </button>
+        </div>
+
+        <!-- 🔴 第二層：平滑收折區 (進階、條件觸發、防呆設定) -->
         <div class="toolbar-wrapper" id="toolbarWrapper">
             <div class="toolbar-inner">
-                <div class="controls-grid">
-                    <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;">
-                        <span id="nightBtnIcon">🌙</span>
-                    </button>
-                    
-                    <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
-                    
-                    <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
-                        ALL UTC
-                    </button>
-
+                <div class="controls-grid" style="padding-top: 8px; border-top: 1px dashed var(--border-light); margin-top: 4px;">
                     <!-- ACARS LBO Input -->
                     <div class="badge-input-wrapper badge-acars" title="ACARS LBO from JZ">
                         <span style="display:flex; align-items:center; font-size:10px;">
@@ -853,9 +856,9 @@
                         </div>
                     </div>
                     
+                    <!-- 危險操作放入收折區當作防呆機制 -->
                     <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
                     
-                    <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
                 </div>
             </div>
         </div>
@@ -1003,9 +1006,9 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.5.0 iPad 全螢幕極致優化版</b><br>• 🚀 <b>頂部工具列收折功能</b>：專為 iPad 橫向/直向螢幕設計，一鍵收起上方控制面板，完全釋放垂直空間，最大化中央航班視角。<br>• 📱 <b>Safai/Chrome 相容提升</b>：優化平板瀏覽器底部/頂部導覽列捲動時的視窗高度佔用問題。<br>• 💾 <b>狀態記憶</b>：系統會自動記住您對工具列的收折偏好。</div>
+            text: `<div class="info-zh"><b>v5.5.1 工具列收折與分層優化</b><br>• 🎯 <b>精準功能分層</b>：將「日期、時區切換、存檔、深色模式」獨立保留於外部常駐區，對應飛行計畫中最頻繁的操作。<br>• 🗂️ <b>進階功能收納 (防呆機制)</b>：將「ACARS、延長任務、無睡眠區、早班機、前趟飛時、Reset重置」等低頻率、異常狀態或破壞性設定移入收折區，徹底釋放空間並防止畫面誤觸。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.4 Z-Index 圖層終極修復版</b><br>• 🛡️ 防剪裁終極佈局：修復橫向模式下按鈕被物理遮擋的 Bug。<br>• 🕳️ 空間極致精簡：移除空白狀態，釋放更多高度。</div>`
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.5.0 iPad 全螢幕極致優化版</b><br>• 🚀 頂部工具列加入平滑收折功能，最大化中央航班視角。<br>• 💾 狀態記憶：系統會自動記住您對工具列的收折偏好。</div>`
         },
         'jz': {
             title: '聯管通報 JZ LBO',
