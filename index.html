@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.4)</title>
+    <title>CAL Duty (Pro v5.4.5)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -295,12 +295,12 @@
             animation: fadeIn 0.3s ease;
         }
         
-        /* 🚨 OPTIMIZED EMPTY STATE: Reduced height, English text */
+        /* 🚨 OPTIMIZED EMPTY STATE: Reduced height significantly, English text */
         .dt-empty-state {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 16px 0; color: var(--text-tertiary); font-weight: 700; font-size: 12px;
+            padding: 6px 0; color: var(--text-tertiary); font-weight: 700; font-size: 11px;
             border: 1px dashed var(--border-light); border-radius: var(--radius-md);
-            background: rgba(0,0,0,0.02); margin-top: 8px;
+            background: rgba(0,0,0,0.02); margin-top: 4px;
         }
         body.dark-mode .dt-empty-state { background: rgba(255,255,255,0.02); }
 
@@ -693,7 +693,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.4 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.5 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -935,11 +935,11 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.4 效能與相容性修復</b><br>• 🐛 <b>iOS 觸控引擎修正</b>：為航段方塊加上 touchstart 雙重監聽，解決行動裝置點擊無反應或被遮擋的問題。<br>• 🕳️ <b>空白狀態高度優化</b>：縮減無資料時的預設高度，避免在小螢幕上產生排版擠壓，並調整為英文顯示。</div>
+            text: `<div class="info-zh"><b>v5.4.5 UI 優化與修復</b><br>• 🕳️ <b>極致空間優化</b>：針對 iOS 橫向模式，進一步將空白狀態 (Awaiting Flight Data) 的間距與字體極小化，徹底解決遮擋刪除按鈕的問題。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.3</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接。<br>• 📊 <b>視覺層級強化</b>：實際數據 (Actual) 卡片自動放大並發光聚焦。<br>• 👆 <b>根除胖手指效應</b>：航段詳細數據改為「點擊鎖定式動態資訊列」。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.4</b><br>• 🐛 <b>iOS 觸控引擎修正</b>：為航段方塊加上 touchstart 雙重監聽，解決行動裝置點擊無反應或被遮擋的問題。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.2</b><br>• 🧭 懸浮 MAX 參考指標，解決提早下班的視覺衝突。</div>`
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.3</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接。<br>• 📊 <b>視覺層級強化</b>：實際數據卡片自動放大並發光聚焦。<br>• 👆 <b>根除胖手指效應</b>：改為「點擊鎖定式動態資訊列」。</div>`
         },
         'jz': {
             title: '聯管通報 JZ LBO',
@@ -2346,6 +2346,7 @@
                 if (startPct >= 0 && startPct <= 100 && (out !== null || std !== null)) {
                     const seg = document.createElement('div');
                     seg.className = 'dt-segment';
+                    seg.tabIndex = 0; // Make focusable for touch
                     seg.style.left = startPct + '%';
                     seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
                     
