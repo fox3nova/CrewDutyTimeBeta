@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.5)</title>
+    <title>CAL Duty (Pro v5.4.6)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -295,7 +295,7 @@
             animation: fadeIn 0.3s ease;
         }
         
-        /* 🚨 OPTIMIZED EMPTY STATE: Reduced height significantly, English text */
+        /* OPTIMIZED EMPTY STATE: Reduced height significantly, English text */
         .dt-empty-state {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 6px 0; color: var(--text-tertiary); font-weight: 700; font-size: 11px;
@@ -395,7 +395,7 @@
         }
         body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
 
-        /* Micro-interaction Segments (iOS Touch Fixed) */
+        /* Micro-interaction Segments */
         .dt-segment {
             position: absolute; top: 1px; bottom: 1px;
             background: rgba(255, 255, 255, 0.3); border-radius: 4px;
@@ -462,21 +462,21 @@
         }
         body.dark-mode .dt-segment-info { background: rgba(59,130,246,0.15); color: #60a5fa; }
 
-        /* === TIMELINE === */
+        /* === TIMELINE CONTAINERS === */
         #timeline-container {
             display: flex;
             overflow-x: auto;
-            overflow-y: hidden;
+            overflow-y: visible; /* 🚨 FIXED: Prevent vertical clipping of X button */
             scroll-snap-type: x mandatory;
-            padding: 0 16px;
+            padding: 24px 16px; /* 🚨 FIXED: Added robust top/bottom padding to absorb floating elements */
             gap: 0;
             scrollbar-width: none;
             -ms-overflow-style: none;
             align-items: center; 
             
             position: absolute;
-            top: 315px; /* Adjust for taller timeline area */
-            bottom: 80px; /* Above footer */
+            top: 315px;
+            bottom: 80px; 
             left: 0;
             width: 100%;
             
@@ -595,7 +595,9 @@
         }
         .btn-add { background: var(--brand-green); }
         .btn-div { background: var(--brand-orange); }
-        .btn-del { position: absolute; top: -8px; right: -8px; background: var(--brand-red); width: 24px; height: 24px; font-size: 12px; z-index: 10; border: 2px solid var(--bg-app); }
+        
+        /* 🚨 FIXED: Modified position and sizing slightly to prevent any cut-offs */
+        .btn-del { position: absolute; top: -12px; right: -12px; background: var(--brand-red); width: 28px; height: 28px; font-size: 14px; z-index: 20; border: 2px solid var(--bg-app); }
 
         /* === FOOTER HUD === */
         .hud-footer {
@@ -652,29 +654,40 @@
         .info-en { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; letter-spacing: 0.01em; }
         .info-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
 
-        /* RESPONSIVE RESET for Mobile Portrait */
-        @media screen and (max-width: 820px) and (orientation: portrait) {
-            html, body { position: static; overflow-y: auto; overflow-x: hidden; }
-            .app-header { position: sticky; top: 0; }
-            .stats-dashboard { position: static; margin-top: 0; }
+        /* 🚨 RESPONSIVE RESET for ALL Mobile Scenarios (Portrait Narrow AND Landscape Short) */
+        @media screen and (max-width: 820px) and (orientation: portrait), 
+               screen and (max-height: 600px) and (orientation: landscape) {
             
-            .duty-timeline-wrapper {
-                position: static;
-                margin: 12px 16px 0 16px;
-            }
+            html, body { position: static; overflow-y: auto; overflow-x: hidden; }
+            .app-header { position: sticky; top: 0; z-index: 1000;}
+            .stats-dashboard { position: static; margin-top: 0; }
+            .duty-timeline-wrapper { position: static; margin: 12px 16px 0 16px; }
             
             #timeline-container {
-                position: static; height: auto; flex-direction: column; 
-                overflow-x: hidden; overflow-y: visible; padding-bottom: 120px; 
-                align-items: center; gap: 0; min-height: auto; padding-top: 16px;
+                position: static; height: auto; 
+                overflow-x: auto; overflow-y: visible; 
+                padding-top: 24px; padding-bottom: 120px; 
+                align-items: flex-start; gap: 0; min-height: auto; 
             }
+            .station-wrapper { scroll-snap-align: start; }
+            body::-webkit-scrollbar { display: none; }
+        }
+
+        /* Specific adjustments just for Portrait Column Flow */
+        @media screen and (max-width: 820px) and (orientation: portrait) {
+            #timeline-container { flex-direction: column; align-items: center; }
             .leg-connector { width: 100%; height: 110px; flex-direction: column; margin-top: 0; }
             .flight-line { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); }
             .stats-dashboard { grid-template-columns: 1fr 1fr; }
-            .station-wrapper { width: 100%; justify-content: center; scroll-snap-align: start; }
+            .station-wrapper { width: 100%; justify-content: center; }
             .station-card { width: 92%; max-width: 380px; }
-            body::-webkit-scrollbar { display: none; }
         }
+
+        /* Specific adjustments just for Landscape Row Flow */
+        @media screen and (max-height: 600px) and (orientation: landscape) {
+            #timeline-container { flex-direction: row; }
+        }
+
     </style>
 </head>
 <body class="light-mode">
@@ -693,7 +706,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.5 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.6 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -935,9 +948,9 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.5 UI 優化與修復</b><br>• 🕳️ <b>極致空間優化</b>：針對 iOS 橫向模式，進一步將空白狀態 (Awaiting Flight Data) 的間距與字體極小化，徹底解決遮擋刪除按鈕的問題。</div>
+            text: `<div class="info-zh"><b>v5.4.6 橫向佈局防剪裁修復</b><br>• 🛡️ <b>防遮擋引擎 (Clipping Prevention)</b>：為底部卡片容器注入專屬緩衝空間，並解鎖了 iOS 橫向模式 (Landscape) 的頁面垂直捲動權限。徹底解決卡片上方「刪除 (X) 按鈕」在窄螢幕橫移時被無情切斷的痛點！</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.4</b><br>• 🐛 <b>iOS 觸控引擎修正</b>：為航段方塊加上 touchstart 雙重監聽，解決行動裝置點擊無反應或被遮擋的問題。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.5 UI 優化與修復</b><br>• 🕳️ <b>極致空間優化</b>：針對 iOS 橫向模式，進一步將空白狀態 (Awaiting Flight Data) 的間距與字體極小化。<br>• 🐛 <b>iOS 觸控引擎修正</b>：為航段方塊加上 touchstart 雙重監聽，解決行動裝置點擊無反應問題。</div>
                    <div class="info-divider"></div>
                    <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.3</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接。<br>• 📊 <b>視覺層級強化</b>：實際數據卡片自動放大並發光聚焦。<br>• 👆 <b>根除胖手指效應</b>：改為「點擊鎖定式動態資訊列」。</div>`
         },
