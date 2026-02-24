@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.4.7)</title>
+    <title>CAL Duty (Pro v5.4.8)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -265,7 +265,6 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* VISUAL HIERARCHY FOR STATUS CARDS */
         .stat-card.act-focus {
             border: 2px solid var(--brand-blue);
             box-shadow: 0 4px 12px rgba(0,122,255,0.15);
@@ -295,7 +294,6 @@
             animation: fadeIn 0.3s ease;
         }
         
-        /* OPTIMIZED EMPTY STATE: Reduced height significantly, English text */
         .dt-empty-state {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 6px 0; color: var(--text-tertiary); font-weight: 700; font-size: 11px;
@@ -320,7 +318,7 @@
             position: relative;
             width: 100%;
             height: 14px; 
-            margin-top: 18px; /* Taller margin to accommodate floating marker */
+            margin-top: 18px; 
         }
         .dt-track-inner {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -331,7 +329,6 @@
             overflow: hidden;
         }
 
-        /* Lifecycle Zones */
         .dt-ghost {
             position: absolute; top: -1px; bottom: -1px; left: 0;
             border: 1px dashed var(--text-tertiary);
@@ -367,7 +364,6 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 2;
         }
         
-        /* Danger Zone Hatching for Overflow */
         @keyframes pulseHatch {
             0% { opacity: 0.8; }
             50% { opacity: 1; box-shadow: 0 0 10px rgba(255,59,48,0.8); }
@@ -382,7 +378,6 @@
             display: none; transition: width 0.5s ease;
         }
 
-        /* CURRENT TIME "NOW" INDICATOR */
         .dt-now-marker {
             position: absolute; top: -6px; bottom: -6px; width: 2px;
             background: #06b6d4; box-shadow: 0 0 6px #06b6d4;
@@ -395,13 +390,12 @@
         }
         body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
 
-        /* Micro-interaction Segments (iOS Touch Fixed) */
         .dt-segment {
             position: absolute; top: 1px; bottom: 1px;
             background: rgba(255, 255, 255, 0.3); border-radius: 4px;
             z-index: 10; box-shadow: 1px 0 0 rgba(0,0,0,0.1); 
             cursor: pointer; transition: background 0.2s, border 0.2s;
-            -webkit-tap-highlight-color: transparent; /* Prevent iOS default highlight */
+            -webkit-tap-highlight-color: transparent; 
         }
         body.dark-mode .dt-segment { background: rgba(0, 0, 0, 0.25); }
         .dt-segment.selected { background: rgba(255, 255, 255, 0.6); border: 2px solid white; box-shadow: 0 0 6px rgba(255,255,255,0.8); }
@@ -425,7 +419,6 @@
         }
         body.dark-mode .dt-limit-text { border-color: rgba(255, 59, 48, 0.3); background: #2a1111;}
         
-        /* TIMELINE RULER FOR TIMESTAMPS */
         .dt-ruler {
             position: relative;
             width: 100%;
@@ -445,16 +438,11 @@
             transition: left 0.5s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .dt-tick span:first-child { font-family: monospace; font-size: 10px; }
-        
-        /* Stagger modifier */
         .dt-tick.stagger { transform: translateX(-50%) translateY(16px); }
-        
-        /* Sub-markers */
         .dt-tick.minor span:first-child { color: var(--text-tertiary); font-size: 9px; }
         .dt-tick.actual-out span:first-child { color: var(--brand-green); font-size: 10px; font-weight: 800;}
         .dt-tick.actual-in span:first-child { color: var(--brand-blue); font-size: 10px; font-weight: 800;}
 
-        /* FAT FINGER INFO BAR */
         .dt-segment-info {
             text-align: center; height: 16px; margin-top: 4px; font-size: 10px; font-weight: 800;
             color: var(--brand-blue); opacity: 0; transition: opacity 0.3s;
@@ -466,8 +454,7 @@
         #timeline-container {
             display: flex;
             overflow-x: auto;
-            /* 🚨 FIXED: Allow vertical overflow out of container natively */
-            overflow-y: visible; 
+            overflow-y: visible; /* Prevent clipping */
             scroll-snap-type: x mandatory;
             padding: 0 16px; 
             gap: 0;
@@ -485,14 +472,14 @@
         }
         #timeline-container::-webkit-scrollbar { display: none; }
 
-        /* 🚨 PROPOSAL 4 (FIXED): Padding Buffer to protect the Delete Button */
+        /* 🚨 THE VITAL PADDING BUFFER: Pushes bounds out so floating buttons aren't clipped */
         .station-wrapper { 
             scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; 
-            padding: 16px 0; /* Creates an invisible buffer inside the scrolling area */
+            padding: 16px 8px; /* Extra horizontal & vertical space */
         }
         .leg-connector {
             display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0;
-            padding: 16px 0; /* Keeps connector centered with the buffered wrapper */
+            padding: 16px 0;
         }
 
         .station-card {
@@ -601,8 +588,24 @@
         .btn-add { background: var(--brand-green); }
         .btn-div { background: var(--brand-orange); }
         
-        /* The button sits visually outside, but the wrapper padding prevents clipping */
-        .btn-del { position: absolute; top: -12px; right: -12px; background: var(--brand-red); width: 28px; height: 28px; font-size: 14px; z-index: 20; border: 2px solid var(--bg-app); box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); }
+        /* 🚨 THE FIX: Match border to CARDS, not Background! Added soft drop shadow */
+        .btn-del { 
+            position: absolute; 
+            top: -10px; 
+            right: -10px; 
+            background: var(--brand-red); 
+            width: 24px; 
+            height: 24px; 
+            font-size: 12px; 
+            z-index: 20; 
+            border: 2px solid var(--bg-card); /* Matches card edge so it doesn't look cut off */
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(255, 59, 48, 0.4); 
+            transition: transform 0.2s;
+        }
+        .btn-del:active { transform: scale(0.9); }
 
         /* === FOOTER HUD === */
         .hud-footer {
@@ -679,7 +682,7 @@
 
         /* Specific adjustments just for Portrait Column Flow */
         @media screen and (max-width: 820px) and (orientation: portrait) {
-            #timeline-container { flex-direction: column; align-items: center; } /* cross-axis horizontal align */
+            #timeline-container { flex-direction: column; align-items: center; padding-top: 24px;} /* Extra top padding for portrait */
             .leg-connector { width: 100%; height: 110px; flex-direction: column; margin-top: 0; }
             .flight-line { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); }
             .stats-dashboard { grid-template-columns: 1fr 1fr; }
@@ -689,7 +692,7 @@
 
         /* Specific adjustments just for Landscape Row Flow */
         @media screen and (max-height: 600px) and (orientation: landscape) {
-            #timeline-container { flex-direction: row; align-items: center; } /* cross-axis vertical align perfectly centered */
+            #timeline-container { flex-direction: row; align-items: center; padding-top: 24px;} /* Extra top padding for landscape */
         }
 
     </style>
@@ -710,7 +713,7 @@
     <header class="app-header">
         <div class="header-top">
             <div class="app-title">
-                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.7 ⓘ</span>
+                <span style="font-size:20px;">✈️</span> CAL Duty <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.4.8 ⓘ</span>
             </div>
             <div class="crew-selector">
                 <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -952,9 +955,9 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.4.7 引擎防剪裁終極修復</b><br>• 🛡️ <b>防遮擋引擎 (Clipping Prevention)</b>：重新架構橫向滑動容器的物理邊界 (Bounding Box)，透過內部預留緩衝區 (Padding Buffer)，徹底消除 iOS 橫向模式下背景色蓋住刪除按鈕的問題。</div>
+            text: `<div class="info-zh"><b>v5.4.8 美學歸位與視錯覺修復</b><br>• 🎨 <b>視錯覺修復 (Optical Illusion Fix)</b>：查明了邊框顏色與背景色融合導致的「假性剪裁」問題。我們將刪除按鈕 ✕ 的邊框改為卡片色，完美重現經典的「右上角懸浮徽章」設計，兼具優雅與點擊直覺！<br>• 🛡️ <b>防遮擋物理緩衝</b>：加大了滾動區的 padding，給予按鈕最安全的物理空間。</div>
                    <div class="info-divider"></div>
-                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.5 UI 優化與修復</b><br>• 🕳️ <b>極致空間優化</b>：針對 iOS 橫向模式，進一步將空白狀態的間距與字體極小化。<br>• 🐛 <b>iOS 觸控引擎修正</b>：解決行動裝置點擊無反應問題。</div>
+                   <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.5 UI 優化與修復</b><br>• 🕳️ <b>極致空間優化</b>：針對 iOS 橫向模式，進一步將空白狀態 (Awaiting Flight Data) 的間距與字體極小化。<br>• 🐛 <b>iOS 觸控引擎修正</b>：為航段方塊加上 touchstart 雙重監聽，解決行動裝置點擊無反應問題。</div>
                    <div class="info-divider"></div>
                    <div class="info-zh" style="color: var(--text-secondary);"><b>v5.4.3</b><br>• ⏱️ <b>NOW 絕對時間指標</b>：加入「青色微光當前時間線」，自動抓取現實時間與進度對接。<br>• 📊 <b>視覺層級強化</b>：實際數據卡片自動放大並發光聚焦。<br>• 👆 <b>根除胖手指效應</b>：改為「點擊鎖定式動態資訊列」。</div>`
         },
@@ -1235,7 +1238,8 @@
             
             html += `<div class="station-wrapper"><div class="${cardClass}">`;
             
-            if(!isFirst && !isLast) html += `<div class="icon-btn btn-del" onclick="remSt(${i})">✕</div>`;
+            // 🚨 Reverted to the beautiful floating absolute button, but fixed the border color!
+            if(!isFirst && !isLast) html += `<div class="btn-del" onclick="remSt(${i})" title="Delete Station">✕</div>`;
 
             html += `<div class="station-header">
                         <input type="text" id="code-${i}" class="station-code-input" value="${st.code}" onchange="updVal(${i},'code',this.value)">
@@ -1788,7 +1792,7 @@
         }
         document.getElementById('resReport').innerHTML = repHtml;
 
-        // 🚨 PROPOSAL 1: Calculate Elapsed Minutes for NOW Marker
+        // Calculate Elapsed Minutes for NOW Marker
         rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0);
         const nowMs = Date.now();
         const repMs = rptDate.getTime();
@@ -2131,25 +2135,21 @@
         const emptyState = document.getElementById('dtEmptyState');
         const content = document.getElementById('dtContent');
 
-        // 🚨 PROPOSAL 4 (FIXED): EMPTY STATE HANDLING with Reduced Height
         if (rep === null || !maxFdpMins || (schedElapsed === 0 && !hasAnyInput)) {
             wrapper.style.display = 'flex';
             emptyState.style.display = 'flex';
             content.style.display = 'none';
             
-            // Remove Act Focus if Empty
             document.getElementById('box-act').classList.remove('act-focus');
             document.getElementById('box-plan').classList.remove('dimmed');
             document.getElementById('box-sched').classList.remove('dimmed');
             return;
         }
 
-        // Has Data -> Show Content
         wrapper.style.display = 'flex';
         emptyState.style.display = 'none';
         content.style.display = 'flex';
 
-        // 🚨 PROPOSAL 2: VISUAL HIERARCHY FOR CARDS
         if (hasAnyInput) {
             document.getElementById('box-act').classList.add('act-focus');
             document.getElementById('box-plan').classList.add('dimmed');
@@ -2160,16 +2160,14 @@
             document.getElementById('box-sched').classList.remove('dimmed');
         }
 
-        // Base Data
         let postDutyMins = 0;
         if (hasAnyInput || schedElapsed > 0) postDutyMins = 30;
 
         let fdpToUse = hasAnyInput ? projElapsed : schedElapsed;
         
-        // 🚨 Proposal 1/4: Non-linear Scale for Rest
         let visualRestMins = restMins;
         let isRestTruncated = false;
-        let maxVisualRest = Math.max(maxFdpMins * 0.4, 180); // Rest visually takes up to 40% of FDP
+        let maxVisualRest = Math.max(maxFdpMins * 0.4, 180); 
         if (restMins > maxVisualRest) {
             visualRestMins = maxVisualRest;
             isRestTruncated = true;
@@ -2179,7 +2177,6 @@
         let totalCycleMins = fdpToUse + postDutyMins + restMins; 
         let scaleMins = Math.max(maxFdpMins, visualTotalCycleMins) * 1.05; 
 
-        // 1. Update Fixed Labels
         document.getElementById('dt-rpt-label').innerText = fmt(rep);
         
         if (restMins > 0) {
@@ -2190,14 +2187,12 @@
             document.getElementById('dt-end-val').innerText = fmt(rep + maxFdpMins);
         }
 
-        // 2. Absolute Max Marker
         const maxMarker = document.getElementById('dtMaxMarker');
         maxMarker.style.display = 'block';
         maxMarker.style.left = (maxFdpMins / scaleMins) * 100 + '%';
         const maxMarkerText = document.querySelector('.dt-limit-text');
         maxMarkerText.innerText = 'MAX ' + fmt(rep + maxFdpMins);
 
-        // 3. Handle Sched Ghost Overlay
         const ghostEl = document.getElementById('dtGhost');
         if (schedElapsed > 0) {
             document.getElementById('dt-sch-val').innerText = fmt(schedElapsed, false);
@@ -2209,7 +2204,6 @@
             document.getElementById('dt-sch-val').innerText = '--:--';
         }
 
-        // 4. Fill Elements & Segments
         const fillEl = document.getElementById('dtFill');
         const fillDangerEl = document.getElementById('dtFillDanger');
         const pctLabel = document.getElementById('dt-pct-label');
@@ -2225,7 +2219,6 @@
         segmentInfoBar.style.opacity = 0;
 
         if (!hasAnyInput) {
-            // Sched Only: Hide the progressive solid bar entirely
             fillEl.style.width = '0%';
             pctLabel.innerText = '0%';
             pctLabel.style.color = 'var(--text-tertiary)';
@@ -2253,12 +2246,10 @@
                 restEl.innerHTML = '';
             }
         } else {
-            // Act Data exists -> Progressive Solid Fill
             let safeSolidMins = Math.min(solidBarElapsed, maxFdpMins);
             let displaySafePct = (safeSolidMins / scaleMins) * 100;
             fillEl.style.width = displaySafePct + '%';
             
-            // 🚨 Danger Zone Hatching
             if (solidBarElapsed > maxFdpMins) {
                 let overflowMins = solidBarElapsed - maxFdpMins;
                 fillDangerEl.style.display = 'block';
@@ -2270,7 +2261,6 @@
                 fillEl.style.borderRadius = 'var(--radius-full)';
             }
             
-            // Health color & text
             let fdpHealthPct = (projElapsed / maxFdpMins) * 100;
             if (fdpHealthPct > 100) {
                 fillEl.style.background = 'linear-gradient(90deg, var(--brand-orange), var(--brand-red))';
@@ -2288,12 +2278,10 @@
             document.getElementById('dt-act-val').innerText = fmt(projElapsed, false);
             pctLabel.innerText = Math.round(fdpHealthPct) + '%'; 
 
-            // Post Duty block
             postDutyEl.style.display = 'block';
             postDutyEl.style.left = (projElapsed / scaleMins) * 100 + '%';
             postDutyEl.style.width = (postDutyMins / scaleMins) * 100 + '%';
 
-            // Rest block
             if (restMins > 0) {
                 restEl.style.display = 'flex';
                 restEl.style.left = ((projElapsed + postDutyMins) / scaleMins) * 100 + '%';
@@ -2306,7 +2294,6 @@
                 restEl.innerHTML = '';
             }
 
-            // Draw Flight Segments (Future/Projected slots)
             let lastProgElapsed = (app.stations[0].code.trim().toUpperCase() === 'TPE') ? 90 : 60;
             for (let i = 0; i < app.stations.length - 1; i++) {
                 let st = app.stations[i];
@@ -2344,7 +2331,6 @@
                     legInRel = legOutRel + txOut + txIn; // fallback
                 }
                 
-                // 🚨 PROPOSAL 3: Micro-interactions (iOS Touch Fix)
                 let blockStr = "00:00";
                 if (out !== null && inc !== null) blockStr = fmt(diff(out, inc), false);
                 else if (ft !== null) blockStr = fmt(ft + txOut + txIn, false) + '*';
@@ -2363,13 +2349,12 @@
                 if (startPct >= 0 && startPct <= 100 && (out !== null || std !== null)) {
                     const seg = document.createElement('div');
                     seg.className = 'dt-segment';
-                    seg.tabIndex = 0; // Make focusable for touch
+                    seg.tabIndex = 0; 
                     seg.style.left = startPct + '%';
                     seg.style.width = Math.min(durationPct, 100 - startPct) + '%';
                     
-                    // Click & Touch Event for Info Bar (Fixing iOS Fat Finger & Ignored Clicks)
                     const handleSegInteraction = (e) => {
-                        e.stopPropagation(); // Prevent global dismiss
+                        e.stopPropagation(); 
                         document.querySelectorAll('.dt-segment').forEach(s => s.classList.remove('selected'));
                         seg.classList.add('selected');
                         segmentInfoBar.innerHTML = `📍 ${segLabel} &nbsp;|&nbsp; ⏱️ Block: ${blockStr}`;
@@ -2384,7 +2369,6 @@
             }
         }
         
-        // 🚨 PROPOSAL 1: CURRENT TIME "NOW" INDICATOR
         const nowMarker = document.getElementById('dtNowMarker');
         if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins) {
             let nowPct = (elapsedSinceRepMins / scaleMins) * 100;
@@ -2394,7 +2378,6 @@
             nowMarker.style.display = 'none';
         }
 
-        // 5. Update Timeline Ruler
         const ruler = document.getElementById('dtRuler');
         ruler.innerHTML = '';
         
@@ -2413,7 +2396,6 @@
 
                 let outRel = tickLastProgElapsed;
                 
-                // OUT/STD Tick
                 if (out !== null) {
                     outRel = out - rep;
                     if (outRel < 0) outRel += 1440;
@@ -2434,7 +2416,6 @@
                     }
                 }
 
-                // IN/STA Tick
                 let inRel = outRel;
                 if (inc !== null) {
                     let actualInRel = inc - rep;
@@ -2477,14 +2458,13 @@
                 tickLastProgElapsed = inRel + turn;
             }
             
-            // Anti-overlap Staggering Algorithm
             rawTicks.sort((a, b) => a.pct - b.pct);
             let lastRenderedPct = -100;
             let isStaggered = false;
             let rulerHtml = '';
             
             rawTicks.forEach(tick => {
-                if (tick.pct - lastRenderedPct < 8) { // 8% visual collision threshold
+                if (tick.pct - lastRenderedPct < 8) { 
                     isStaggered = !isStaggered;
                 } else {
                     isStaggered = false;
