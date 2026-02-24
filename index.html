@@ -656,11 +656,14 @@
         .hud-item.locked .hud-value { color: var(--brand-red); }
         .lock-icon { font-size: 10px; margin-left: 4px; padding: 2px 4px; background: var(--bg-input); border-radius: 4px; cursor: pointer; }
         
+        /* 🚨 終極修復 Popover：脫離受限佈局，改用全局相對定位 🚨 */
         .popover {
-            position: absolute; top: 110%; right: 0;
+            position: absolute; 
+            top: calc(100% + 4px); /* 位於 header 正下方 */
+            right: 16px;           /* 對齊右側 */
             background: var(--bg-card); border: 1px solid var(--border-light);
             border-radius: 12px; padding: 12px; box-shadow: var(--shadow-float);
-            z-index: 300; width: 240px; display: none; animation: fadeIn 0.2s ease;
+            z-index: 300; width: 250px; display: none; animation: fadeIn 0.2s ease;
         }
         .popover.show { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: 0; } }
@@ -809,9 +812,9 @@
                 <span style="font-size:8px; color:var(--brand-blue); margin-left:4px; pointer-events:none;">▼</span>
             </div>
 
-            <div id="prev-container" style="position: relative; flex: 1 1 auto; min-width:125px;">
-                <!-- 🚨 加入 event.stopPropagation() 防止 Chrome 點擊穿透 🚨 -->
-                <div class="badge-input-wrapper badge-prev-ft" onclick="event.stopPropagation(); togglePrevPopup()">
+            <!-- 🚨 取消了內部的 relative 定位與多餘的 stopPropagation 🚨 -->
+            <div id="prev-container" style="flex: 1 1 auto; min-width:125px;">
+                <div class="badge-input-wrapper badge-prev-ft" onclick="togglePrevPopup(event)">
                     <span style="display:flex; align-items:center; font-size:10px;">
                         PREV FT <span class="info-icon" onclick="event.stopPropagation(); showInfo('prev')">i</span>
                     </span>
@@ -820,48 +823,49 @@
                         <span style="font-size:8px; margin-left:4px;">▼</span>
                     </div>
                 </div>
-                <!-- 🚨 面板本身也阻擋事件，防止點擊內部時誤關 🚨 -->
-                <div id="prevPopup" class="popover" onclick="event.stopPropagation();">
-                    <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
-                    <div class="flex flex-col gap-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-secondary">DATE (Z)</span>
-                            <input type="date" id="pf-date" class="glass-input" style="width:120px; font-size:12px;" onchange="calc24hOverlap(); runAllCalc()">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-secondary">IN (Z)</span>
-                            <input type="tel" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-secondary">FT</span>
-                            <input type="tel" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
-                        </div>
-                        <div style="margin-top:8px; display:flex; justify-content:center;">
-                            <button onclick="togglePrevPopup()" class="crew-btn active" style="width:100%; background:var(--brand-green); color:white;">✅ OK</button>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <button class="toggle-wrapper" onclick="resetData()" style="justify-content:center; color:var(--brand-red); font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 60px;">RESET</button>
             
-            <!-- 🚨 加入 event.stopPropagation() 防止 Chrome 點擊穿透 🚨 -->
-            <button class="toggle-wrapper" id="routeBtn" onclick="event.stopPropagation(); toggleRoutePopup()" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
-            
-             <!-- 🚨 面板本身也阻擋事件 🚨 -->
-             <div id="routePopup" class="popover" onclick="event.stopPropagation();">
-                <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
-                <div class="flex gap-2 mb-2">
-                    <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
-                    <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
+            <!-- 🚨 透過獨立的 JS Handler 防止穿透，不再直接寫 inline 邏輯 🚨 -->
+            <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;">📂</button>
+        </div>
+
+        <!-- 🚨 【重大修復】這兩個面板被移出 controls-grid，直接放在 app-header 中，徹底解決被裁切隱藏的問題 🚨 -->
+        <div id="prevPopup" class="popover" onclick="event.stopPropagation();">
+            <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-secondary">DATE (Z)</span>
+                    <input type="date" id="pf-date" class="glass-input" style="width:120px; font-size:12px;" onchange="calc24hOverlap(); runAllCalc()">
                 </div>
-                <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
-                <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
-                    <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
-                    <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-secondary">IN (Z)</span>
+                    <input type="tel" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-secondary">FT</span>
+                    <input type="tel" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                </div>
+                <div style="margin-top:8px; display:flex; justify-content:center;">
+                    <button onclick="togglePrevPopup()" class="crew-btn active" style="width:100%; background:var(--brand-green); color:white;">✅ OK</button>
                 </div>
             </div>
         </div>
+
+        <div id="routePopup" class="popover" onclick="event.stopPropagation();">
+            <div class="text-sm font-bold text-primary mb-3">Saved Routes</div>
+            <div class="flex gap-2 mb-2">
+                <input type="text" id="routeName" class="glass-input" placeholder="Name" style="font-size:12px; line-height:34px;">
+                <button id="saveBtn" onclick="saveRoute()" class="crew-btn active" style="padding:4px 8px;">Save</button>
+            </div>
+            <div id="routeList" style="max-height:150px; overflow-y:auto; border-top:1px solid var(--border-light); padding-top:4px;"></div>
+            <div class="flex justify-between mt-2 pt-2 border-t" style="border-color:var(--border-light);">
+                <button onclick="exportRoutes()" class="text-xs text-secondary">Export</button>
+                <button onclick="importRoutes()" class="text-xs text-secondary">Import</button>
+            </div>
+        </div>
+
         <div id="ulr-alert" class="hidden" style="background:var(--brand-red); color:white; text-align:center; font-size:10px; font-weight:bold; border-radius:4px; margin-top:4px; padding:2px;">⚠️ ULR DETECTED: REQUIRE 4 PILOTS</div>
     </header>
 
@@ -1444,11 +1448,36 @@
         runAllCalc();
     }
 
-    // --- ROUTE MANAGEMENT ---
-    function toggleRoutePopup() {
+    // 🚨 透過 JS Handler 防止事件穿透，並加入防呆互斥邏輯
+    function togglePrevPopup(e) {
+        if(e) e.stopPropagation();
+        const el = document.getElementById('prevPopup');
+        const isClosed = !el.classList.contains('show');
+        document.querySelectorAll('.popover').forEach(p => p.classList.remove('show')); // Auto-close others
+        if (isClosed) {
+            const curDateVal = document.getElementById('flightDate').value;
+            if (curDateVal) {
+                const d = getUtcDate(curDateVal);
+                d.setUTCDate(d.getUTCDate() - 1); 
+                const yyyy = d.getUTCFullYear();
+                const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+                const dd = String(d.getUTCDate()).padStart(2, '0');
+                document.getElementById('pf-date').value = `${yyyy}-${mm}-${dd}`;
+            }
+            calc24hOverlap(); 
+            el.classList.add('show');
+        }
+    }
+
+    function toggleRoutePopup(e) {
+        if(e) e.stopPropagation();
         const el = document.getElementById('routePopup');
-        el.classList.toggle('show');
-        renderRouteList();
+        const isClosed = !el.classList.contains('show');
+        document.querySelectorAll('.popover').forEach(p => p.classList.remove('show')); // Auto-close others
+        if(isClosed) {
+            el.classList.add('show');
+            renderRouteList();
+        }
     }
 
     function saveRoute() {
@@ -1615,24 +1644,6 @@
 
     function runAllCalc(redraw = false) { 
         saveData(); updateResultsOnly(); if (redraw) drawTimeline();
-    }
-    
-    function togglePrevPopup() {
-        const el = document.getElementById('prevPopup');
-        const isClosed = !el.classList.contains('show');
-        if (isClosed) {
-            const curDateVal = document.getElementById('flightDate').value;
-            if (curDateVal) {
-                const d = getUtcDate(curDateVal);
-                d.setUTCDate(d.getUTCDate() - 1); 
-                const yyyy = d.getUTCFullYear();
-                const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
-                const dd = String(d.getUTCDate()).padStart(2, '0');
-                document.getElementById('pf-date').value = `${yyyy}-${mm}-${dd}`;
-            }
-            calc24hOverlap(); 
-        }
-        el.classList.toggle('show');
     }
     
     function calc24hOverlap() {
@@ -2743,11 +2754,17 @@
     }
 
     const hideGlobalElements = (e) => {
-        const prevPopup = document.getElementById('prevPopup'); const prevBadge = document.querySelector('.badge-prev-ft');
-        if (prevPopup && prevPopup.classList.contains('show')) { if (!prevPopup.contains(e.target) && !prevBadge.contains(e.target)) prevPopup.classList.remove('show'); }
+        const prevPopup = document.getElementById('prevPopup'); 
+        const prevBadge = document.querySelector('.badge-prev-ft');
+        if (prevPopup && prevPopup.classList.contains('show')) { 
+            if (!prevPopup.contains(e.target) && prevBadge && !prevBadge.contains(e.target)) prevPopup.classList.remove('show'); 
+        }
 
-        const routePopup = document.getElementById('routePopup'); const routeBtn = document.getElementById('routeBtn');
-        if (routePopup && routePopup.classList.contains('show')) { if (!routePopup.contains(e.target) && !routeBtn.contains(e.target)) routePopup.classList.remove('show'); }
+        const routePopup = document.getElementById('routePopup'); 
+        const routeBtn = document.getElementById('routeBtn');
+        if (routePopup && routePopup.classList.contains('show')) { 
+            if (!routePopup.contains(e.target) && routeBtn && !routeBtn.contains(e.target)) routePopup.classList.remove('show'); 
+        }
         
         const infoModal = document.getElementById('infoModal');
         if (e.target === infoModal) closeInfo();
