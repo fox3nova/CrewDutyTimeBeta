@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.8.1)</title>
+    <title>CAL Duty (Pro v5.8.3)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -130,13 +130,13 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* 🚀 v5.7.0 DYNAMIC RESPONSIVE HEADER GRID */
+        /* DYNAMIC RESPONSIVE HEADER GRID */
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap; /* Allows fallback to second row on mobile */
+            flex-wrap: wrap; 
         }
 
         .app-title {
@@ -157,15 +157,15 @@
             align-items: center;
             gap: 8px;
             flex-shrink: 0;
-            order: 2; /* Mobile priority top-right */
+            order: 2; 
         }
 
         .header-primary-group {
             display: flex;
             align-items: center;
             gap: 8px;
-            flex: 1 1 100%; /* Force wrap on mobile to full width */
-            order: 3; /* Render under title on mobile */
+            flex: 1 1 100%; 
+            order: 3; 
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
@@ -175,12 +175,11 @@
         .header-primary-group > * { flex: 0 0 auto !important; }
 
         @media screen and (min-width: 768px) {
-            /* 🚀 iPad & Desktop: Perfect single line layout */
             .header-top { flex-wrap: nowrap; }
-            .header-actions { order: 3; } /* Move to far right */
+            .header-actions { order: 3; } 
             .header-primary-group {
                 flex: 1 1 auto;
-                order: 2; /* Move to center */
+                order: 2; 
                 padding-top: 0;
             }
         }
@@ -611,6 +610,7 @@
 </head>
 <body class="light-mode">
 
+    <!-- GLOBAL INFO MODAL -->
     <div id="infoModal" class="info-modal-overlay">
         <div class="info-modal-card">
             <div class="info-modal-header">
@@ -623,12 +623,16 @@
 
     <header class="app-header">
         
+        <!-- 🚀 DYNAMIC RESPONSIVE ONE-LINE HEADER TOP -->
         <div class="header-top">
+            
+            <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.8.1 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.8.3 ⓘ</span>
             </div>
 
+            <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
             <div class="header-primary-group">
                 <input type="date" id="flightDate" class="date-trigger" onchange="calc24hOverlap(); runAllCalc()">
                 <button class="toggle-wrapper" id="globalTimeBtn" onclick="toggleAllModes()" style="justify-content:center; font-weight:bold; font-size:11px; color:var(--brand-blue);">
@@ -641,9 +645,11 @@
                     <span id="nightBtnIcon">🌙</span>
                 </button>
                 
+                <!-- 動態摘要區 (填補剩餘空白，當收起進階面板時，提示開啟的規則) -->
                 <div class="header-center-zone" id="headerCenterZone"></div>
             </div>
 
+            <!-- 3. Header Actions (Right) -->
             <div class="header-actions">
                 <div class="crew-selector">
                     <div class="crew-btn active" id="btn-S" onclick="setCrew('S')">Single</div>
@@ -657,8 +663,10 @@
                     </svg>
                 </button>
             </div>
+
         </div>
 
+        <!-- 🔴 進階與例外區 (預設收折，節省大量垂直空間) -->
         <div class="toolbar-wrapper" id="toolbarWrapper">
             <div class="toolbar-inner">
                 <div class="controls-grid" style="padding-top: 8px; border-top: 1px dashed var(--border-light); margin-top: 4px;">
@@ -720,6 +728,7 @@
             </div>
         </div>
 
+        <!-- 浮動視窗 (Popovers) -->
         <div id="prevPopup" class="popover" onclick="event.stopPropagation();">
             <div class="text-sm font-bold text-primary mb-3">Previous Flight (24h Check)</div>
             <div class="flex flex-col gap-2">
@@ -764,6 +773,7 @@
         <span class="status-text" id="legalStatusText">Ready</span>
     </div>
 
+    <!-- === STATS DASHBOARD === -->
     <div class="stats-dashboard">
         <div class="stat-card">
             <span class="stat-label">Local (STD)</span>
@@ -865,20 +875,70 @@
     </footer>
 
 <script>
-    // === INFO SYSTEM DATA ===
+    // === INFO SYSTEM DATA & BILINGUAL TEXTS ===
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.8.1 智能感知修復版</b><br>• 🔮 <b>動態執勤窗 (Live Tracking Window)</b>：解決了模擬舊航班時，系統因為計算出「已報到 40,000 分鐘」而誤判超時的問題。現在系統只會在「報到前 12 小時 ～ 極限結束後 12 小時」這段合理的執勤窗內，才會啟動 Live Time 追蹤。如果您測試的是昨天以前的舊資料或未來的預排航班，系統會自動靜音現實時間警告，完美支援模擬試算！<br>• 📐 <b>嚴格 Actual 邏輯</b>：若未輸入實際時間，Actual 不會再拿預估值湊數，維持數據真實性。</div>`
+            text: `<div class="info-zh"><b>v5.8.3 雙語註解完整還原版 (Bilingual Restored)</b><br>• 📝 <b>解除極限壓縮 (Unminified)</b>：恢復被移除的結構化註解與雙語說明。<br>• 🔮 <b>動態執勤窗 (Live Tracking Window)</b>：僅在「報到前 12h ~ 極限後 12h」內啟動即時追蹤，完美支援模擬試算。<br>• 📐 <b>嚴格 Actual 邏輯 (Strict Actuals)</b>：未輸入真實時間不顯示預估值。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en"><b>v5.8.3 Bilingual Restored Edition</b><br>• Restored bilingual comments and unminified code structure for better maintainability.<br>• Live Tracking Window added to prevent false alerts on simulated past/future flights.<br>• Strict Actual logic applied to prevent estimation leakages into actual flight times.</div>`
         },
-        'jz': { title: '聯管通報 JZ LBO', text: `<div class="info-ref">B744 Fleet Notification 2024-14</div><div class="info-zh">當航班延誤時，聯管處將提供最後合法後推時間。</div>` },
-        'ext': { title: '延長任務 (Ext. FDT)', text: `<div class="info-ref">FOM 3.4.3.3 C.</div><div class="info-zh">機長裁量權。僅限多重派遣 (M)，最多延長 2 小時。</div>` },
-        'night': { title: '夜間航班限制 (Night Ops)', text: `<div class="info-ref">FOM 3.4.3.5</div><div class="info-zh">首段起飛介於 2100L-0700L，最大任務期間扣除 2 小時。</div>` },
-        'nobunk': { title: '無睡眠設備 (No Bunk)', text: `<div class="info-ref">FOM 3.4.3.1 B/C</div><div class="info-zh">無適當睡眠設備時，多重(M)/雙重(D)最高飛行時間下修為 12 小時。</div>` },
-        'early': { title: '連續早班機 (Early Morning)', text: `<div class="info-ref">FOM 3.4.3.4</div><div class="info-zh">起降涵蓋 0200L-0500L 之航班，連續 2/3 天有特殊休時規定。</div>` },
-        'prev': { title: '前趟飛時 (Prev FT)', text: `<div class="info-ref">FOM 3.4.3.1</div><div class="info-zh">用於檢查連續 24 小時內之最大飛行時間限制。</div>` },
-        'hotel': { title: '外站休息 (Hotel / Split)', text: `<div class="info-ref">FOM 3.4.3.3 A/B</div><div class="info-zh">連續 3 小時以上之休息得計入 Split Duty 或延長 FDP。</div>` },
-        'report': { title: '報到時間鎖定 (Report Lock)', text: `<div class="info-ref">FOM 3.4.6</div><div class="info-zh">遇到延誤時鎖定原訂報到時間，確保法規基準正確。</div>` }
+        'jz': { 
+            title: '聯管通報 JZ LBO', 
+            text: `<div class="info-ref">B744 Fleet Notification 2024-14</div>
+                   <div class="info-zh">當航班遇有延誤或轉降時，聯管處將以 ACARS 主動提供最後合法計劃後推時間。若客艙組員 FDP limit 較早，則應以先到的時間計算。<br><br>⚠️ 系統將自動與自算 LBO 比對，並嚴格採用兩者中<b>最早 (Earliest)</b> 的時間。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">When Flight was delayed or diverted, JZ will proactively provide latest legally pushback time via ACARS. If FDP limit of cabin crew reaches earlier, the last legal block out time should be based on the earlier FDP limit.</div>` 
+        },
+        'ext': { 
+            title: '延長任務 (Ext. FDT)', 
+            text: `<div class="info-ref">FOM 3.4.3.3 C.</div>
+                   <div class="info-zh">機長裁量權 (Captain's Discretion)。<br>僅限多重派遣 (M)，在遭遇不可抗力之轉降情況下，機長可同意延長最大飛行任務期間不超過 2 小時。單重 (S) 不可使用。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">For multiple crew dispatch only, in the event of diversion due to natural disasters or events beyond control, the PIC may agree to extend the maximum flight duty period for not more than 2 hours.</div>` 
+        },
+        'night': { 
+            title: '夜間航班限制 (Night Ops)', 
+            text: `<div class="info-ref">FOM 3.4.3.5</div>
+                   <div class="info-zh">表定第一段起飛時間介於當地時間 <b>2100L 至 0700L</b> 之間 (不含)。<br>單重、多重與雙重派遣之最大飛行任務期間 (Max FDP) 將自正常限制中扣除 2 小時。系統預設會自動判斷勾選。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Flights scheduled to depart between the hours of 2100L and 0700L (not included). Maximum flight duty period will be reduced 2 hours from the normal limits.</div>` 
+        },
+        'nobunk': { 
+            title: '無睡眠設備 (No Bunk)', 
+            text: `<div class="info-ref">FOM 3.4.3.1 B/C</div>
+                   <div class="info-zh">當機上無適當之睡眠設備 (僅提供商務艙座位等) 時。<br>⚠️ 勾選後，多重 (M) 或雙重 (D) 派遣於連續 24 小時內之最高飛行時間將被下修限制為 <b>12 小時</b>。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">With at least a business class seat whenever a bunk is not available, Max. Flight Time in 24 Consecutive Hours is limited to 12 hours for Multiple/Double Crew.</div>` 
+        },
+        'early': { 
+            title: '連續早班機 (Early Morning)', 
+            text: `<div class="info-ref">FOM 3.4.3.4</div>
+                   <div class="info-zh">起降涵蓋首段出發地當地時間 <b>0200L 至 0500L</b> 之航班。<br>• 連續 2 天執行：下次最低休時強制需達 <b>34 小時</b>。<br>• 連續 3 天執行：最低休時強制需達 <b>54 小時</b>。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Flight duties starting or ending within, or encompassing 0200L-0500L of the first sector departure airport. 2 consecutive days require 34hrs rest; 3 consecutive days require 54hrs rest.</div>` 
+        },
+        'prev': { 
+            title: '前趟飛時 (Prev FT)', 
+            text: `<div class="info-ref">FOM 3.4.3.1 / 24h Rolling</div>
+                   <div class="info-zh">用於檢查「連續 24 小時內」之最大飛行時間限制。<br>輸入前趟航班之抵達時間 (IN Z) 與飛時 (FT)，系統將自動推算與本次任務的 24 小時重疊分鐘數，並計入 FT 總額審核。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Used to ensure compliance with Max. Flight Time in 24 Consecutive Hours. Input the previous flight's arrival time and flight time to calculate overlapping block time.</div>` 
+        },
+        'hotel': { 
+            title: '外站休息 (Hotel / Split)', 
+            text: `<div class="info-ref">FOM 3.4.3.3 A/B</div>
+                   <div class="info-zh">報到後或首段起飛後，若於適當住宿地點獲得連續 <b>3 小時以上</b> 之休息。<br>該休息時間得依規定計入為 Split Duty (首段後) 或放寬最大飛行任務期間 FDP Extension (後續段)。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">After reporting or after commencement of the first sector, if provided 3 or more consecutive hours of rest at an appropriate accommodation, the FDP may be paused or extended by half of the rest period.</div>` 
+        },
+        'report': { 
+            title: '報到時間鎖定 (Report Lock)', 
+            text: `<div class="info-ref">FOM 3.4.6 / Delay</div>
+                   <div class="info-zh">遇到航班<b>「延誤 (Delay)」</b>時使用。點擊鎖定 🔒 可強制系統記住原訂報到時間。<br>⚠️ 往後修改 STD 測試極限時，系統仍會以<b>原報到時間</b>為基準計算，確保絕對合法。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en">Use when flight is delayed. Lock the original reporting time, as the FDP limits must be strictly calculated based on the original scheduled reporting time for regulatory compliance.</div>` 
+        }
     };
 
     function showInfo(key) {
@@ -888,13 +948,21 @@
         document.getElementById('infoBody').innerHTML = data.text;
         document.getElementById('infoModal').classList.add('show');
     }
-    function closeInfo() { document.getElementById('infoModal').classList.remove('show'); }
+    
+    function closeInfo() { 
+        document.getElementById('infoModal').classList.remove('show'); 
+    }
 
+    // --- TOOLBAR TOGGLE & DYNAMIC SUMMARY ---
+    // 工具列收折與動態標籤生成邏輯
     function toggleToolbar() {
         const wrapper = document.getElementById('toolbarWrapper');
         const btn = document.getElementById('headerToggleBtn');
         const isCollapsed = wrapper.classList.toggle('collapsed');
         btn.classList.toggle('collapsed', isCollapsed);
+        
+        // Hide popovers when collapsing to avoid ghost floating UI
+        // 收起工具列時關閉所有氣泡視窗避免殘影
         if(isCollapsed) document.querySelectorAll('.popover').forEach(p => p.classList.remove('show'));
         localStorage.setItem('toolbarCollapsed', isCollapsed);
         refreshConditionsSummary(); 
@@ -903,21 +971,28 @@
     function refreshConditionsSummary() {
         const centerZone = document.getElementById('headerCenterZone');
         if (!centerZone) return;
+        
         const isCollapsed = document.getElementById('toolbarWrapper').classList.contains('collapsed');
-        centerZone.innerHTML = '';
+        centerZone.innerHTML = ''; // Clear existing chips / 清空目前的標籤
+        
+        // Only show chips if toolbar is collapsed / 如果沒有收起工具列，就保持空白
         if (!isCollapsed) return;
 
         const chips = [];
         if (document.getElementById('extFdt').checked) chips.push('Ext FDT');
         if (document.getElementById('nightOps').checked) chips.push('Night');
         if (document.getElementById('noBunk').checked) chips.push('No Bunk');
+        
         const earlyVal = document.getElementById('earlyMorningSel').value;
         if (earlyVal !== '0') chips.push(`Early ${earlyVal}D`);
+        
         const acars = document.getElementById('acarsLbo').value.trim();
         if (acars) chips.push(`JZ ${acars}`);
+        
         const prev = document.getElementById('prevFt').value.trim();
         if (prev && prev !== '0000') chips.push(`Prev ${prev}`);
 
+        // Generate chip HTML elements / 將陣列中的設定轉換為 HTML 的藍色小標籤 (Chips)
         chips.forEach(text => {
             const chip = document.createElement('span');
             chip.className = 'cond-chip';
@@ -926,6 +1001,8 @@
         });
     }
 
+    // === HHMM VALIDATION UX ===
+    // 判斷是否為時間輸入框 / Check if the element is an HHMM input field
     function isHHMMFieldTarget(el) {
         if (!el || el.tagName !== 'INPUT' || el.type !== 'tel' || el.classList.contains('taxi-val') || el.readOnly) return false;
         const id = el.id || '';
@@ -934,7 +1011,9 @@
         return false;
     }
     
+    // 初始化時間自動補零與驗證邏輯 / Initialize Auto-pad zero and validation
     function initHHMMUX() {
+        // Blur event: Auto-pad and validate / 離開輸入框時自動補零與驗證
         document.addEventListener('blur', function(e){
             const el = e.target;
             if (!isHHMMFieldTarget(el)) return;
@@ -943,6 +1022,7 @@
             if (!trimmed) { el.classList.remove('hhmm-invalid', 'hhmm-valid'); return; }
 
             let finalVal = trimmed;
+            // Pad zero if less than 4 digits (e.g. 930 -> 0930) / 若長度不足 4 碼，自動補零
             if (trimmed.length > 0 && trimmed.length < 4) finalVal = trimmed.padStart(4, '0');
             if (before !== finalVal) {
                 el.value = finalVal;
@@ -950,6 +1030,7 @@
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             }
 
+            // Time logic validation (00-23, 00-59) / 檢查時間邏輯是否合理
             const h = parseInt(finalVal.slice(0,2), 10);
             const m = parseInt(finalVal.slice(2,4), 10);
             if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
@@ -959,6 +1040,7 @@
             }
         }, true);
         
+        // Input event: Allow only numbers and max 4 digits / 輸入時限制僅允許數字與最多 4 碼
         document.addEventListener('input', function(e){
             const el = e.target;
             if (!isHHMMFieldTarget(el)) return;
@@ -968,6 +1050,7 @@
         });
     }
 
+    // === CORE LOGIC & STATE ===
     const icaoToIata = {
         'RCTP': 'TPE', 'RCSS': 'TSA', 'RCKH': 'KHH', 'VHHH': 'HKG', 'VMMC': 'MFM',
         'ZSPD': 'PVG', 'ZBAA': 'PEK', 'RJAA': 'NRT', 'RJTT': 'HND', 'RJBB': 'KIX',
@@ -988,13 +1071,23 @@
         { id: 2, code: 'HKG', std: '', stdMode: 'Z', out: '', in: '', sta: '', staMode: 'Z', hotel: false, ci: '', co: '', taxiOut: 15, taxiIn: 15, isDivert: false, isAcm: false },
         { id: 3, code: 'TPE', std: null, stdMode: 'Z', out: null, in: '', sta: '', staMode: 'Z', hotel: false, ci: '', co: '', taxiOut: 15, taxiIn: 15, isDivert: false, isAcm: false }
     ];
+    
+    // 全局狀態物件 (Global App State)
     let app = { 
-        crew: 'S', stations: JSON.parse(JSON.stringify(DEFAULTS)), sfts: ['', ''],
-        lockedReport: null, isLocked: false, nextLegHeavy: false, acarsLbo: '', earlyMorning: '0',
-        _stats: {} // 用於跨函數儲存計算結果，供 Status Strip 讀取
+        crew: 'S', 
+        stations: JSON.parse(JSON.stringify(DEFAULTS)), 
+        sfts: ['', ''],
+        lockedReport: null, 
+        isLocked: false, 
+        nextLegHeavy: false, 
+        acarsLbo: '', 
+        earlyMorning: '0',
+        _stats: {} // Storing calculation results for Status Strip / 用於跨函數儲存計算結果，供 Status Strip 讀取與警告判定
     };
+    
     let savedRoutes = [];
 
+    // IANA 時區對應表 (用於 Local Time 計算 / For Local Time Calculation)
     const airportIanaZones = {
         'TPE': 'Asia/Taipei', 'TSA': 'Asia/Taipei', 'KHH': 'Asia/Taipei', 
         'HKG': 'Asia/Hong_Kong', 'MFM': 'Asia/Macau', 'PVG': 'Asia/Shanghai', 'PEK': 'Asia/Shanghai', 
@@ -1068,8 +1161,15 @@
         let isLocal = false;
         if (app.stations[0] && app.stations[0].stdMode === 'L') isLocal = true;
         btn.innerText = isLocal ? "ALL LOCAL" : "ALL UTC";
-        if(isLocal) { btn.style.color = 'white'; btn.style.background = 'var(--brand-orange)'; btn.style.borderColor = 'var(--brand-orange)'; } 
-        else { btn.style.color = 'var(--brand-blue)'; btn.style.background = 'var(--bg-input)'; btn.style.borderColor = 'var(--border-light)'; }
+        if(isLocal) { 
+            btn.style.color = 'white'; 
+            btn.style.background = 'var(--brand-orange)'; 
+            btn.style.borderColor = 'var(--brand-orange)'; 
+        } else { 
+            btn.style.color = 'var(--brand-blue)'; 
+            btn.style.background = 'var(--bg-input)'; 
+            btn.style.borderColor = 'var(--border-light)'; 
+        }
     }
 
     function calcUtcFromLocal(localHHMM, zone) {
@@ -1077,13 +1177,20 @@
         const h = parseInt(localHHMM.substring(0,2)); const m = parseInt(localHHMM.substring(2,4));
         if(isNaN(h) || isNaN(m)) return '';
         const guessUtc = new Date(refDate); guessUtc.setUTCHours(h, m);
+        
+        // 透過 Intl API 獲取準確的當地時間進行時區偏移計算 / Get exact local offset via Intl API
         const formatLocal = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
         const parts = formatLocal.formatToParts(guessUtc);
         const lh = parseInt(parts.find(p=>p.type==='hour').value); const lm = parseInt(parts.find(p=>p.type==='minute').value);
+        
         let diffMinutes = (lh*60+lm) - (h*60+m);
-        if (diffMinutes > 720) diffMinutes -= 1440; if (diffMinutes < -720) diffMinutes += 1440;
+        if (diffMinutes > 720) diffMinutes -= 1440; 
+        if (diffMinutes < -720) diffMinutes += 1440;
+        
         let totalMins = (h*60+m) - diffMinutes;
-        if (totalMins < 0) totalMins += 1440; if (totalMins >= 1440) totalMins -= 1440;
+        if (totalMins < 0) totalMins += 1440; 
+        if (totalMins >= 1440) totalMins -= 1440;
+        
         return String(Math.floor(totalMins/60)).padStart(2,'0') + String(totalMins%60).padStart(2,'0');
     }
 
@@ -1094,6 +1201,7 @@
         const code = app.stations[i].code.trim().toUpperCase();
         const zone = airportIanaZones[code];
         if (!zone) { el.innerText = ''; return; }
+        
         if (mode === 'L') {
             const utc = calcUtcFromLocal(rawVal, zone);
             el.innerText = `= ${utc.substring(0,2)}:${utc.substring(2,4)}Z`;
@@ -1107,11 +1215,15 @@
         }
     }
 
+    // === DOM DRAWING & RENDERING ===
+    // 繪製動態時間軸主結構 / Render Timeline Structure
     function drawTimeline() {
         const con = document.getElementById('timeline-container');
         let html = '';
         app.stations.forEach((st, i) => {
             const isFirst = i === 0; const isLast = i === app.stations.length - 1;
+            
+            // Render Flight Leg Connector / 繪製航段連接卡 (Flight Leg)
             if (!isFirst) {
                 const sft = app.sfts[i-1] || '';
                 const isAcmLeg = app.stations[i-1].isAcm; 
@@ -1133,9 +1245,12 @@
                     </div>
                 </div>`;
             }
+            
             const cardClass = st.isDivert ? 'station-card station-divert' : 'station-card';
             html += `<div class="station-wrapper"><div class="${cardClass}">`;
             if(!isFirst && !isLast) html += `<div class="btn-del" onclick="remSt(${i})" title="Delete Station">✕</div>`;
+            
+            // Render Station Header / 繪製航站標題與按鈕
             html += `<div class="station-header">
                         <input type="text" id="code-${i}" class="station-code-input" value="${st.code}" onchange="updVal(${i},'code',this.value)">
                         ${!isLast ? `
@@ -1153,6 +1268,7 @@
                         </div>` : ''}
                     </div>`;
 
+            // Render Hotel Block / 繪製飯店休息區塊
             if (!isLast && st.hotel) {
                 html += `
                 <div class="hotel-section">
@@ -1165,6 +1281,7 @@
                 </div>`;
             }
 
+            // Render Arrival Block / 繪製抵達 (IN) 輸入區塊
             if (!isFirst) {
                 const staMode = st.staMode || 'Z';
                 const staDisplay = getDisplayValue(i, 'sta', staMode);
@@ -1187,6 +1304,7 @@
 
             if (!isFirst && !isLast) html += `<div id="turn-${i}" style="text-align:center; font-size:10px; font-weight:bold; color:var(--text-secondary); margin:6px 0; font-family:monospace;">Turn: --:--</div>`;
 
+            // Render Departure Block & LBO / 繪製出發 (OUT) 輸入區塊與 LBO
             if (!isLast) {
                  const stdMode = st.stdMode || 'Z';
                  const stdDisplay = getDisplayValue(i, 'std', stdMode);
@@ -1229,6 +1347,7 @@
         updateResultsOnly(); 
         updateGlobalBtnState();
         
+        // 觸發輸入框屬性初始化 (限制為數字鍵盤) / Ensure tel inputs trigger number pad
         document.querySelectorAll('input[type="tel"]').forEach(el => {
             if (!isHHMMFieldTarget(el)) return;
             el.setAttribute('inputmode', 'numeric'); el.setAttribute('maxlength', '4');
@@ -1290,7 +1409,15 @@
     function saveRoute() {
         const name = document.getElementById('routeName').value.trim();
         if(!name) { alert('Please enter a name'); return; }
-        savedRoutes.push({ name: name, stations: JSON.parse(JSON.stringify(app.stations)), sfts: JSON.parse(JSON.stringify(app.sfts)), crew: app.crew, isNight: document.getElementById('nightOps').checked, isNoBunk: document.getElementById('noBunk').checked, extFdt: document.getElementById('extFdt').checked });
+        savedRoutes.push({ 
+            name: name, 
+            stations: JSON.parse(JSON.stringify(app.stations)), 
+            sfts: JSON.parse(JSON.stringify(app.sfts)), 
+            crew: app.crew, 
+            isNight: document.getElementById('nightOps').checked, 
+            isNoBunk: document.getElementById('noBunk').checked, 
+            extFdt: document.getElementById('extFdt').checked 
+        });
         localStorage.setItem('calSavedRoutes', JSON.stringify(savedRoutes));
         const btn = document.getElementById('saveBtn'); const origText = btn.innerText;
         btn.innerText = "Saved!";
@@ -1378,7 +1505,8 @@
         location.reload(); 
     }
 
-    // 🚀 v5.8.1 智能預測狀態列 UI 更新引擎
+    // 🚀 LEGAL STATUS STRIP UPDATE LOGIC (SMART HUD)
+    // 負責更新「全局狀態列」的智慧引擎
     function refreshLegalStatusStrip() {
         const strip = document.getElementById('legalStatusStrip');
         if (!strip) return;
@@ -1391,23 +1519,28 @@
 
         if (st.isReady) {
             let d_msgs = [];
+            // Alert Check: Any strict limit exceeded / 檢查是否有任何硬性極限超標
             if (st.ldg > 6) d_msgs.push('Ldg > 6');
             if (st.isFtExceeded) d_msgs.push('FT Limit');
             if (st.isFdpExceeded) d_msgs.push('FDP Limit');
-            // 只在「Live tracking 期間內」才報錯現實超時，不會對過去/未來航班報警
+            
+            // Only report Live Duty Exceeded if currently tracking / 僅在執勤窗口內通報現實時間超時
             if (st.isLiveDutyExceeded) d_msgs.push('Live Duty Exceeded');
 
             if (d_msgs.length > 0) {
+                // State: DANGER (Alert)
                 s_state = 'danger';
                 s_text = `Exceeded: ${d_msgs.join(', ')}`;
             } else {
                 let c_msgs = [];
+                // State: CAUTION (Warning thresholds)
                 // 飛時 (FT) 只剩 60 分鐘內觸發 Caution
                 if (st.ftRem >= 0 && st.ftRem <= 60) c_msgs.push(`FT Rem: ${fmt(st.ftRem, false)}`);
                 // 任務期 (FDP) 剩下 90 分鐘內觸發 Caution
                 if (st.fdpRem >= 0 && st.fdpRem <= 90) c_msgs.push(`FDP Rem: ${fmt(st.fdpRem, false)}`);
                 
-                // 🚀 v5.8.1: 現實時間還在執勤中，且距離極限剩下 90 分鐘以內 (僅限合理的現實時間窗)
+                // 現實時間還在執勤中，且距離極限剩下 90 分鐘以內 (僅限合理的現實時間窗)
+                // Live FDP Rem checks if current real time is approaching limits
                 if (st.isLiveTracking && !st.isDutyFinished && st.elapsedSinceRep > 0 && st.rtRem >= 0 && st.rtRem <= 90) {
                     c_msgs.push(`Live FDP Rem: ${Math.floor(st.rtRem)}m`);
                 }
@@ -1416,6 +1549,7 @@
                     s_state = 'caution';
                     s_text = `Approaching Limits: ${c_msgs.join(' · ')}`;
                 } else {
+                    // State: SAFE (Everything normal)
                     s_state = 'safe';
                     s_text = `Legal & In Range · Max FDT ${fmt(st.maxFdpMins, false)}`;
                     if (st.ftRem > 0) s_text += ` · FT Rem ${fmt(st.ftRem, false)}`;
@@ -1429,12 +1563,16 @@
         if (text) text.textContent = s_text;
     }
 
+    // 全局執行計算總和與介面刷新 / Run all calculations and UI refreshes
     function runAllCalc(redraw = false) { 
-        saveData(); updateResultsOnly(); if (redraw) drawTimeline(); 
+        saveData(); 
+        updateResultsOnly(); 
+        if (redraw) drawTimeline(); 
         refreshConditionsSummary(); 
         refreshLegalStatusStrip(); 
     }
     
+    // --- 0. PREVIOUS FLIGHT 24H OVERLAP LOGIC ---
     function calc24hOverlap() {
         const pfDateStr = document.getElementById('pf-date').value; const pfInStr = document.getElementById('pf-in').value; const pfDurStr = document.getElementById('pf-dur').value; const curDateStr = document.getElementById('flightDate').value;
         const s0 = app.stations[0]; const s1 = app.stations[1]; 
@@ -1458,6 +1596,7 @@
         app._stats.isReady = false; 
 
         // --- 1. PRE-CALCULATION & AUTO-DETECT NIGHT OPS ---
+        // 預先計算並自動偵測夜間航班 (先偵測才能正確計算 Max FDP)
         const s1 = parse(app.stations[0].std); 
         const code = app.stations[0].code.trim().toUpperCase(); 
         const dateInput = document.getElementById('flightDate').value; 
@@ -1470,6 +1609,7 @@
                 const stdInfo = getLocalInfo(s1, airportIanaZones[code], refDate);
                 if (stdInfo) {
                     const h = parseInt(stdInfo.timeStr.split(':')[0]); const m = parseInt(stdInfo.timeStr.split(':')[1]);
+                    // Auto toggle Night Ops if STD is between 21:00L and 06:59L
                     const isNightTime = (h > 21 || h < 7) || (h === 21 && m > 0);
                     document.getElementById('nightOps').checked = isNightTime;
                     const offsetSign = stdInfo.offset >= 0 ? '+' : '';
@@ -1479,6 +1619,7 @@
         } else { document.getElementById('loc-time-display').innerText = `STD: --:--`; nightContainer.style.border = "1px solid var(--border-light)"; }
 
         // --- 2. GATHER HOTEL EXTENSIONS ---
+        // 計算飯店休息是否符合 Split Duty 或是 Extension
         let stationLimitExtensions = []; let globalPauseMinutes = 0; 
         app.stations.forEach((s, i) => {
             let extension = 0; let pause = 0;
@@ -1494,6 +1635,7 @@
         });
 
         // --- 3. CALCULATE FDP LIMITS ---
+        // 計算最大飛行任務期間 (Max FDP)
         let base = 14; if(app.crew==='M') base=18; if(app.crew==='D') base=24; 
         const isNight = document.getElementById('nightOps').checked; let lim = isNight ? base - 2 : base;
         const totalExtension = stationLimitExtensions.reduce((a, b) => a + b, 0); const isExt = document.getElementById('extFdt').checked; const discretionMins = isExt ? 120 : 0;
@@ -1504,6 +1646,7 @@
         app._stats.maxFdpMins = globalMaxFdpMins;
 
         // --- 4. CALCULATE TOTALS & ULR ---
+        // 計算總飛時與超長程航班判定
         calcTotals(); 
 
         let totalFtCalc = 0; let isULR = false;
@@ -1526,10 +1669,12 @@
         }
 
         // --- 5. REPORT TIME LOGIC ---
+        // 報到時間計算與鎖定防呆
         let rep = null; let reportOffset = (code==='TPE'?90:60); 
         if (app.isLocked && app.lockedReport !== null) { rep = app.lockedReport; document.getElementById('reportLabel').innerText = "LOCKED"; } 
         else if (s1 !== null) { rep = s1 - reportOffset; if(rep<0) rep+=1440; document.getElementById('reportLabel').innerText = code==='TPE'?"STD-90":"STD-60"; }
 
+        // 如果連基礎資料都沒有，終止後續渲染
         if (rep === null || (!hasAnyStd && !hasAnyInput)) {
             document.getElementById('resReport').innerText="--:--"; 
             if(document.getElementById('resNextRpt')) document.getElementById('resNextRpt').innerHTML = "--:--";
@@ -1540,6 +1685,7 @@
             return; 
         }
 
+        // Data is sufficient to run stats engine / 如果資料足夠，將引擎狀態設為 Ready
         app._stats.isReady = true;
 
         let repHtml = fmt(rep); let rptDate = new Date(refDate);
@@ -1553,10 +1699,12 @@
         rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0); const nowMs = Date.now(); const repMs = rptDate.getTime(); const elapsedSinceRepMins = (nowMs - repMs) / 60000;
         app._stats.elapsedSinceRep = elapsedSinceRepMins;
         
-        // 🚀 V5.8.1: Smart Simulation Detection (Live window is Rep - 12h to MaxFDP + 12h)
+        // 🚀 V5.8.1: Smart Simulation Detection (Live tracking window is Rep - 12h to MaxFDP + 12h)
         // 只有現實時間介於這個範圍內，系統才會啟動 Live Time 現實追蹤警告，完美解決舊資料誤判的問題
         app._stats.isLiveTracking = (elapsedSinceRepMins >= -720 && elapsedSinceRepMins <= (globalMaxFdpMins + 720));
 
+        // --- 6. PROJECTED ELAPSED (FDP Estimation) ---
+        // 計算預期飛行任務進度
         let projectedElapsed = 0;
         if (s1 !== null) {
             let lastProjDepartureElapsed = reportOffset; 
@@ -1574,6 +1722,8 @@
             }
         }
 
+        // --- 7. SOLID BAR ELAPSED (Actual flown) ---
+        // 計算確定已執行的進度，畫出時間軸的實色區塊
         let solidBarElapsed = 0;
         if (s1 !== null) {
             let lastSolid = reportOffset;
@@ -1602,6 +1752,7 @@
         const maxFdtBox = document.getElementById('max-fdt-box-card'); const capMsg = document.getElementById('cap-msg-card'); let effectiveLimit = globalMaxFdpMins;
         let isActExceeded = false; if (estimatedDutyEndTime !== null) { let actualElapsed = estimatedDutyEndTime - rep; if (actualElapsed < 0) actualElapsed += 1440; if (actualElapsed > effectiveLimit) isActExceeded = true; }
 
+        // --- 8. SCHED ELAPSED (Pure Plan) ---
         let schedElapsed = 0;
         if (s1 !== null) {
             let lastSchedDepartureElapsed = reportOffset; 
@@ -1629,18 +1780,21 @@
              }
         }
         
-        // 🚀 V5.8.1 Smart HUD FDP States
+        // 🚀 V5.8.3 Smart HUD FDP States Binding
+        // 綁定動態任務期剩餘資料，交由 Strip 統一判定警告
         app._stats.fdpRem = globalMaxFdpMins - Math.max(projectedElapsed, schedElapsed);
         app._stats.rtRem = globalMaxFdpMins - elapsedSinceRepMins;
         app._stats.isFdpExceeded = isActExceeded && hasAnyInput;
         
-        // 檢查是否已抵達最終站
+        // 檢查是否已抵達最終站 Check if duty is finished
         const lastIn = parse(app.stations[app.stations.length - 1].in);
         app._stats.isDutyFinished = (lastIn !== null);
         
-        // 只有在現實執勤窗口內，才會觸發 Live 警告 (完美解決舊航班誤判問題)
+        // Only trigger live alert if inside the Live Tracking Window / 僅在執勤窗內觸發即時超時警告
         app._stats.isLiveDutyExceeded = (app._stats.isLiveTracking && !app._stats.isDutyFinished && elapsedSinceRepMins > globalMaxFdpMins && hasAnyInput);
 
+        // --- 9. REST PERIOD CALCULATION ---
+        // 法定休時與下次報到計算
         let calculatedRestMins = 0; const lastIdx = app.stations.length - 1;
         if (estimatedDutyEndTime === null) {
             document.getElementById('resNextRpt').innerHTML = "--:--"; document.getElementById('min-rest-lbl').innerText = "Rest: --"; const tag = document.getElementById('ulr-tag'); if(tag) tag.remove();
@@ -1693,6 +1847,7 @@
             document.getElementById('resNextRpt').innerHTML = nextRptHtml;
         }
 
+        // --- 10. LAST BLOCK OUT CALCULATION ---
         calcLBO(rep, globalMaxFdpMins, stationLimitExtensions, globalPauseMinutes);
         
         let landingCount = 0; for(let k=0; k<app.stations.length-1; k++) { if (!app.stations[k].isAcm) landingCount++; }
@@ -1713,6 +1868,7 @@
         }
     }
 
+    // 繪製動態渲染時間軸動畫 / Render the Timeline Minimap Animations
     function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins) {
         const wrapper = document.getElementById('dutyTimelineWrapper'); const content = document.getElementById('dtContent');
         if (rep === null || !maxFdpMins || (schedElapsed === 0 && !hasAnyInput)) {
@@ -1855,7 +2011,7 @@
             if(pEl) { if(std!==null && sta!==null) { let d = diff(std,sta); if (!isAcm) aggPlan += d; pEl.innerText = fmt(d, false); }  else pEl.innerText = "--"; }
             if (sft !== null) { const txOut = app.stations[i].taxiOut !== undefined ? app.stations[i].taxiOut : 15; const txIn = app.stations[i+1].taxiIn !== undefined ? app.stations[i+1].taxiIn : 15; if (!isAcm) aggSched += (sft + txOut + txIn);  }
             
-            // 🚨 V5.7.3 Strict Actual
+            // 🚨 V5.7.3 Strict Actual Logic / 嚴格要求輸入實際時間才計算 Actual
             let ft = 0; const aEl = document.getElementById(`a-${i}`);
             if(out!==null && inc!==null) { 
                 ft = diff(out,inc); 
@@ -1868,7 +2024,7 @@
         
         let maxFt = 600; if (app.crew === 'M') maxFt = noBunk ? 720 : 960; else if (app.crew === 'D') maxFt = noBunk ? 720 : 1080; 
         
-        // 🚀 V5.8.0 Smart HUD FT States
+        // 🚀 V5.8.0 Smart HUD FT States / 計算飛時剩餘量供狀態列讀取
         app._stats.ftRem = maxFt - Math.max(totalActWithPrev, aggSched, aggPlan);
         app._stats.isFtExceeded = (totalActWithPrev > maxFt && totalAct > 0);
 
@@ -1949,6 +2105,7 @@
         }
     }
 
+    // === UTILITY FUNCTIONS ===
     function calcRest(ci, co) { const i = parse(ci); const o = parse(co); if(i === null || o === null) return 0; let diff = o - i; if(diff < 0) diff += 1440; return diff; }
     function parse(v) { if(!v) return null; let c=v.replace(/\D/g,''); if(c.length===0) return null; while(c.length<4) c='0'+c; return parseInt(c.substring(0,2))*60 + parseInt(c.substring(2,4)); }
     function fmt(m, mod=true) { while(m<0) m+=1440; let h=Math.floor(m/60), n=m%60; if(mod) h%=24; return `${String(h).padStart(2,'0')}:${String(n).padStart(2,'0')}`; }
@@ -1966,6 +2123,7 @@
         } catch (e) { return null; }
     }
       
+    // === PERSISTENCE & INITIALIZATION ===
     function saveData() {
         const data = {
             stations: app.stations, sfts: app.sfts, crew: app.crew, 
@@ -1984,10 +2142,11 @@
         const isSegment = e.target.closest('.dt-segment');
         if (!isSegment) { document.querySelectorAll('.dt-segment').forEach(s => s.classList.remove('selected')); const infoBar = document.getElementById('dtSegmentInfo'); if(infoBar) infoBar.style.opacity = 0; }
     };
+    
     window.addEventListener('click', hideGlobalElements);
     window.addEventListener('touchstart', hideGlobalElements, {passive: true});
 
-    // 每 60 秒背景更新一次，驅動 Live Time 檢查
+    // 每 60 秒背景更新一次，驅動 Live Time 檢查 / 60s Background Update Loop for Live tracking
     setInterval(() => { if(app.stations[0].std) runAllCalc(false); }, 60000); 
 
     window.onload = () => { 
