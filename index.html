@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.2.3)</title>
+    <title>CAL Duty (Pro v6.4.1)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -435,6 +435,43 @@
         .stat-alert { background: var(--danger-bg-soft) !important; border-color: color-mix(in srgb, var(--semantic-danger) 45%, var(--border-light) 55%) !important; opacity: 1 !important; transform: scale(1) !important;}
         .stat-alert .stat-value { color: var(--semantic-danger); }
 
+        /* 🚀 NEW: Guided Input Focus (Enhanced & Cross-Browser) */
+        @-webkit-keyframes pulseFocus {
+            0% { -webkit-box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.7); border-color: var(--brand-blue); }
+            70% { -webkit-box-shadow: 0 0 0 8px rgba(0, 122, 255, 0); border-color: color-mix(in srgb, var(--brand-blue) 60%, transparent); }
+            100% { -webkit-box-shadow: 0 0 0 0 rgba(0, 122, 255, 0); border-color: var(--brand-blue); }
+        }
+        @keyframes pulseFocus {
+            0% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.7); border-color: var(--brand-blue); }
+            70% { box-shadow: 0 0 0 8px rgba(0, 122, 255, 0); border-color: color-mix(in srgb, var(--brand-blue) 60%, transparent); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0); border-color: var(--brand-blue); }
+        }
+        .guided-focus {
+            -webkit-animation: pulseFocus 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+            animation: pulseFocus 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+            border-width: 2px !important;
+            border-color: var(--brand-blue) !important;
+            background-color: var(--bg-accent) !important;
+            z-index: 10;
+        }
+        
+        @-webkit-keyframes pulseFocusDark {
+            0% { -webkit-box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.8); border-color: #60a5fa; }
+            70% { -webkit-box-shadow: 0 0 0 8px rgba(96, 165, 250, 0); border-color: color-mix(in srgb, #60a5fa 60%, transparent); }
+            100% { -webkit-box-shadow: 0 0 0 0 rgba(96, 165, 250, 0); border-color: #60a5fa; }
+        }
+        @keyframes pulseFocusDark {
+            0% { box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.8); border-color: #60a5fa; }
+            70% { box-shadow: 0 0 0 8px rgba(96, 165, 250, 0); border-color: color-mix(in srgb, #60a5fa 60%, transparent); }
+            100% { box-shadow: 0 0 0 0 rgba(96, 165, 250, 0); border-color: #60a5fa; }
+        }
+        body.dark-mode .guided-focus {
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            border-color: #60a5fa !important;
+            -webkit-animation: pulseFocusDark 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+            animation: pulseFocusDark 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+        }
+
         /* === TIMELINE MINIMAP === */
         .duty-timeline-wrapper {
             position: relative;
@@ -494,18 +531,19 @@
         #timeline-container {
             position: relative; flex: 1; min-height: 0; width: 100%; z-index: 85; display: flex; overflow-x: auto;
             overflow-y: hidden !important; scroll-snap-type: x mandatory; padding: 16px 16px 65px 16px; gap: 0; scrollbar-width: none;
-            -ms-overflow-style: none; align-items: flex-start; overscroll-behavior-y: none; overscroll-behavior-x: auto;
+            -ms-overflow-style: none; align-items: center; overscroll-behavior-y: none; overscroll-behavior-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         #timeline-container::-webkit-scrollbar { display: none; }
-        .station-wrapper { scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; margin-top: auto; margin-bottom: auto; }
-        .leg-connector { display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0; margin-top: auto; margin-bottom: auto; }
+        .station-wrapper { scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; }
+        .leg-connector { display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0; }
         
         /* 🚀 NEW: END OF DUTY CARD STYLES */
-        .end-connector { display: flex; align-items: center; justify-content: center; width: 80px; position: relative; z-index: 1; flex-shrink: 0; margin-top: auto; margin-bottom: auto; }
+        .end-connector { display: flex; align-items: center; justify-content: center; width: 80px; position: relative; z-index: 1; flex-shrink: 0; }
         .end-connector .flight-line { height: 0; width: 100%; border-top: 2px dashed var(--brand-blue); background: transparent; position: absolute; top: 50%; left: 0; transform: translateY(-50%); opacity: 0.6;}
         .end-connector .end-icon { position: absolute; background: var(--bg-app); padding: 4px; font-size: 16px; border-radius: 50%; z-index: 2; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px var(--bg-app); }
         
-        .end-duty-wrapper { scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; margin-top: auto; margin-bottom: auto; }
+        .end-duty-wrapper { scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; }
         .end-duty-card { background: var(--bg-accent); border: 2px solid var(--brand-blue); border-radius: var(--radius-lg); width: 280px; padding: 16px; position: relative; z-index: 2; display:flex; flex-direction:column; gap:10px; align-items:center; text-align:center; transition: all 0.3s ease; box-shadow: var(--shadow-md);}
         body.dark-mode .end-duty-card { background: rgba(59, 130, 246, 0.05); }
         .end-duty-title { font-size: 12px; font-weight: 800; color: var(--brand-blue); text-transform: uppercase; letter-spacing: 0.5px;}
@@ -664,7 +702,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.2.3 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.4.2 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -917,16 +955,16 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.2.4 智慧字典反向判定 (Smart Dictionary Inverse Check)</b><br>• <b>自動辨識所有地面任務</b>：捨棄傳統的關鍵字比對，改用「機場資料庫反向判定」。只要輸入的代碼<b>不在系統機場庫內</b>，一律自動判定為地面任務（帶入 -0m 報到）。此設計能完美涵蓋未來任何新增的上課、開會或體檢代碼！</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.2.4 Smart Dictionary Inverse Check</b><br>• Switched to inverse database checking. Any code not found in the recognized airport list is automatically treated as a Ground Duty (0m offset), making it future-proof for any unlisted duty codes.</div>
+            text: `<div class="info-zh"><b>v6.4.2 引導光環強化 (Enhanced Guided Focus)</b><br>• <b>視覺衝擊提升</b>：加強了引導輸入的脈衝光暈（加粗邊框與更廣的擴散半徑），讓下一個必填欄位更醒目。<br>• <b>跨平台相容</b>：新增 Safari WebKit 專屬動畫支援，確保在 iPad/iOS 的 Safari 與 Chrome 上皆能完美順暢呈現呼吸燈效果。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.4.2 Enhanced Guided Focus</b><br>• Strengthened the visual impact of the pulse animation and added full WebKit support for iOS Safari and Chrome.</div>
                    <div class="info-divider"></div>
                    <details class="changelog-details">
                        <summary class="changelog-summary">查看歷史版本 (Previous Versions) ▼</summary>
                        <div class="info-zh" style="margin-top:8px; font-size:12px; line-height:1.6;">
-                           <b>v6.2.3 地面任務代碼擴充</b><br>• 新增對 MIT, SEP 等代碼的辨識能力。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.2.2 情境感知時差掃描</b><br>• 僅當時差≥6h才顯示48H選項；全自動豁免判定。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.2.1 智慧出發地繼承</b><br>• 自動隱藏無效選項；智慧判定報到前置量。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.2.0 長程線自動豁免引擎</b><br>• 自動鎖定 48H 且支援時差 ≤3h 自動豁免。
+                           <b>v6.4.1 Safari 相容性修復</b><br>• 修復 iOS/macOS Safari 瀏覽器專屬的 Flexbox 高度崩塌問題。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.4.0 智慧引導輸入</b><br>• 視覺脈衝引導填寫；支援智慧捷徑 (Smart Bypass)。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.3.0 智慧機上輪休計算</b><br>• 航段卡新增輪休預估，支援 M/D Crew 動態雙重計算。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.2.4 智慧字典反向判定</b><br>• 自動將非機場代碼識別為地面任務 (-0m)。
                        </div>
                    </details>`
         },
@@ -1396,6 +1434,9 @@
                         <div class="flex justify-between text-xs font-bold text-primary">
                             <span>Act</span> <span id="a-${i-1}" class="font-mono" style="color:var(--brand-blue);">--</span>
                         </div>
+                        <div id="rb-${i-1}" style="font-size:10px; font-weight:800; color:var(--brand-purple); margin-top:4px; display:none; background:rgba(175,82,222,0.1); border-radius:4px; padding:2px 0;">
+                            💤 --:--
+                        </div>
                     </div>
                 </div>`;
             }
@@ -1445,7 +1486,7 @@
                                 </div>
                                 <input type="tel" class="glass-input" id="in-${i}" placeholder="ACT IN" value="${st.in||''}" oninput="updVal(${i},'in',this.value)" style="border-color:var(--brand-blue);">
                                 <div class="smart-input-wrapper">
-                                    <input type="tel" class="glass-input" placeholder="STA" value="${staDisplay}" oninput="handleSmartInput(${i}, 'sta', this.value)" onfocus="updateGhostText(${i}, 'sta', this.value)" onblur="document.getElementById('sta-ghost-${i}').innerText=''">
+                                    <input type="tel" id="sta-${i}" class="glass-input" placeholder="STA" value="${staDisplay}" oninput="handleSmartInput(${i}, 'sta', this.value)" onfocus="updateGhostText(${i}, 'sta', this.value)" onblur="document.getElementById('sta-ghost-${i}').innerText=''">
                                     <div class="mode-badge ${staMode==='L'?'mode-l':'mode-z'}" onclick="toggleInputMode(${i}, 'sta')">${staMode}</div>
                                     <div id="sta-ghost-${i}" class="ghost-text"></div>
                                 </div>
@@ -1462,7 +1503,7 @@
                             <span class="input-label">Departure (OUT)</span>
                             <div class="time-input-row">
                                 <div class="smart-input-wrapper">
-                                    <input type="tel" class="glass-input" placeholder="STD" value="${stdDisplay}" oninput="handleSmartInput(${i}, 'std', this.value)" onfocus="updateGhostText(${i}, 'std', this.value)" onblur="document.getElementById('std-ghost-${i}').innerText=''">
+                                    <input type="tel" id="std-${i}" class="glass-input" placeholder="STD" value="${stdDisplay}" oninput="handleSmartInput(${i}, 'std', this.value)" onfocus="updateGhostText(${i}, 'std', this.value)" onblur="document.getElementById('std-ghost-${i}').innerText=''">
                                     <div class="mode-badge ${stdMode==='L'?'mode-l':'mode-z'}" onclick="toggleInputMode(${i}, 'std')">${stdMode}</div>
                                     <div id="std-ghost-${i}" class="ghost-text"></div>
                                 </div>
@@ -1786,6 +1827,50 @@
         if (redraw) drawTimeline(); 
         refreshConditionsSummary(); 
         refreshLegalStatusStrip(); 
+        updateGuidedFocus(); // 🚀 Trigger Guided Focus
+    }
+
+    // 🚀 NEW: Smart Guided Input Focus Logic
+    function updateGuidedFocus() {
+        document.querySelectorAll('.guided-focus').forEach(el => el.classList.remove('guided-focus'));
+
+        let targetId = null;
+
+        // Check if execution has started (Smart Bypass condition)
+        let executionStarted = false;
+        for (let i = 0; i < app.stations.length - 1; i++) {
+            if (app.sfts[i] || app.stations[i].out || app.stations[i+1].in) { 
+                executionStarted = true; break; 
+            }
+        }
+
+        // 1. Plan Phase (STD -> STA -> STD...)
+        for (let i = 0; i < app.stations.length; i++) {
+            if (i > 0 && !app.stations[i].sta) { targetId = `sta-${i}`; break; }
+            if (i < app.stations.length - 1 && !app.stations[i].std) { targetId = `std-${i}`; break; }
+        }
+
+        // 2. Next Duty Phase (Only guide if execution hasn't started)
+        if (!targetId && !executionStarted) {
+            if (!app.nextDuty.code) { targetId = 'nd-code'; }
+            else if (!app.nextDuty.date) { targetId = 'nd-date'; }
+            else if (!app.nextDuty.time) { targetId = 'nd-time'; }
+        }
+
+        // 3. Execution Phase (FT -> ACT OUT -> ACT IN)
+        if (!targetId) {
+            for (let i = 0; i < app.stations.length - 1; i++) {
+                if (!app.sfts[i]) { targetId = `sft-${i}`; break; }
+                if (!app.stations[i].out) { targetId = `out-${i}`; break; }
+                if (!app.stations[i+1].in) { targetId = `in-${i+1}`; break; }
+            }
+        }
+
+        // Apply visual guidance
+        if (targetId) {
+            const el = document.getElementById(targetId);
+            if (el) el.classList.add('guided-focus');
+        }
     }
     
     function calc24hOverlap() {
@@ -2365,6 +2450,50 @@
             } else { 
                 if(aEl) aEl.innerText = "--"; 
             }
+            
+            // --- NEW: In-flight Rest Break Calculation (機上輪休計算) ---
+            const rbEl = document.getElementById(`rb-${i}`);
+            if (rbEl) {
+                if (!isAcm && (app.crew === 'M' || app.crew === 'D')) {
+                    let restMins = 0;
+                    let isAct = false;
+                    let isValid = false;
+
+                    if (sft !== null) { 
+                        // Using FT (Actual Flight Time)
+                        // Formula: (FT - 01:15) / crew_divisor
+                        let base = Math.max(0, sft - 75);
+                        restMins = Math.floor(base / (app.crew === 'M' ? 3 : 2));
+                        isAct = true;
+                        isValid = true;
+                    } else if (std !== null && sta !== null) { 
+                        // Using Plan (Block Time)
+                        // Formula: (Plan - 00:30 - 01:15) / crew_divisor
+                        let planMins = diff(std, sta);
+                        let base = Math.max(0, planMins - 105);
+                        restMins = Math.floor(base / (app.crew === 'M' ? 3 : 2));
+                        isValid = true;
+                    }
+
+                    if (isValid && restMins > 0) {
+                        rbEl.style.display = 'block';
+                        rbEl.innerText = `💤 ${fmt(restMins, false)}`;
+                        if (isAct) {
+                            rbEl.style.color = 'var(--brand-blue)';
+                            rbEl.style.background = 'rgba(0,122,255,0.1)';
+                            rbEl.title = "Rest based on FT";
+                        } else {
+                            rbEl.style.color = 'var(--brand-purple)';
+                            rbEl.style.background = 'rgba(175,82,222,0.1)';
+                            rbEl.title = "Rest based on Plan";
+                        }
+                    } else {
+                        rbEl.style.display = 'none';
+                    }
+                } else {
+                    rbEl.style.display = 'none';
+                }
+            }
         }
         
         let maxFt = 600; if (app.crew === 'M') maxFt = noBunk ? 720 : 960; else if (app.crew === 'D') maxFt = noBunk ? 720 : 1080; 
@@ -2543,6 +2672,7 @@
         setCrew(savedCrew);
         initHHMMUX();
         drawTimeline(); 
+        updateGuidedFocus(); // Initialize focus on load
     };
 </script>
 </body>
