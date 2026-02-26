@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v5.8.3)</title>
+    <title>CAL Duty (Pro v6.0.0)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -499,6 +499,30 @@
         #timeline-container::-webkit-scrollbar { display: none; }
         .station-wrapper { scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; margin-top: auto; margin-bottom: auto; }
         .leg-connector { display: flex; align-items: center; justify-content: center; width: 140px; position: relative; z-index: 1; flex-shrink: 0; margin-top: auto; margin-bottom: auto; }
+        
+        /* 🚀 NEW: END OF DUTY CARD STYLES */
+        .end-connector { display: flex; align-items: center; justify-content: center; width: 80px; position: relative; z-index: 1; flex-shrink: 0; margin-top: auto; margin-bottom: auto; }
+        .end-connector .flight-line { height: 0; width: 100%; border-top: 2px dashed var(--brand-blue); background: transparent; position: absolute; top: 50%; left: 0; transform: translateY(-50%); opacity: 0.6;}
+        .end-connector .end-icon { position: absolute; background: var(--bg-app); padding: 4px; font-size: 16px; border-radius: 50%; z-index: 2; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px var(--bg-app); }
+        
+        .end-duty-wrapper { scroll-snap-align: center; flex-shrink: 0; display: flex; align-items: center; margin-top: auto; margin-bottom: auto; }
+        .end-duty-card { background: var(--bg-accent); border: 2px solid var(--brand-blue); border-radius: var(--radius-lg); width: 280px; padding: 16px; position: relative; z-index: 2; display:flex; flex-direction:column; gap:10px; align-items:center; text-align:center; transition: all 0.3s ease; box-shadow: var(--shadow-md);}
+        body.dark-mode .end-duty-card { background: rgba(59, 130, 246, 0.05); }
+        .end-duty-title { font-size: 12px; font-weight: 800; color: var(--brand-blue); text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        /* New sleek layout */
+        .ed-status-row { display: flex; justify-content: center; gap: 24px; width: 100%; font-size: 11px; color: var(--text-secondary); }
+        .ed-status-item { display: flex; flex-direction: column; align-items: center; }
+        .ed-status-item strong { font-size: 16px; color: var(--text-primary); font-family: "SF Mono", monospace; margin-top: 2px;}
+        .ed-legal-rpt { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 10px; padding: 10px; width: 100%; box-shadow: var(--shadow-sm); margin-top: 2px;}
+        .ed-legal-title { font-size: 10px; font-weight: 800; color: var(--text-tertiary); display: block; margin-bottom: 4px; }
+        .ed-rpt-time { font-size: 22px; font-weight: 800; color: var(--brand-blue); font-family: "SF Mono", monospace; line-height: 1; display: flex; align-items: baseline; justify-content: center;}
+        #ed-report-z { font-size: 12px; color: var(--text-secondary); font-weight: 600; margin-left:4px; }
+        .ed-planner-form { background: var(--bg-input); border-radius: 10px; padding: 10px; width: 100%; border: 1px dashed var(--border-light); display: flex; flex-direction: column; gap: 8px;}
+        .ed-input-row { display: flex; gap: 8px; align-items: center; width: 100%; }
+        .ed-offset-badge { font-size: 10px; font-weight: 800; color: var(--brand-purple); background: rgba(175, 82, 222, 0.1); padding: 0 8px; border-radius: 6px; white-space: nowrap; height: 30px; display: flex; align-items: center; border: 1px solid rgba(175, 82, 222, 0.2); }
+        .ed-warn-badge { margin-top:4px; font-size:11px; font-weight:bold; color:white; background:var(--brand-red); padding:6px 12px; border-radius:8px; display:none; width: 100%; text-align: center; box-shadow: 0 4px 12px rgba(255,59,48,0.3);}
+
         .station-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 280px; padding: 16px; box-shadow: var(--shadow-md); position: relative; z-index: 2; transition: transform 0.2s, width 0.3s; }
         .station-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
         .station-code-input { font-size: 24px; font-weight: 800; color: var(--text-primary); background: transparent; text-transform: uppercase; width: 80px; padding: 0; }
@@ -582,6 +606,11 @@
         .info-en { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; letter-spacing: 0.01em; }
         .info-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
 
+        /* Changelog Accordion */
+        .changelog-details { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 8px; padding: 10px; margin-top: 12px; transition: all 0.3s ease;}
+        .changelog-summary { cursor: pointer; font-size: 12px; font-weight: 800; color: var(--brand-blue); outline: none; user-select: none; }
+        .changelog-summary::-webkit-details-marker { display: none; }
+
         /* 🚨 RESPONSIVE RESET */
         @media screen and (max-width: 820px) and (orientation: portrait), 
                screen and (max-height: 600px) and (orientation: landscape) {
@@ -596,6 +625,13 @@
             #timeline-container { flex-direction: column; align-items: center; padding-top: 24px;} 
             .leg-connector { width: 100%; height: 110px; flex-direction: column; margin-top: 0; }
             .flight-line { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); }
+            
+            /* End Card Vertical Adjustment */
+            .end-connector { width: 100%; height: 60px; flex-direction: column; margin-top: 0; }
+            .end-connector .flight-line { width: 0; height: 100%; border-top: none; border-left: 2px dashed var(--brand-blue); top: 0; left: 50%; transform: translateX(-50%); }
+            .end-duty-wrapper { width: 100%; justify-content: center; margin-bottom: 24px;}
+            .end-duty-card { width: 92%; max-width: 380px; }
+
             .stats-dashboard { grid-template-columns: 1fr 1fr; }
             .station-wrapper { width: 100%; justify-content: center; }
             .station-card { width: 92%; max-width: 380px; }
@@ -629,7 +665,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v5.8.3 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.0.0 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -861,7 +897,10 @@
                 <span class="hud-sub">Max: 6</span>
             </div>
             <div class="hud-item">
-                <span class="hud-label">Next Rpt</span>
+                <span class="hud-label">
+                    Next Rpt
+                    <span class="info-icon" style="margin-left: 4px;" onclick="showInfo('nextRpt')">i</span>
+                </span>
                 <span id="resNextRpt" class="hud-value text-lg">--:--</span>
                 <div class="hud-sub" style="justify-content:center; width:100%;">
                     <span id="min-rest-lbl">Rest: --</span>
@@ -879,9 +918,26 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v5.8.3 雙語註解完整還原版 (Bilingual Restored)</b><br>• 📝 <b>解除極限壓縮 (Unminified)</b>：恢復被移除的結構化註解與雙語說明。<br>• 🔮 <b>動態執勤窗 (Live Tracking Window)</b>：僅在「報到前 12h ~ 極限後 12h」內啟動即時追蹤，完美支援模擬試算。<br>• 📐 <b>嚴格 Actual 邏輯 (Strict Actuals)</b>：未輸入真實時間不顯示預估值。</div>
+            text: `<div class="info-zh"><b>v6.0.0 里程碑更新 (Milestone Update)</b><br>• <b>排班體驗優化</b>：計畫任務時間欄位標示由 Start 改為更直覺的 <code>STD</code>。<br>• <b>歷史紀錄收折</b>：更新日誌支援收折，保留前五版重要演進軌跡。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.0.0 Milestone Update</b><br>• Input placeholder updated to 'STD'.<br>• Added collapsible history for previous 5 versions.</div>
                    <div class="info-divider"></div>
-                   <div class="info-en"><b>v5.8.3 Bilingual Restored Edition</b><br>• Restored bilingual comments and unminified code structure for better maintainability.<br>• Live Tracking Window added to prevent false alerts on simulated past/future flights.<br>• Strict Actual logic applied to prevent estimation leakages into actual flight times.</div>`
+                   <details class="changelog-details">
+                       <summary class="changelog-summary">查看歷史版本 (Previous Versions) ▼</summary>
+                       <div class="info-zh" style="margin-top:8px; font-size:12px; line-height:1.6;">
+                           <b>v5.8.8 智慧代碼辨識 & 美型排班卡</b><br>• 自動報到判定 (TPE-90m/外站-60m/SIM-0m) 與卡片分層設計。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v5.8.7 局部更新架構 & 警告強化</b><br>• 導入防斷尾機制；新增 ⚠️ 休時不足 警告標示。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v5.8.6 主動適法性預排</b><br>• 互動式預排功能上線，自動精算休時差額。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v5.8.5 時間軸終點定錨</b><br>• 新增 NEXT DUTY 卡片，具象化「報退與休時」流程。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v5.8.4 下次報到時區邏輯</b><br>• 釐清 Next Rpt 適用於任何職務，統一顯示最後落地的 Local Time。
+                       </div>
+                   </details>`
+        },
+        'nextRpt': {
+            title: '下次合法報到 (Next Report)',
+            text: `<div class="info-ref">FOM 3.4.1 (H)(L) & 3.4.3.1</div>
+                   <div class="info-zh"><b>休時規定適用於「任何職務」</b><br>依據 FOM 3.4.1 定義，Duty 包含飛行、訓練(如模擬機)、開會等。休時 (Rest Period) 意即「解除一切職務」。<br><br>系統計算的休息時間，是根據您剛完成的「前趟飛行」來決定。您必須休滿這段時間，才能開始下一個任務（不限於飛行）。<br><br>⚠️ 註：由於您落地後人處於該地，因此系統統一顯示您<b>最後一站降落地的 Local Time</b>，不再印出特定機場代碼。</div>
+                   <div class="info-divider"></div>
+                   <div class="info-en"><b>Rest applies to ANY Duty</b><br>The required Rest Period determined by the preceding flight duty must be completed before starting ANY subsequent duty (including Simulator or meetings). The displayed time is the earliest legal report time in the local timezone of your last arrival station.</div>`
         },
         'jz': { 
             title: '聯管通報 JZ LBO', 
@@ -954,15 +1010,12 @@
     }
 
     // --- TOOLBAR TOGGLE & DYNAMIC SUMMARY ---
-    // 工具列收折與動態標籤生成邏輯
     function toggleToolbar() {
         const wrapper = document.getElementById('toolbarWrapper');
         const btn = document.getElementById('headerToggleBtn');
         const isCollapsed = wrapper.classList.toggle('collapsed');
         btn.classList.toggle('collapsed', isCollapsed);
         
-        // Hide popovers when collapsing to avoid ghost floating UI
-        // 收起工具列時關閉所有氣泡視窗避免殘影
         if(isCollapsed) document.querySelectorAll('.popover').forEach(p => p.classList.remove('show'));
         localStorage.setItem('toolbarCollapsed', isCollapsed);
         refreshConditionsSummary(); 
@@ -973,9 +1026,7 @@
         if (!centerZone) return;
         
         const isCollapsed = document.getElementById('toolbarWrapper').classList.contains('collapsed');
-        centerZone.innerHTML = ''; // Clear existing chips / 清空目前的標籤
-        
-        // Only show chips if toolbar is collapsed / 如果沒有收起工具列，就保持空白
+        centerZone.innerHTML = ''; 
         if (!isCollapsed) return;
 
         const chips = [];
@@ -992,7 +1043,6 @@
         const prev = document.getElementById('prevFt').value.trim();
         if (prev && prev !== '0000') chips.push(`Prev ${prev}`);
 
-        // Generate chip HTML elements / 將陣列中的設定轉換為 HTML 的藍色小標籤 (Chips)
         chips.forEach(text => {
             const chip = document.createElement('span');
             chip.className = 'cond-chip';
@@ -1002,18 +1052,15 @@
     }
 
     // === HHMM VALIDATION UX ===
-    // 判斷是否為時間輸入框 / Check if the element is an HHMM input field
     function isHHMMFieldTarget(el) {
         if (!el || el.tagName !== 'INPUT' || el.type !== 'tel' || el.classList.contains('taxi-val') || el.readOnly) return false;
         const id = el.id || '';
-        if (['acarsLbo', 'pf-in', 'pf-dur'].includes(id)) return true;
+        if (['acarsLbo', 'pf-in', 'pf-dur', 'nd-time'].includes(id)) return true;
         if (/^(in|out|ci|co)-\d+$/.test(id)) return true;
         return false;
     }
     
-    // 初始化時間自動補零與驗證邏輯 / Initialize Auto-pad zero and validation
     function initHHMMUX() {
-        // Blur event: Auto-pad and validate / 離開輸入框時自動補零與驗證
         document.addEventListener('blur', function(e){
             const el = e.target;
             if (!isHHMMFieldTarget(el)) return;
@@ -1022,7 +1069,6 @@
             if (!trimmed) { el.classList.remove('hhmm-invalid', 'hhmm-valid'); return; }
 
             let finalVal = trimmed;
-            // Pad zero if less than 4 digits (e.g. 930 -> 0930) / 若長度不足 4 碼，自動補零
             if (trimmed.length > 0 && trimmed.length < 4) finalVal = trimmed.padStart(4, '0');
             if (before !== finalVal) {
                 el.value = finalVal;
@@ -1030,7 +1076,6 @@
                 el.dispatchEvent(new Event('change', { bubbles: true }));
             }
 
-            // Time logic validation (00-23, 00-59) / 檢查時間邏輯是否合理
             const h = parseInt(finalVal.slice(0,2), 10);
             const m = parseInt(finalVal.slice(2,4), 10);
             if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
@@ -1040,7 +1085,6 @@
             }
         }, true);
         
-        // Input event: Allow only numbers and max 4 digits / 輸入時限制僅允許數字與最多 4 碼
         document.addEventListener('input', function(e){
             const el = e.target;
             if (!isHHMMFieldTarget(el)) return;
@@ -1082,12 +1126,17 @@
         nextLegHeavy: false, 
         acarsLbo: '', 
         earlyMorning: '0',
-        _stats: {} // Storing calculation results for Status Strip / 用於跨函數儲存計算結果，供 Status Strip 讀取與警告判定
+        nextDuty: { code: '', date: '', time: '', timeMode: 'Z', offset: 0 },
+        _stats: {
+            fdpExcessMins: 0,
+            ftExcessMins: 0,
+            restShortMins: 0
+        } 
     };
     
     let savedRoutes = [];
 
-    // IANA 時區對應表 (用於 Local Time 計算 / For Local Time Calculation)
+    // IANA 時區對應表
     const airportIanaZones = {
         'TPE': 'Asia/Taipei', 'TSA': 'Asia/Taipei', 'KHH': 'Asia/Taipei', 
         'HKG': 'Asia/Hong_Kong', 'MFM': 'Asia/Macau', 'PVG': 'Asia/Shanghai', 'PEK': 'Asia/Shanghai', 
@@ -1124,6 +1173,21 @@
         return info ? info.timeStr.replace(':','') : utcVal;
     }
 
+    function getNdDisplayValue() {
+        const utcVal = app.nextDuty.time;
+        if (!utcVal) return '';
+        if (app.nextDuty.timeMode === 'Z') return utcVal;
+        
+        const destCode = app.stations[app.stations.length-1].code.trim().toUpperCase();
+        const zone = airportIanaZones[destCode];
+        if (!zone) return utcVal;
+        
+        const refDateStr = app.nextDuty.date || document.getElementById('flightDate').value;
+        const refDate = getUtcDate(refDateStr) || new Date();
+        const info = getLocalInfo(parse(utcVal), zone, refDate);
+        return info ? info.timeStr.replace(':','') : utcVal;
+    }
+
     function handleSmartInput(i, field, rawVal) {
         const mode = app.stations[i][field + 'Mode'] || 'Z';
         if (mode === 'Z') {
@@ -1132,7 +1196,7 @@
             const code = app.stations[i].code.trim().toUpperCase();
             const zone = airportIanaZones[code];
             if (zone && rawVal.length === 4) {
-                const calculatedUtc = calcUtcFromLocal(rawVal, zone);
+                const calculatedUtc = calcUtcFromLocal(rawVal, zone, null);
                 app.stations[i][field] = calculatedUtc;
             } else { if(rawVal.length === 0) app.stations[i][field] = ''; }
         }
@@ -1172,13 +1236,13 @@
         }
     }
 
-    function calcUtcFromLocal(localHHMM, zone) {
-        const refDate = getUtcDate(document.getElementById('flightDate').value) || new Date();
+    function calcUtcFromLocal(localHHMM, zone, customDateStr) {
+        const dateStr = customDateStr || document.getElementById('flightDate').value;
+        const refDate = getUtcDate(dateStr) || new Date();
         const h = parseInt(localHHMM.substring(0,2)); const m = parseInt(localHHMM.substring(2,4));
         if(isNaN(h) || isNaN(m)) return '';
         const guessUtc = new Date(refDate); guessUtc.setUTCHours(h, m);
         
-        // 透過 Intl API 獲取準確的當地時間進行時區偏移計算 / Get exact local offset via Intl API
         const formatLocal = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
         const parts = formatLocal.formatToParts(guessUtc);
         const lh = parseInt(parts.find(p=>p.type==='hour').value); const lm = parseInt(parts.find(p=>p.type==='minute').value);
@@ -1203,7 +1267,7 @@
         if (!zone) { el.innerText = ''; return; }
         
         if (mode === 'L') {
-            const utc = calcUtcFromLocal(rawVal, zone);
+            const utc = calcUtcFromLocal(rawVal, zone, null);
             el.innerText = `= ${utc.substring(0,2)}:${utc.substring(2,4)}Z`;
         } else {
             const refDate = getUtcDate(document.getElementById('flightDate').value) || new Date();
@@ -1215,15 +1279,84 @@
         }
     }
 
+    // === NEXT DUTY SPECIFIC LOGIC ===
+    function toggleNdMode() {
+        const current = app.nextDuty.timeMode || 'Z';
+        app.nextDuty.timeMode = (current === 'Z') ? 'L' : 'Z';
+        saveData(); drawTimeline(); 
+    }
+    
+    function updNd(field, val) {
+        app.nextDuty[field] = val;
+        saveData(); runAllCalc(false);
+    }
+
+    function updNdCode(val) {
+        let code = val.toUpperCase().trim();
+        if (code.length === 4 && icaoToIata[code]) code = icaoToIata[code];
+        app.nextDuty.code = code;
+
+        // Auto-determine offset based on the code entered
+        if (code === 'TPE') {
+            app.nextDuty.offset = 90;
+        } else if (airportIanaZones[code]) {
+            app.nextDuty.offset = 60; // Is a recognized outstation airport
+        } else if (code) {
+            app.nextDuty.offset = 0; // SIM, GROUND, CLASS, etc.
+        } else {
+            app.nextDuty.offset = 0;
+        }
+        
+        saveData();
+        runAllCalc(true); // Redraw timeline to update offset badge UI
+    }
+
+    function handleNdSmartInput(rawVal) {
+        const mode = app.nextDuty.timeMode || 'Z';
+        if (mode === 'Z') {
+            app.nextDuty.time = rawVal;
+        } else {
+            const destCode = app.stations[app.stations.length-1].code.trim().toUpperCase();
+            const zone = airportIanaZones[destCode];
+            if (zone && rawVal.length === 4) {
+                const dateToUse = document.getElementById('nd-date').value || document.getElementById('flightDate').value;
+                app.nextDuty.time = calcUtcFromLocal(rawVal, zone, dateToUse);
+            } else { if(rawVal.length === 0) app.nextDuty.time = ''; }
+        }
+        updateGhostTextNd(rawVal);
+        saveData();
+        runAllCalc(false); 
+    }
+
+    function updateGhostTextNd(rawVal) {
+        const el = document.getElementById('nd-ghost');
+        if (!el || rawVal.length < 4) { if(el) el.innerText = ''; return; }
+        const mode = app.nextDuty.timeMode || 'Z';
+        const destCode = app.stations[app.stations.length-1].code.trim().toUpperCase();
+        const zone = airportIanaZones[destCode];
+        if (!zone) { el.innerText = ''; return; }
+        const dateToUse = document.getElementById('nd-date').value || document.getElementById('flightDate').value;
+        
+        if (mode === 'L') {
+            const utc = calcUtcFromLocal(rawVal, zone, dateToUse);
+            el.innerText = `= ${utc.substring(0,2)}:${utc.substring(2,4)}Z`;
+        } else {
+            const refDate = getUtcDate(dateToUse) || new Date();
+            const utcMins = parse(rawVal);
+            if (utcMins !== null) {
+                const info = getLocalInfo(utcMins, zone, refDate);
+                if(info) el.innerText = `= ${info.timeStr}L`;
+            }
+        }
+    }
+
     // === DOM DRAWING & RENDERING ===
-    // 繪製動態時間軸主結構 / Render Timeline Structure
     function drawTimeline() {
         const con = document.getElementById('timeline-container');
         let html = '';
         app.stations.forEach((st, i) => {
             const isFirst = i === 0; const isLast = i === app.stations.length - 1;
             
-            // Render Flight Leg Connector / 繪製航段連接卡 (Flight Leg)
             if (!isFirst) {
                 const sft = app.sfts[i-1] || '';
                 const isAcmLeg = app.stations[i-1].isAcm; 
@@ -1250,7 +1383,6 @@
             html += `<div class="station-wrapper"><div class="${cardClass}">`;
             if(!isFirst && !isLast) html += `<div class="btn-del" onclick="remSt(${i})" title="Delete Station">✕</div>`;
             
-            // Render Station Header / 繪製航站標題與按鈕
             html += `<div class="station-header">
                         <input type="text" id="code-${i}" class="station-code-input" value="${st.code}" onchange="updVal(${i},'code',this.value)">
                         ${!isLast ? `
@@ -1268,7 +1400,6 @@
                         </div>` : ''}
                     </div>`;
 
-            // Render Hotel Block / 繪製飯店休息區塊
             if (!isLast && st.hotel) {
                 html += `
                 <div class="hotel-section">
@@ -1281,7 +1412,6 @@
                 </div>`;
             }
 
-            // Render Arrival Block / 繪製抵達 (IN) 輸入區塊
             if (!isFirst) {
                 const staMode = st.staMode || 'Z';
                 const staDisplay = getDisplayValue(i, 'sta', staMode);
@@ -1304,7 +1434,6 @@
 
             if (!isFirst && !isLast) html += `<div id="turn-${i}" style="text-align:center; font-size:10px; font-weight:bold; color:var(--text-secondary); margin:6px 0; font-family:monospace;">Turn: --:--</div>`;
 
-            // Render Departure Block & LBO / 繪製出發 (OUT) 輸入區塊與 LBO
             if (!isLast) {
                  const stdMode = st.stdMode || 'Z';
                  const stdDisplay = getDisplayValue(i, 'std', stdMode);
@@ -1342,12 +1471,57 @@
             html += `</div></div>`;
         });
         
+        // 🚀 NEW: Render End of Duty Target Card (Interactive Terminal Node)
+        html += `
+        <div class="end-connector">
+            <div class="flight-line"></div>
+            <div class="end-icon">⏱️</div>
+        </div>
+        <div class="end-duty-wrapper">
+            <div class="end-duty-card" id="endDutyCard">
+                <div class="end-duty-title">NEXT DUTY PLANNER <span class="info-icon" style="margin-left:2px;" onclick="showInfo('nextRpt')">i</span></div>
+                
+                <div class="ed-status-row">
+                    <div class="ed-status-item">
+                        <span>Arrive</span>
+                        <strong id="ed-arr">--:--Z</strong>
+                    </div>
+                    <div class="ed-status-item">
+                        <span style="color:var(--semantic-success);">+ Rest</span>
+                        <strong id="ed-rest">--h</strong>
+                    </div>
+                </div>
+
+                <div class="ed-legal-rpt">
+                    <span class="ed-legal-title">EARLIEST LEGAL REPORT</span>
+                    <div class="ed-rpt-time"><span id="ed-report">--:--</span> <span id="ed-report-z">(--:-- Z)</span></div>
+                </div>
+                
+                <div class="ed-planner-form">
+                    <div style="font-size:9px; font-weight:800; color:var(--text-tertiary); text-align:left; text-transform:uppercase;">Planned Next Duty</div>
+                    <div class="ed-input-row">
+                        <input type="text" class="glass-input" id="nd-code" placeholder="Code (TPE/SIM)" style="flex:1; height:30px; font-size:12px; text-transform:uppercase; font-weight:800; letter-spacing:1px;" value="${app.nextDuty.code || ''}" onchange="updNdCode(this.value)">
+                        <div class="ed-offset-badge" id="nd-offset-badge" title="Auto Report Offset">RPT -${app.nextDuty.offset !== undefined ? app.nextDuty.offset : 0}m</div>
+                    </div>
+                    <div class="ed-input-row">
+                        <input type="date" id="nd-date" class="glass-input" style="width:115px; height:30px; font-size:11px; padding:0 2px;" value="${app.nextDuty.date || ''}" onchange="updNd('date', this.value)">
+                        <div class="smart-input-wrapper" style="flex:1;">
+                            <input type="tel" id="nd-time" class="glass-input" placeholder="STD" style="height:30px; font-size:14px; width:100%; text-align:center;" value="${getNdDisplayValue()}" oninput="handleNdSmartInput(this.value)" onfocus="updateGhostTextNd(this.value)" onblur="document.getElementById('nd-ghost').innerText=''">
+                            <div class="mode-badge ${app.nextDuty.timeMode==='L'?'mode-l':'mode-z'}" onclick="toggleNdMode()">${app.nextDuty.timeMode||'Z'}</div>
+                            <div id="nd-ghost" class="ghost-text"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ed-warning" class="ed-warn-badge"></div>
+            </div>
+        </div>`;
+
         con.innerHTML = html;
         updateLockButton();
         updateResultsOnly(); 
         updateGlobalBtnState();
         
-        // 觸發輸入框屬性初始化 (限制為數字鍵盤) / Ensure tel inputs trigger number pad
         document.querySelectorAll('input[type="tel"]').forEach(el => {
             if (!isHHMMFieldTarget(el)) return;
             el.setAttribute('inputmode', 'numeric'); el.setAttribute('maxlength', '4');
@@ -1505,8 +1679,7 @@
         location.reload(); 
     }
 
-    // 🚀 LEGAL STATUS STRIP UPDATE LOGIC (SMART HUD)
-    // 負責更新「全局狀態列」的智慧引擎
+    // 🚀 LEGAL STATUS STRIP UPDATE LOGIC
     function refreshLegalStatusStrip() {
         const strip = document.getElementById('legalStatusStrip');
         if (!strip) return;
@@ -1519,28 +1692,23 @@
 
         if (st.isReady) {
             let d_msgs = [];
-            // Alert Check: Any strict limit exceeded / 檢查是否有任何硬性極限超標
             if (st.ldg > 6) d_msgs.push('Ldg > 6');
-            if (st.isFtExceeded) d_msgs.push('FT Limit');
-            if (st.isFdpExceeded) d_msgs.push('FDP Limit');
+            if (st.isFtExceeded) d_msgs.push(`FT Limit (+${fmt(st.ftExcessMins, false)})`);
+            if (st.isFdpExceeded) d_msgs.push(`FDP Limit (+${fmt(st.fdpExcessMins, false)})`);
             
-            // Only report Live Duty Exceeded if currently tracking / 僅在執勤窗口內通報現實時間超時
+            // 🚀 NEW: Rest Shortage Warning
+            if (st.restShortMins > 0) d_msgs.push(`Rest Short (+${fmt(st.restShortMins, false)})`);
+            
             if (st.isLiveDutyExceeded) d_msgs.push('Live Duty Exceeded');
 
             if (d_msgs.length > 0) {
-                // State: DANGER (Alert)
                 s_state = 'danger';
-                s_text = `Exceeded: ${d_msgs.join(', ')}`;
+                s_text = `Exceeded: ${d_msgs.join(' ｜ ')}`;
             } else {
                 let c_msgs = [];
-                // State: CAUTION (Warning thresholds)
-                // 飛時 (FT) 只剩 60 分鐘內觸發 Caution
                 if (st.ftRem >= 0 && st.ftRem <= 60) c_msgs.push(`FT Rem: ${fmt(st.ftRem, false)}`);
-                // 任務期 (FDP) 剩下 90 分鐘內觸發 Caution
                 if (st.fdpRem >= 0 && st.fdpRem <= 90) c_msgs.push(`FDP Rem: ${fmt(st.fdpRem, false)}`);
                 
-                // 現實時間還在執勤中，且距離極限剩下 90 分鐘以內 (僅限合理的現實時間窗)
-                // Live FDP Rem checks if current real time is approaching limits
                 if (st.isLiveTracking && !st.isDutyFinished && st.elapsedSinceRep > 0 && st.rtRem >= 0 && st.rtRem <= 90) {
                     c_msgs.push(`Live FDP Rem: ${Math.floor(st.rtRem)}m`);
                 }
@@ -1549,7 +1717,6 @@
                     s_state = 'caution';
                     s_text = `Approaching Limits: ${c_msgs.join(' · ')}`;
                 } else {
-                    // State: SAFE (Everything normal)
                     s_state = 'safe';
                     s_text = `Legal & In Range · Max FDT ${fmt(st.maxFdpMins, false)}`;
                     if (st.ftRem > 0) s_text += ` · FT Rem ${fmt(st.ftRem, false)}`;
@@ -1563,7 +1730,6 @@
         if (text) text.textContent = s_text;
     }
 
-    // 全局執行計算總和與介面刷新 / Run all calculations and UI refreshes
     function runAllCalc(redraw = false) { 
         saveData(); 
         updateResultsOnly(); 
@@ -1572,7 +1738,6 @@
         refreshLegalStatusStrip(); 
     }
     
-    // --- 0. PREVIOUS FLIGHT 24H OVERLAP LOGIC ---
     function calc24hOverlap() {
         const pfDateStr = document.getElementById('pf-date').value; const pfInStr = document.getElementById('pf-in').value; const pfDurStr = document.getElementById('pf-dur').value; const curDateStr = document.getElementById('flightDate').value;
         const s0 = app.stations[0]; const s1 = app.stations[1]; 
@@ -1595,8 +1760,6 @@
     function updateResultsOnly() {
         app._stats.isReady = false; 
 
-        // --- 1. PRE-CALCULATION & AUTO-DETECT NIGHT OPS ---
-        // 預先計算並自動偵測夜間航班 (先偵測才能正確計算 Max FDP)
         const s1 = parse(app.stations[0].std); 
         const code = app.stations[0].code.trim().toUpperCase(); 
         const dateInput = document.getElementById('flightDate').value; 
@@ -1609,7 +1772,6 @@
                 const stdInfo = getLocalInfo(s1, airportIanaZones[code], refDate);
                 if (stdInfo) {
                     const h = parseInt(stdInfo.timeStr.split(':')[0]); const m = parseInt(stdInfo.timeStr.split(':')[1]);
-                    // Auto toggle Night Ops if STD is between 21:00L and 06:59L
                     const isNightTime = (h > 21 || h < 7) || (h === 21 && m > 0);
                     document.getElementById('nightOps').checked = isNightTime;
                     const offsetSign = stdInfo.offset >= 0 ? '+' : '';
@@ -1618,8 +1780,6 @@
             } else { nightContainer.style.border = "2px solid var(--brand-orange)"; document.getElementById('loc-time-display').innerText = `STD: --:-- (Chk Night)`; }
         } else { document.getElementById('loc-time-display').innerText = `STD: --:--`; nightContainer.style.border = "1px solid var(--border-light)"; }
 
-        // --- 2. GATHER HOTEL EXTENSIONS ---
-        // 計算飯店休息是否符合 Split Duty 或是 Extension
         let stationLimitExtensions = []; let globalPauseMinutes = 0; 
         app.stations.forEach((s, i) => {
             let extension = 0; let pause = 0;
@@ -1634,8 +1794,6 @@
             stationLimitExtensions.push(extension); if (i === 0) globalPauseMinutes = pause;
         });
 
-        // --- 3. CALCULATE FDP LIMITS ---
-        // 計算最大飛行任務期間 (Max FDP)
         let base = 14; if(app.crew==='M') base=18; if(app.crew==='D') base=24; 
         const isNight = document.getElementById('nightOps').checked; let lim = isNight ? base - 2 : base;
         const totalExtension = stationLimitExtensions.reduce((a, b) => a + b, 0); const isExt = document.getElementById('extFdt').checked; const discretionMins = isExt ? 120 : 0;
@@ -1645,8 +1803,6 @@
         document.getElementById('disp-limit-dur').innerText = limitText;
         app._stats.maxFdpMins = globalMaxFdpMins;
 
-        // --- 4. CALCULATE TOTALS & ULR ---
-        // 計算總飛時與超長程航班判定
         calcTotals(); 
 
         let totalFtCalc = 0; let isULR = false;
@@ -1668,24 +1824,30 @@
             if (app.stations[k].out || app.stations[k+1].in || app.sfts[k]) hasAnyInput = true;
         }
 
-        // --- 5. REPORT TIME LOGIC ---
-        // 報到時間計算與鎖定防呆
         let rep = null; let reportOffset = (code==='TPE'?90:60); 
         if (app.isLocked && app.lockedReport !== null) { rep = app.lockedReport; document.getElementById('reportLabel').innerText = "LOCKED"; } 
         else if (s1 !== null) { rep = s1 - reportOffset; if(rep<0) rep+=1440; document.getElementById('reportLabel').innerText = code==='TPE'?"STD-90":"STD-60"; }
 
-        // 如果連基礎資料都沒有，終止後續渲染
         if (rep === null || (!hasAnyStd && !hasAnyInput)) {
             document.getElementById('resReport').innerText="--:--"; 
             if(document.getElementById('resNextRpt')) document.getElementById('resNextRpt').innerHTML = "--:--";
             if(document.getElementById('min-rest-lbl')) document.getElementById('min-rest-lbl').innerText = "Rest: --";
             document.getElementById('disp-limit-dur').innerText = "--";
-            if(document.getElementById('resMaxFdtCard')) document.getElementById('resMaxFdtCard').innerText = "--:--";
+            
+            const edCard = document.getElementById('endDutyCard');
+            if(edCard) {
+                document.getElementById('ed-arr').innerText = "--:--Z";
+                document.getElementById('ed-rest').innerText = "--h";
+                document.getElementById('ed-report').innerText = "--:--";
+                document.getElementById('ed-report-z').innerText = "(--:-- Z)";
+                document.getElementById('ed-warning').style.display = 'none';
+                edCard.style.borderColor = 'var(--brand-blue)';
+                edCard.style.background = 'var(--bg-accent)';
+            }
             updateDynamicTimeline(null, null, 0, 0, 0, 0, false, null); 
             return; 
         }
 
-        // Data is sufficient to run stats engine / 如果資料足夠，將引擎狀態設為 Ready
         app._stats.isReady = true;
 
         let repHtml = fmt(rep); let rptDate = new Date(refDate);
@@ -1699,12 +1861,8 @@
         rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0); const nowMs = Date.now(); const repMs = rptDate.getTime(); const elapsedSinceRepMins = (nowMs - repMs) / 60000;
         app._stats.elapsedSinceRep = elapsedSinceRepMins;
         
-        // 🚀 V5.8.1: Smart Simulation Detection (Live tracking window is Rep - 12h to MaxFDP + 12h)
-        // 只有現實時間介於這個範圍內，系統才會啟動 Live Time 現實追蹤警告，完美解決舊資料誤判的問題
         app._stats.isLiveTracking = (elapsedSinceRepMins >= -720 && elapsedSinceRepMins <= (globalMaxFdpMins + 720));
 
-        // --- 6. PROJECTED ELAPSED (FDP Estimation) ---
-        // 計算預期飛行任務進度
         let projectedElapsed = 0;
         if (s1 !== null) {
             let lastProjDepartureElapsed = reportOffset; 
@@ -1722,8 +1880,6 @@
             }
         }
 
-        // --- 7. SOLID BAR ELAPSED (Actual flown) ---
-        // 計算確定已執行的進度，畫出時間軸的實色區塊
         let solidBarElapsed = 0;
         if (s1 !== null) {
             let lastSolid = reportOffset;
@@ -1742,17 +1898,22 @@
         }
 
         let estimatedDutyEndTime = rep + projectedElapsed; if (estimatedDutyEndTime >= 1440) estimatedDutyEndTime = estimatedDutyEndTime % 1440;
-        const fdpEndTime = rep + globalMaxFdpMins; const maxFdtEl = document.getElementById('resMaxFdtCard');
-        if (maxFdtEl) { maxFdtEl.innerText = fmt(fdpEndTime); const capMsg = document.getElementById('cap-msg-card'); if (isCapped) { if(capMsg) capMsg.innerText = " (Cap 24h)"; } else { if(capMsg) capMsg.innerText = ""; } }
+        const fdpEndTime = rep + globalMaxFdpMins; 
         
         let cbnOffset = (code === 'TPE') ? 140 : (code === 'TSA' ? 90 : (code === 'KHH' ? 110 : 60));
         let cbnLimit = (app.crew === 'M' || app.crew === 'D') ? 20 * 60 : 14 * 60; let cbnEndRelative = cbnLimit - (cbnOffset - reportOffset); 
         let cbnChoke = false; let cbnEndDisplay = ""; if (cbnEndRelative < globalMaxFdpMins) { cbnChoke = true; cbnEndDisplay = fmt(rep + cbnEndRelative); }
 
-        const maxFdtBox = document.getElementById('max-fdt-box-card'); const capMsg = document.getElementById('cap-msg-card'); let effectiveLimit = globalMaxFdpMins;
-        let isActExceeded = false; if (estimatedDutyEndTime !== null) { let actualElapsed = estimatedDutyEndTime - rep; if (actualElapsed < 0) actualElapsed += 1440; if (actualElapsed > effectiveLimit) isActExceeded = true; }
+        let effectiveLimit = globalMaxFdpMins;
+        let isActExceeded = false; 
+        let actualElapsedForDiff = 0;
+        if (estimatedDutyEndTime !== null) { 
+            let actualElapsed = estimatedDutyEndTime - rep; 
+            if (actualElapsed < 0) actualElapsed += 1440; 
+            actualElapsedForDiff = actualElapsed;
+            if (actualElapsed > effectiveLimit) isActExceeded = true; 
+        }
 
-        // --- 8. SCHED ELAPSED (Pure Plan) ---
         let schedElapsed = 0;
         if (s1 !== null) {
             let lastSchedDepartureElapsed = reportOffset; 
@@ -1770,36 +1931,27 @@
 
         let isStaExceeded = false; if (schedElapsed > effectiveLimit) isStaExceeded = true;
         
-        if(maxFdtBox) {
-             maxFdtBox.querySelector('.lbo-time').style.color = 'var(--text-primary)'; maxFdtBox.querySelector('.lbo-label').style.color = 'var(--text-secondary)';
-             if (isActExceeded && hasAnyInput) { maxFdtBox.style.background = 'var(--brand-red)'; maxFdtBox.querySelector('.lbo-time').style.color = 'white'; maxFdtBox.querySelector('.lbo-label').style.color = 'white'; if(capMsg) capMsg.innerText = "⚠️ ACT EXCEEDS LIMIT"; } 
-             else if (isStaExceeded) { maxFdtBox.style.background = 'var(--brand-orange)'; maxFdtBox.querySelector('.lbo-time').style.color = 'white'; maxFdtBox.querySelector('.lbo-label').style.color = 'white'; if(capMsg) capMsg.innerText = "⚠️ STA EXCEEDS LIMIT"; } 
-             else {
-                maxFdtBox.style.background = 'var(--bg-accent)'; maxFdtBox.classList.remove('station-divert'); maxFdtBox.style.borderColor = 'var(--border-light)';
-                if (cbnChoke) { if(capMsg) capMsg.innerText = `(CBN: ${cbnEndDisplay}Z)`; } else if (isCapped) { if(capMsg) capMsg.innerText = " (Cap 24h)"; } else { if(capMsg) capMsg.innerText = ""; }
-             }
-        }
-        
-        // 🚀 V5.8.3 Smart HUD FDP States Binding
-        // 綁定動態任務期剩餘資料，交由 Strip 統一判定警告
         app._stats.fdpRem = globalMaxFdpMins - Math.max(projectedElapsed, schedElapsed);
         app._stats.rtRem = globalMaxFdpMins - elapsedSinceRepMins;
         app._stats.isFdpExceeded = isActExceeded && hasAnyInput;
         
-        // 檢查是否已抵達最終站 Check if duty is finished
+        if (app._stats.isFdpExceeded) {
+            app._stats.fdpExcessMins = actualElapsedForDiff - effectiveLimit;
+        } else {
+            app._stats.fdpExcessMins = 0;
+        }
+        
         const lastIn = parse(app.stations[app.stations.length - 1].in);
         app._stats.isDutyFinished = (lastIn !== null);
-        
-        // Only trigger live alert if inside the Live Tracking Window / 僅在執勤窗內觸發即時超時警告
         app._stats.isLiveDutyExceeded = (app._stats.isLiveTracking && !app._stats.isDutyFinished && elapsedSinceRepMins > globalMaxFdpMins && hasAnyInput);
 
         // --- 9. REST PERIOD CALCULATION ---
-        // 法定休時與下次報到計算
-        let calculatedRestMins = 0; const lastIdx = app.stations.length - 1;
+        let calculatedRestMins = 0; const lastIdx = app.stations.length - 1; let finalRestHours = 0; let nextRptZAbs = 0; let localReportStr = ""; let dayOffsetStr = ""; let destIsHome = false;
+        
         if (estimatedDutyEndTime === null) {
             document.getElementById('resNextRpt').innerHTML = "--:--"; document.getElementById('min-rest-lbl').innerText = "Rest: --"; const tag = document.getElementById('ulr-tag'); if(tag) tag.remove();
         } else {
-            let tableRest = 0; let destIsHome = false;
+            let tableRest = 0;
             if (isULR) {
                 const destCode = app.stations[lastIdx].code.toUpperCase().trim(); destIsHome = ['TPE', 'TSA', 'KHH'].includes(destCode); tableRest = destIsHome ? 96 : 48; 
                 if(!document.getElementById('ulr-tag')) { const tag = document.createElement('span'); tag.id = 'ulr-tag'; tag.className = 'text-xs text-white px-1 rounded ml-1'; tag.style.fontSize = '9px'; tag.style.background = destIsHome ? 'var(--brand-blue)' : 'var(--brand-orange)'; document.getElementById('min-rest-lbl').appendChild(tag); }
@@ -1823,13 +1975,12 @@
                 else { nextLegCheck.classList.add('hidden'); }
             } else { nextLegCheck.classList.add('hidden'); }
             
-            let finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (actualFdpMins < 0) actualFdpMins += 1440;
+            finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (actualFdpMins < 0) actualFdpMins += 1440;
             if (actualFdpMins > globalMaxFdpMins && !isULR) { const fdpRestHours = Math.ceil(actualFdpMins / 60); finalRestHours = Math.max(tableRest, fdpRestHours); }
             
-            calculatedRestMins = finalRestHours * 60; const postDuty = 30; let arrivalZAbs = estimatedDutyEndTime; let nextRptZAbs = arrivalZAbs + postDuty + calculatedRestMins;
+            calculatedRestMins = finalRestHours * 60; const postDuty = 30; let arrivalZAbs = estimatedDutyEndTime; nextRptZAbs = arrivalZAbs + postDuty + calculatedRestMins;
             const destCode = app.stations[lastIdx].code; let nextRptHtml = fmt(nextRptZAbs % 1440) + " Z"; 
 
-            let localReportStr = ""; let dayOffsetStr = "";
             if (destCode in airportIanaZones) {
                 const zone = airportIanaZones[destCode]; const anchor = new Date(refDate);
                 let flowMins = estimatedDutyEndTime - rep; if(flowMins < 0) flowMins += 1440;
@@ -1847,13 +1998,80 @@
             document.getElementById('resNextRpt').innerHTML = nextRptHtml;
         }
 
-        // --- 10. LAST BLOCK OUT CALCULATION ---
+        // 🚀 SMART NEXT DUTY PLANNING LOGIC
+        app._stats.restShortMins = 0;
+        if (app.nextDuty && app.nextDuty.time && app.nextDuty.time.length === 4) {
+            if (!app.nextDuty.date) {
+                let baseD = new Date(refDate.getTime() + (nextRptZAbs * 60000));
+                app.nextDuty.date = baseD.toISOString().split('T')[0];
+                const ndDateEl = document.getElementById('nd-date');
+                if (ndDateEl) ndDateEl.value = app.nextDuty.date;
+                saveData(); 
+            }
+            
+            let ndDate = getUtcDate(app.nextDuty.date);
+            if (ndDate) {
+                let parsedMins = parse(app.nextDuty.time);
+                if (parsedMins !== null) {
+                    let baseDate = getUtcDate(document.getElementById('flightDate').value);
+                    let diffDays = Math.round((ndDate - baseDate) / 86400000);
+                    let plannedStartAbs = diffDays * 1440 + parsedMins;
+                    let offset = parseInt(app.nextDuty.offset) || 0;
+                    let plannedRptAbs = plannedStartAbs - offset;
+                    
+                    if (plannedRptAbs < nextRptZAbs) {
+                        app._stats.restShortMins = nextRptZAbs - plannedRptAbs;
+                    }
+                }
+            }
+        }
+
+        // 🚀 POPULATE TERMINAL END DUTY CARD
+        const edArr = document.getElementById('ed-arr'); const edRest = document.getElementById('ed-rest'); const edReport = document.getElementById('ed-report'); const edReportZ = document.getElementById('ed-report-z'); const edWarning = document.getElementById('ed-warning'); const endCard = document.getElementById('endDutyCard');
+        if (estimatedDutyEndTime !== null && edArr && endCard) {
+            edArr.innerText = fmt(estimatedDutyEndTime) + "Z";
+            edRest.innerText = finalRestHours + "h";
+            
+            if (isULR && destIsHome) {
+                edReport.innerText = "4 Local Nights";
+                edReportZ.innerText = "";
+                edRest.innerText = "96+h";
+            } else {
+                if (localReportStr) {
+                    edReport.innerHTML = `${localReportStr}${dayOffsetStr}`;
+                    edReportZ.innerText = `(${fmt(nextRptZAbs % 1440)}Z)`;
+                } else {
+                    edReport.innerText = fmt(nextRptZAbs % 1440) + "Z";
+                    edReportZ.innerText = "";
+                }
+            }
+
+            let warns = [];
+            if (app._stats.fdpExcessMins > 0) warns.push(`FDP +${fmt(app._stats.fdpExcessMins, false)}`);
+            if (app._stats.ftExcessMins > 0) warns.push(`FT +${fmt(app._stats.ftExcessMins, false)}`);
+            let landingCount = 0; for(let k=0; k<app.stations.length-1; k++) { if (!app.stations[k].isAcm) landingCount++; }
+            if (landingCount > 6) warns.push(`Ldg > 6`);
+            if (app._stats.restShortMins > 0) warns.push(`⚠️ 休時不足 (Rest Short) +${fmt(app._stats.restShortMins, false)}`);
+            
+            if (warns.length > 0) {
+                edWarning.style.display = 'block';
+                edWarning.innerText = "❌ 違規 (EXCEEDED): " + warns.join(' ｜ ');
+                endCard.style.borderColor = 'var(--brand-red)';
+                endCard.style.background = 'var(--danger-bg-soft)';
+            } else {
+                edWarning.style.display = 'none';
+                endCard.style.borderColor = 'var(--brand-blue)';
+                endCard.style.background = 'var(--bg-accent)';
+                if(document.body.classList.contains('dark-mode')) endCard.style.background = 'rgba(59, 130, 246, 0.05)';
+            }
+        }
+
         calcLBO(rep, globalMaxFdpMins, stationLimitExtensions, globalPauseMinutes);
         
-        let landingCount = 0; for(let k=0; k<app.stations.length-1; k++) { if (!app.stations[k].isAcm) landingCount++; }
-        app._stats.ldg = landingCount;
+        let ldgCount = 0; for(let k=0; k<app.stations.length-1; k++) { if (!app.stations[k].isAcm) ldgCount++; }
+        app._stats.ldg = ldgCount;
         const resLdgEl = document.getElementById('resLdg');
-        if(resLdgEl) { resLdgEl.innerText = landingCount; if(landingCount > 6) resLdgEl.classList.add('val-danger'); else resLdgEl.classList.remove('val-danger'); }
+        if(resLdgEl) { resLdgEl.innerText = ldgCount; if(ldgCount > 6) resLdgEl.classList.add('val-danger'); else resLdgEl.classList.remove('val-danger'); }
         updateTurns();
         updateDynamicTimeline(rep, globalMaxFdpMins, projectedElapsed, schedElapsed, calculatedRestMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins);
     }
@@ -1868,7 +2086,6 @@
         }
     }
 
-    // 繪製動態渲染時間軸動畫 / Render the Timeline Minimap Animations
     function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins) {
         const wrapper = document.getElementById('dutyTimelineWrapper'); const content = document.getElementById('dtContent');
         if (rep === null || !maxFdpMins || (schedElapsed === 0 && !hasAnyInput)) {
@@ -2011,7 +2228,6 @@
             if(pEl) { if(std!==null && sta!==null) { let d = diff(std,sta); if (!isAcm) aggPlan += d; pEl.innerText = fmt(d, false); }  else pEl.innerText = "--"; }
             if (sft !== null) { const txOut = app.stations[i].taxiOut !== undefined ? app.stations[i].taxiOut : 15; const txIn = app.stations[i+1].taxiIn !== undefined ? app.stations[i+1].taxiIn : 15; if (!isAcm) aggSched += (sft + txOut + txIn);  }
             
-            // 🚨 V5.7.3 Strict Actual Logic / 嚴格要求輸入實際時間才計算 Actual
             let ft = 0; const aEl = document.getElementById(`a-${i}`);
             if(out!==null && inc!==null) { 
                 ft = diff(out,inc); 
@@ -2024,9 +2240,14 @@
         
         let maxFt = 600; if (app.crew === 'M') maxFt = noBunk ? 720 : 960; else if (app.crew === 'D') maxFt = noBunk ? 720 : 1080; 
         
-        // 🚀 V5.8.0 Smart HUD FT States / 計算飛時剩餘量供狀態列讀取
         app._stats.ftRem = maxFt - Math.max(totalActWithPrev, aggSched, aggPlan);
         app._stats.isFtExceeded = (totalActWithPrev > maxFt && totalAct > 0);
+        
+        if (app._stats.isFtExceeded) {
+            app._stats.ftExcessMins = totalActWithPrev - maxFt;
+        } else {
+            app._stats.ftExcessMins = 0;
+        }
 
         const boxPlan = document.getElementById('box-plan'); const boxSched = document.getElementById('box-sched'); const boxAct = document.getElementById('box-act');
 
@@ -2128,7 +2349,7 @@
         const data = {
             stations: app.stations, sfts: app.sfts, crew: app.crew, 
             isNight: document.getElementById('nightOps').checked, isNoBunk: document.getElementById('noBunk').checked, prevFt: document.getElementById('prevFt').value, extFdt: document.getElementById('extFdt').checked, pfDate: document.getElementById('pf-date').value, pfIn: document.getElementById('pf-in').value, pfDur: document.getElementById('pf-dur').value, flightDate: document.getElementById('flightDate').value,
-            isLocked: app.isLocked, lockedReport: app.lockedReport, nextLegHeavy: app.nextLegHeavy, acarsLbo: app.acarsLbo, earlyMorning: app.earlyMorning, nightMode: localStorage.getItem('nightMode')
+            isLocked: app.isLocked, lockedReport: app.lockedReport, nextLegHeavy: app.nextLegHeavy, acarsLbo: app.acarsLbo, earlyMorning: app.earlyMorning, nextDuty: app.nextDuty, nightMode: localStorage.getItem('nightMode')
         };
         localStorage.setItem('calData158', JSON.stringify(data));
     }
@@ -2146,7 +2367,6 @@
     window.addEventListener('click', hideGlobalElements);
     window.addEventListener('touchstart', hideGlobalElements, {passive: true});
 
-    // 每 60 秒背景更新一次，驅動 Live Time 檢查 / 60s Background Update Loop for Live tracking
     setInterval(() => { if(app.stations[0].std) runAllCalc(false); }, 60000); 
 
     window.onload = () => { 
@@ -2177,8 +2397,19 @@
                 if(p.nextLegHeavy !== undefined) app.nextLegHeavy = p.nextLegHeavy;
                 if(p.acarsLbo !== undefined) { app.acarsLbo = p.acarsLbo; document.getElementById('acarsLbo').value = p.acarsLbo; }
                 if(p.earlyMorning !== undefined) { app.earlyMorning = p.earlyMorning; document.getElementById('earlyMorningSel').value = p.earlyMorning; }
+                if(p.nextDuty) {
+                    app.nextDuty = p.nextDuty;
+                    if(app.nextDuty.name !== undefined) {
+                        app.nextDuty.code = app.nextDuty.name;
+                        delete app.nextDuty.name;
+                    }
+                    if(app.nextDuty.offset === undefined) app.nextDuty.offset = 0;
+                }
             } catch(e){} 
         }
+        
+        // Safety initialization for Next Duty Object
+        if (!app.nextDuty) app.nextDuty = { code: '', date: '', time: '', timeMode: 'Z', offset: 0 };
 
         setCrew(savedCrew);
         initHHMMUX();
