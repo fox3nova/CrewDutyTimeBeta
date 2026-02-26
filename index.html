@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.0.2)</title>
+    <title>CAL Duty (Pro v6.2.3)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -520,7 +520,6 @@
         #ed-report-z { font-size: 12px; color: var(--text-secondary); font-weight: 600; margin-left:4px; }
         .ed-planner-form { background: var(--bg-input); border-radius: 10px; padding: 10px; width: 100%; border: 1px dashed var(--border-light); display: flex; flex-direction: column; gap: 8px;}
         .ed-input-row { display: flex; gap: 8px; align-items: center; width: 100%; }
-        .ed-offset-badge { font-size: 10px; font-weight: 800; color: var(--brand-purple); background: rgba(175, 82, 222, 0.1); padding: 0 8px; border-radius: 6px; white-space: nowrap; height: 30px; display: flex; align-items: center; border: 1px solid rgba(175, 82, 222, 0.2); }
         .ed-warn-badge { margin-top:4px; font-size:11px; font-weight:bold; color:white; background:var(--brand-red); padding:6px 12px; border-radius:8px; display:none; width: 100%; text-align: center; box-shadow: 0 4px 12px rgba(255,59,48,0.3);}
 
         .station-card { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg); width: 280px; padding: 16px; box-shadow: var(--shadow-md); position: relative; z-index: 2; transition: transform 0.2s, width 0.3s; }
@@ -665,7 +664,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.0.2 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.2.3 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -918,25 +917,25 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.0.2 介面顯示修復</b><br>• 修復：最後一段 MAX FDT END (Z) 卡片無法即時顯示計算時間與警示背景顏色的問題。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.0.2 UI Display Fix</b><br>• Fixed an issue where the MAX FDT END (Z) card was not rendering the calculated time and status colors correctly.</div>
+            text: `<div class="info-zh"><b>v6.2.4 智慧字典反向判定 (Smart Dictionary Inverse Check)</b><br>• <b>自動辨識所有地面任務</b>：捨棄傳統的關鍵字比對，改用「機場資料庫反向判定」。只要輸入的代碼<b>不在系統機場庫內</b>，一律自動判定為地面任務（帶入 -0m 報到）。此設計能完美涵蓋未來任何新增的上課、開會或體檢代碼！</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.2.4 Smart Dictionary Inverse Check</b><br>• Switched to inverse database checking. Any code not found in the recognized airport list is automatically treated as a Ground Duty (0m offset), making it future-proof for any unlisted duty codes.</div>
                    <div class="info-divider"></div>
                    <details class="changelog-details">
                        <summary class="changelog-summary">查看歷史版本 (Previous Versions) ▼</summary>
                        <div class="info-zh" style="margin-top:8px; font-size:12px; line-height:1.6;">
-                           <b>v6.0.1 邏輯除錯與全域連動</b><br>• ALL UTC 同步切換；跨日休時精算修復。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.0.0 里程碑更新</b><br>• 計畫任務欄位標示改為 STD；新增收折式歷史日誌。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v5.8.8 智慧代碼辨識</b><br>• 自動報到判定與卡片分層設計。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v5.8.7 局部更新架構</b><br>• 導入防斷尾機制；強化休時不足警告。
+                           <b>v6.2.3 地面任務代碼擴充</b><br>• 新增對 MIT, SEP 等代碼的辨識能力。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.2.2 情境感知時差掃描</b><br>• 僅當時差≥6h才顯示48H選項；全自動豁免判定。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.2.1 智慧出發地繼承</b><br>• 自動隱藏無效選項；智慧判定報到前置量。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.2.0 長程線自動豁免引擎</b><br>• 自動鎖定 48H 且支援時差 ≤3h 自動豁免。
                        </div>
                    </details>`
         },
         'nextRpt': {
             title: '下次合法報到 (Next Report)',
-            text: `<div class="info-ref">FOM 3.4.1 (H)(L) & 3.4.3.1</div>
-                   <div class="info-zh"><b>休時規定適用於「任何職務」</b><br>依據 FOM 3.4.1 定義，Duty 包含飛行、訓練(如模擬機)、開會等。休時 (Rest Period) 意即「解除一切職務」。<br><br>系統計算的休息時間，是根據您剛完成的「前趟飛行」來決定。您必須休滿這段時間，才能開始下一個任務（不限於飛行）。<br><br>⚠️ 註：由於您落地後人處於該地，因此系統統一顯示您<b>最後一站降落地的 Local Time</b>，不再印出特定機場代碼。</div>
+            text: `<div class="info-ref">FOM 3.4.1 (H)(L) & 3.4.3.2</div>
+                   <div class="info-zh"><b>一般休時規定</b><br>系統計算的休息時間，是根據前趟飛行來決定。您必須休滿這段時間才能開始下一個任務。<br><br><b>外站長程 Layover 豁免條件</b><br>當從累積時差≥6小時且停留>48小時的外站返台時，依法需休48小時。但若您預排的下次目的地與前一外站「時差≤3小時」或為「同地點」，系統會自動計算並賦予豁免權！</div>
                    <div class="info-divider"></div>
-                   <div class="info-en"><b>Rest applies to ANY Duty</b><br>The required Rest Period determined by the preceding flight duty must be completed before starting ANY subsequent duty (including Simulator or meetings). The displayed time is the earliest legal report time in the local timezone of your last arrival station.</div>`
+                   <div class="info-en"><b>Rest applies to ANY Duty</b><br>Rest must be completed before starting ANY subsequent duty.<br><br><b>Long Layover Exemption</b><br>Returning from an outstation with TZ diff ≥6h and layover >48h requires 48h rest. However, if your next planned duty is to the same outstation or one within 3h TZ diff, the system will automatically exempt the 48h rule!</div>`
         },
         'jz': { 
             title: '聯管通報 JZ LBO', 
@@ -1125,7 +1124,7 @@
         nextLegHeavy: false, 
         acarsLbo: '', 
         earlyMorning: '0',
-        nextDuty: { code: '', date: '', time: '', timeMode: 'Z', offset: 0 },
+        nextDuty: { code: '', date: '', time: '', timeMode: 'Z', offset: 0, isLongLayover: false },
         _stats: {
             fdpExcessMins: 0,
             ftExcessMins: 0,
@@ -1187,6 +1186,25 @@
         return info ? info.timeStr.replace(':','') : utcVal;
     }
 
+    // 🚀 NEW: Absolute Timezone Offset Getter
+    function getZoneOffset(code) {
+        if (!code) return null;
+        let c = code.toUpperCase().trim();
+        if (icaoToIata[c]) c = icaoToIata[c];
+        const zone = airportIanaZones[c];
+        if(!zone) return null;
+        const refDate = getUtcDate(document.getElementById('flightDate').value) || new Date();
+        const utcDate = new Date(Date.UTC(refDate.getUTCFullYear(), refDate.getUTCMonth(), refDate.getUTCDate(), 12, 0));
+        try {
+            const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: 'numeric', hourCycle: 'h23' });
+            const localH = parseInt(fmt.format(utcDate).split(':')[0]); 
+            let offset = localH - 12; 
+            if (offset < -12) offset += 24; 
+            if (offset > 12) offset -= 24;
+            return offset;
+        } catch(e) { return null; }
+    }
+
     function handleSmartInput(i, field, rawVal) {
         const mode = app.stations[i][field + 'Mode'] || 'Z';
         if (mode === 'Z') {
@@ -1210,11 +1228,19 @@
         app.stations[i][field + 'Mode'] = (current === 'Z') ? 'L' : 'Z';
         saveData(); drawTimeline(); 
     }
-    
+
+    // === NEXT DUTY SPECIFIC LOGIC ===
+    function toggleNdMode() {
+        const current = app.nextDuty.timeMode || 'Z';
+        app.nextDuty.timeMode = (current === 'Z') ? 'L' : 'Z';
+        saveData(); drawTimeline(); 
+    }
+
     function toggleAllModes() {
         let target = 'L';
         if (app.stations[0] && app.stations[0].stdMode === 'L') target = 'Z';
         app.stations.forEach(s => { s.stdMode = target; s.staMode = target; });
+        if (app.nextDuty) app.nextDuty.timeMode = target;
         saveData(); drawTimeline();
     }
     
@@ -1277,21 +1303,6 @@
             }
         }
     }
-
-    // === NEXT DUTY SPECIFIC LOGIC ===
-    function toggleNdMode() {
-        const current = app.nextDuty.timeMode || 'Z';
-        app.nextDuty.timeMode = (current === 'Z') ? 'L' : 'Z';
-        saveData(); drawTimeline(); 
-    }
-
-    function toggleAllModes() {
-        let target = 'L';
-        if (app.stations[0] && app.stations[0].stdMode === 'L') target = 'Z';
-        app.stations.forEach(s => { s.stdMode = target; s.staMode = target; });
-        if (app.nextDuty) app.nextDuty.timeMode = target;
-        saveData(); drawTimeline();
-    }
     
     function updNd(field, val) {
         app.nextDuty[field] = val;
@@ -1303,19 +1314,22 @@
         if (code.length === 4 && icaoToIata[code]) code = icaoToIata[code];
         app.nextDuty.code = code;
 
-        // Auto-determine offset based on the code entered
-        if (code === 'TPE') {
-            app.nextDuty.offset = 90;
+        // Auto-determine offset based on the CURRENT duty's final arrival station
+        const lastDest = app.stations[app.stations.length-1].code.toUpperCase().trim();
+        const isDepartingHome = ['TPE', 'TSA', 'KHH'].includes(lastDest);
+
+        // Smart Dictionary Inverse Check: If it's a known airport, treat as flight. Otherwise, ground duty.
+        if (!code) {
+            app.nextDuty.offset = 0;
         } else if (airportIanaZones[code]) {
-            app.nextDuty.offset = 60; // Is a recognized outstation airport
-        } else if (code) {
-            app.nextDuty.offset = 0; // SIM, GROUND, CLASS, etc.
+            app.nextDuty.offset = isDepartingHome ? 90 : 60;
         } else {
+            // Not in the airport database -> Auto-categorize as Ground Duty (0 mins)
             app.nextDuty.offset = 0;
         }
         
         saveData();
-        runAllCalc(true); // Redraw timeline to update offset badge UI
+        runAllCalc(true); 
     }
 
     function handleNdSmartInput(rawVal) {
@@ -1479,6 +1493,24 @@
         });
         
         // 🚀 NEW: Render End of Duty Target Card (Interactive Terminal Node)
+        const lastStCode = app.stations[app.stations.length-1].code.toUpperCase().trim();
+        const firstStCode = app.stations[0].code.toUpperCase().trim();
+        const isHomeEnd = ['TPE', 'TSA', 'KHH'].includes(lastStCode);
+
+        // Auto-check if TZ diff between Leg 1 and Base is >= 6 hours
+        let showLongLayoverToggle = false;
+        if (isHomeEnd && firstStCode && !['TPE', 'TSA', 'KHH'].includes(firstStCode)) {
+            let offFirst = getZoneOffset(firstStCode);
+            let offHome = getZoneOffset(lastStCode);
+            if (offFirst !== null && offHome !== null) {
+                let rawDiff = Math.abs(offFirst - offHome);
+                let actualTzDiff = Math.min(rawDiff, 24 - rawDiff);
+                if (actualTzDiff >= 6) {
+                    showLongLayoverToggle = true;
+                }
+            }
+        }
+
         html += `
         <div class="end-connector">
             <div class="flight-line"></div>
@@ -1505,10 +1537,23 @@
                 </div>
                 
                 <div class="ed-planner-form">
-                    <div style="font-size:9px; font-weight:800; color:var(--text-tertiary); text-align:left; text-transform:uppercase;">Planned Next Duty</div>
-                    <div class="ed-input-row">
-                        <input type="text" class="glass-input" id="nd-code" placeholder="Code (TPE/SIM)" style="flex:1; height:30px; font-size:12px; text-transform:uppercase; font-weight:800; letter-spacing:1px;" value="${app.nextDuty.code || ''}" onchange="updNdCode(this.value)">
-                        <div class="ed-offset-badge" id="nd-offset-badge" title="Auto Report Offset">RPT -${app.nextDuty.offset !== undefined ? app.nextDuty.offset : 0}m</div>
+                    <div style="font-size:9px; font-weight:800; color:var(--text-tertiary); text-align:left; text-transform:uppercase;">Planned Next Duty (Dep ${lastStCode})</div>
+                    <div class="ed-input-row" style="margin-top:4px; display:${showLongLayoverToggle ? 'flex' : 'none'};">
+                        <label class="toggle-wrapper" style="flex:1; padding:0 4px; background:transparent; border:none; justify-content:flex-start; gap:6px;">
+                            <label class="switch" style="transform:scale(0.7); margin:0;">
+                                <input type="checkbox" id="nd-long-layover" ${app.nextDuty.isLongLayover ? 'checked' : ''} onchange="updNd('isLongLayover', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                            <span style="font-size:10px; font-weight:700; color:var(--brand-orange); white-space:nowrap;">>48h Layover at ${firstStCode}</span>
+                        </label>
+                    </div>
+                    <div class="ed-input-row" style="margin-top:2px;">
+                        <input type="text" class="glass-input" id="nd-code" placeholder="Next Dest / Duty" style="flex:1; height:30px; font-size:12px; text-transform:uppercase; font-weight:800; letter-spacing:1px;" value="${app.nextDuty.code || ''}" onchange="updNdCode(this.value)">
+                        <select id="nd-offset" class="glass-input" style="width:75px; height:30px; font-size:11px; padding:0 4px;" onchange="updNd('offset', this.value)">
+                            <option value="90" ${app.nextDuty.offset==90?'selected':''}>RPT -90</option>
+                            <option value="60" ${app.nextDuty.offset==60?'selected':''}>RPT -60</option>
+                            <option value="0"  ${app.nextDuty.offset==0?'selected':''}>RPT -0</option>
+                        </select>
                     </div>
                     <div class="ed-input-row">
                         <input type="date" id="nd-date" class="glass-input" style="width:115px; height:30px; font-size:11px; padding:0 2px;" value="${app.nextDuty.date || ''}" onchange="updNd('date', this.value)">
@@ -1703,14 +1748,12 @@
             if (st.isFtExceeded) d_msgs.push(`FT Limit (+${fmt(st.ftExcessMins, false)})`);
             if (st.isFdpExceeded) d_msgs.push(`FDP Limit (+${fmt(st.fdpExcessMins, false)})`);
             
-            // 🚀 NEW: Rest Shortage Warning
             if (st.restShortMins > 0) d_msgs.push(`Rest Short (+${fmt(st.restShortMins, false)})`);
-            
             if (st.isLiveDutyExceeded) d_msgs.push('Live Duty Exceeded');
 
             if (d_msgs.length > 0) {
                 s_state = 'danger';
-                s_text = `Exceeded: ${d_msgs.join(' ｜ ')}`;
+                s_text = `Exceeded: ${d_msgs.join(' | ')}`;
             } else {
                 let c_msgs = [];
                 if (st.ftRem >= 0 && st.ftRem <= 60) c_msgs.push(`FT Rem: ${fmt(st.ftRem, false)}`);
@@ -1976,12 +2019,19 @@
         // --- 9. REST PERIOD CALCULATION ---
         let calculatedRestMins = 0; const lastIdx = app.stations.length - 1; let finalRestHours = 0; let nextRptZAbs = 0; let localReportStr = ""; let dayOffsetStr = ""; let destIsHome = false;
         
+        let applied48hRule = false;
+        let exempted48hRule = false;
+        let tzExemptText = "";
+
         if (estimatedDutyEndTime === null) {
             document.getElementById('resNextRpt').innerHTML = "--:--"; document.getElementById('min-rest-lbl').innerText = "Rest: --"; const tag = document.getElementById('ulr-tag'); if(tag) tag.remove();
         } else {
             let tableRest = 0;
+            const destCode = app.stations[lastIdx].code.toUpperCase().trim(); 
+            destIsHome = ['TPE', 'TSA', 'KHH'].includes(destCode);
+
             if (isULR) {
-                const destCode = app.stations[lastIdx].code.toUpperCase().trim(); destIsHome = ['TPE', 'TSA', 'KHH'].includes(destCode); tableRest = destIsHome ? 96 : 48; 
+                tableRest = destIsHome ? 96 : 48; 
                 if(!document.getElementById('ulr-tag')) { const tag = document.createElement('span'); tag.id = 'ulr-tag'; tag.className = 'text-xs text-white px-1 rounded ml-1'; tag.style.fontSize = '9px'; tag.style.background = destIsHome ? 'var(--brand-blue)' : 'var(--brand-orange)'; document.getElementById('min-rest-lbl').appendChild(tag); }
                 const tagEl = document.getElementById('ulr-tag'); if(tagEl) tagEl.innerText = destIsHome ? 'HB ULR' : 'ULR';
             } else {
@@ -2003,12 +2053,55 @@
                 else { nextLegCheck.classList.add('hidden'); }
             } else { nextLegCheck.classList.add('hidden'); }
             
+            // 🚀 48h Long Layover Rule Check Engine
+            if (app.nextDuty && app.nextDuty.isLongLayover && destIsHome && !isULR) {
+                let prevOutstation = app.stations[0].code.toUpperCase().trim();
+                let nextOutstation = app.nextDuty.code.toUpperCase().trim();
+                
+                // Final safety check for TZ >= 6h
+                let isValidLongLayover = false;
+                let offPrev = getZoneOffset(prevOutstation);
+                let offHome = getZoneOffset(destCode);
+                if (offPrev !== null && offHome !== null) {
+                    let d = Math.abs(offPrev - offHome);
+                    if (Math.min(d, 24 - d) >= 6) isValidLongLayover = true;
+                }
+                
+                if (isValidLongLayover) {
+                    let requires48h = true;
+
+                    if (nextOutstation && nextOutstation !== 'SIM' && nextOutstation !== 'CLASS' && nextOutstation !== 'TRG' && !['TPE','TSA','KHH'].includes(nextOutstation)) {
+                        if (prevOutstation === nextOutstation) {
+                            requires48h = false;
+                            exempted48hRule = true;
+                            tzExemptText = `Exempt (Same Port: ${nextOutstation})`;
+                        } else {
+                            let offNext = getZoneOffset(nextOutstation);
+                            if (offPrev !== null && offNext !== null) {
+                                let rawDiff = Math.abs(offPrev - offNext);
+                                let actualTzDiff = Math.min(rawDiff, 24 - rawDiff);
+                                if (actualTzDiff <= 3) {
+                                    requires48h = false;
+                                    exempted48hRule = true;
+                                    tzExemptText = `Exempt TZ≤3 (${prevOutstation} vs ${nextOutstation})`;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (requires48h) {
+                        tableRest = Math.max(tableRest, 48);
+                        applied48hRule = true;
+                    }
+                }
+            }
+
             finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (actualFdpMins < 0) actualFdpMins += 1440;
             if (actualFdpMins > globalMaxFdpMins && !isULR) { const fdpRestHours = Math.ceil(actualFdpMins / 60); finalRestHours = Math.max(tableRest, fdpRestHours); }
             
             calculatedRestMins = finalRestHours * 60; const postDuty = 30; 
             nextRptZAbs = absEstimatedDutyEndTime + postDuty + calculatedRestMins;
-            const destCode = app.stations[lastIdx].code; let nextRptHtml = fmt(nextRptZAbs % 1440) + " Z"; 
+            let nextRptHtml = fmt(nextRptZAbs % 1440) + " Z"; 
 
             if (destCode in airportIanaZones) {
                 const zone = airportIanaZones[destCode]; const anchor = new Date(refDate);
@@ -2058,7 +2151,15 @@
         const edArr = document.getElementById('ed-arr'); const edRest = document.getElementById('ed-rest'); const edReport = document.getElementById('ed-report'); const edReportZ = document.getElementById('ed-report-z'); const edWarning = document.getElementById('ed-warning'); const endCard = document.getElementById('endDutyCard');
         if (estimatedDutyEndTime !== null && endCard) {
             if(edArr) edArr.innerText = fmt(estimatedDutyEndTime) + "Z";
-            if(edRest) edRest.innerText = finalRestHours + "h";
+            
+            // Render beautiful rest logic status
+            let restBadgeHtml = finalRestHours + "h";
+            if (applied48hRule) {
+                restBadgeHtml = `48h <span style="font-size:9px; color:var(--brand-orange); display:block; line-height:1; margin-top:2px; white-space:nowrap;">Long Layover</span>`;
+            } else if (exempted48hRule) {
+                restBadgeHtml = `${finalRestHours}h <span style="font-size:9px; color:var(--brand-green); display:block; line-height:1; margin-top:2px; white-space:nowrap;">${tzExemptText}</span>`;
+            }
+            if (edRest) edRest.innerHTML = restBadgeHtml;
             
             if (isULR && destIsHome) {
                 if(edReport) edReport.innerText = "4 Local Nights";
@@ -2432,12 +2533,12 @@
                         delete app.nextDuty.name;
                     }
                     if(app.nextDuty.offset === undefined) app.nextDuty.offset = 0;
+                    if(app.nextDuty.isLongLayover === undefined) app.nextDuty.isLongLayover = false;
                 }
             } catch(e){} 
         }
         
-        // Safety initialization for Next Duty Object
-        if (!app.nextDuty) app.nextDuty = { code: '', date: '', time: '', timeMode: 'Z', offset: 0 };
+        if (!app.nextDuty) app.nextDuty = { code: '', date: '', time: '', timeMode: 'Z', offset: 0, isLongLayover: false };
 
         setCrew(savedCrew);
         initHHMMUX();
