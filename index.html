@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.0.0)</title>
+    <title>CAL Duty (Pro v6.0.2)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -665,7 +665,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.0.0 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.0.2 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -918,17 +918,16 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.0.0 里程碑更新 (Milestone Update)</b><br>• <b>排班體驗優化</b>：計畫任務時間欄位標示由 Start 改為更直覺的 <code>STD</code>。<br>• <b>歷史紀錄收折</b>：更新日誌支援收折，保留前五版重要演進軌跡。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.0.0 Milestone Update</b><br>• Input placeholder updated to 'STD'.<br>• Added collapsible history for previous 5 versions.</div>
+            text: `<div class="info-zh"><b>v6.0.2 介面顯示修復</b><br>• 修復：最後一段 MAX FDT END (Z) 卡片無法即時顯示計算時間與警示背景顏色的問題。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.0.2 UI Display Fix</b><br>• Fixed an issue where the MAX FDT END (Z) card was not rendering the calculated time and status colors correctly.</div>
                    <div class="info-divider"></div>
                    <details class="changelog-details">
                        <summary class="changelog-summary">查看歷史版本 (Previous Versions) ▼</summary>
                        <div class="info-zh" style="margin-top:8px; font-size:12px; line-height:1.6;">
-                           <b>v5.8.8 智慧代碼辨識 & 美型排班卡</b><br>• 自動報到判定 (TPE-90m/外站-60m/SIM-0m) 與卡片分層設計。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v5.8.7 局部更新架構 & 警告強化</b><br>• 導入防斷尾機制；新增 ⚠️ 休時不足 警告標示。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v5.8.6 主動適法性預排</b><br>• 互動式預排功能上線，自動精算休時差額。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v5.8.5 時間軸終點定錨</b><br>• 新增 NEXT DUTY 卡片，具象化「報退與休時」流程。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v5.8.4 下次報到時區邏輯</b><br>• 釐清 Next Rpt 適用於任何職務，統一顯示最後落地的 Local Time。
+                           <b>v6.0.1 邏輯除錯與全域連動</b><br>• ALL UTC 同步切換；跨日休時精算修復。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.0.0 里程碑更新</b><br>• 計畫任務欄位標示改為 STD；新增收折式歷史日誌。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v5.8.8 智慧代碼辨識</b><br>• 自動報到判定與卡片分層設計。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v5.8.7 局部更新架構</b><br>• 導入防斷尾機制；強化休時不足警告。
                        </div>
                    </details>`
         },
@@ -1284,6 +1283,14 @@
         const current = app.nextDuty.timeMode || 'Z';
         app.nextDuty.timeMode = (current === 'Z') ? 'L' : 'Z';
         saveData(); drawTimeline(); 
+    }
+
+    function toggleAllModes() {
+        let target = 'L';
+        if (app.stations[0] && app.stations[0].stdMode === 'L') target = 'Z';
+        app.stations.forEach(s => { s.stdMode = target; s.staMode = target; });
+        if (app.nextDuty) app.nextDuty.timeMode = target;
+        saveData(); drawTimeline();
     }
     
     function updNd(field, val) {
@@ -1775,10 +1782,10 @@
                     const isNightTime = (h > 21 || h < 7) || (h === 21 && m > 0);
                     document.getElementById('nightOps').checked = isNightTime;
                     const offsetSign = stdInfo.offset >= 0 ? '+' : '';
-                    document.getElementById('loc-time-display').innerText = `${stdInfo.timeStr} L (UTC${offsetSign}${stdInfo.offset})`;
+                    const locDisp = document.getElementById('loc-time-display'); if(locDisp) locDisp.innerText = `${stdInfo.timeStr} L (UTC${offsetSign}${stdInfo.offset})`;
                 }
-            } else { nightContainer.style.border = "2px solid var(--brand-orange)"; document.getElementById('loc-time-display').innerText = `STD: --:-- (Chk Night)`; }
-        } else { document.getElementById('loc-time-display').innerText = `STD: --:--`; nightContainer.style.border = "1px solid var(--border-light)"; }
+            } else { nightContainer.style.border = "2px solid var(--brand-orange)"; const locDisp = document.getElementById('loc-time-display'); if(locDisp) locDisp.innerText = `STD: --:-- (Chk Night)`; }
+        } else { const locDisp = document.getElementById('loc-time-display'); if(locDisp) locDisp.innerText = `STD: --:--`; nightContainer.style.border = "1px solid var(--border-light)"; }
 
         let stationLimitExtensions = []; let globalPauseMinutes = 0; 
         app.stations.forEach((s, i) => {
@@ -1800,7 +1807,7 @@
         let globalMaxFdpMins = (lim*60) + globalPauseMinutes + totalExtension + discretionMins; 
         let isCapped = false; if (globalMaxFdpMins > 1440) { globalMaxFdpMins = 1440; isCapped = true; } 
         let limitText = `${base}h`; if(isNight) limitText += `-2h`; if(globalPauseMinutes > 0) limitText += `+S`; if(totalExtension > 0) limitText += `+E`; if(isExt) limitText += `+CD`; 
-        document.getElementById('disp-limit-dur').innerText = limitText;
+        const dispLimitEl = document.getElementById('disp-limit-dur'); if (dispLimitEl) dispLimitEl.innerText = limitText;
         app._stats.maxFdpMins = globalMaxFdpMins;
 
         calcTotals(); 
@@ -1825,22 +1832,23 @@
         }
 
         let rep = null; let reportOffset = (code==='TPE'?90:60); 
-        if (app.isLocked && app.lockedReport !== null) { rep = app.lockedReport; document.getElementById('reportLabel').innerText = "LOCKED"; } 
-        else if (s1 !== null) { rep = s1 - reportOffset; if(rep<0) rep+=1440; document.getElementById('reportLabel').innerText = code==='TPE'?"STD-90":"STD-60"; }
+        const repLabelEl = document.getElementById('reportLabel');
+        if (app.isLocked && app.lockedReport !== null) { rep = app.lockedReport; if(repLabelEl) repLabelEl.innerText = "LOCKED"; } 
+        else if (s1 !== null) { rep = s1 - reportOffset; if(rep<0) rep+=1440; if(repLabelEl) repLabelEl.innerText = code==='TPE'?"STD-90":"STD-60"; }
 
         if (rep === null || (!hasAnyStd && !hasAnyInput)) {
-            document.getElementById('resReport').innerText="--:--"; 
-            if(document.getElementById('resNextRpt')) document.getElementById('resNextRpt').innerHTML = "--:--";
-            if(document.getElementById('min-rest-lbl')) document.getElementById('min-rest-lbl').innerText = "Rest: --";
-            document.getElementById('disp-limit-dur').innerText = "--";
+            const resRepEl = document.getElementById('resReport'); if(resRepEl) resRepEl.innerText="--:--"; 
+            const resNextEl = document.getElementById('resNextRpt'); if(resNextEl) resNextEl.innerHTML = "--:--";
+            const minRestEl = document.getElementById('min-rest-lbl'); if(minRestEl) minRestEl.innerText = "Rest: --";
+            const dispLimEl = document.getElementById('disp-limit-dur'); if(dispLimEl) dispLimEl.innerText = "--";
             
             const edCard = document.getElementById('endDutyCard');
             if(edCard) {
-                document.getElementById('ed-arr').innerText = "--:--Z";
-                document.getElementById('ed-rest').innerText = "--h";
-                document.getElementById('ed-report').innerText = "--:--";
-                document.getElementById('ed-report-z').innerText = "(--:-- Z)";
-                document.getElementById('ed-warning').style.display = 'none';
+                const edArr = document.getElementById('ed-arr'); if(edArr) edArr.innerText = "--:--Z";
+                const edRest = document.getElementById('ed-rest'); if(edRest) edRest.innerText = "--h";
+                const edReport = document.getElementById('ed-report'); if(edReport) edReport.innerText = "--:--";
+                const edReportZ = document.getElementById('ed-report-z'); if(edReportZ) edReportZ.innerText = "(--:-- Z)";
+                const edWarn = document.getElementById('ed-warning'); if(edWarn) edWarn.style.display = 'none';
                 edCard.style.borderColor = 'var(--brand-blue)';
                 edCard.style.background = 'var(--bg-accent)';
             }
@@ -1856,7 +1864,7 @@
             const rptLoc = getLocalInfo(rep, airportIanaZones[code], rptDate);
             if (rptLoc) repHtml += ` <span style="font-size:10px; color:var(--text-secondary); font-weight:normal;">(${rptLoc.timeStr}L)</span>`;
         }
-        document.getElementById('resReport').innerHTML = repHtml;
+        const resRepElMain = document.getElementById('resReport'); if(resRepElMain) resRepElMain.innerHTML = repHtml;
 
         rptDate.setUTCHours(Math.floor(rep/60), rep%60, 0, 0); const nowMs = Date.now(); const repMs = rptDate.getTime(); const elapsedSinceRepMins = (nowMs - repMs) / 60000;
         app._stats.elapsedSinceRep = elapsedSinceRepMins;
@@ -1897,8 +1905,17 @@
             }
         }
 
-        let estimatedDutyEndTime = rep + projectedElapsed; if (estimatedDutyEndTime >= 1440) estimatedDutyEndTime = estimatedDutyEndTime % 1440;
+        let absRep = rep;
+        if (s1 !== null && rep > s1 && (rep - s1 > 720)) absRep = rep - 1440;
+        let absEstimatedDutyEndTime = absRep + projectedElapsed;
+
+        let estimatedDutyEndTime = absEstimatedDutyEndTime; 
+        while (estimatedDutyEndTime < 0) estimatedDutyEndTime += 1440;
+        estimatedDutyEndTime = estimatedDutyEndTime % 1440;
+        
         const fdpEndTime = rep + globalMaxFdpMins; 
+        const maxFdtEl = document.getElementById('resMaxFdtCard');
+        if (maxFdtEl) { maxFdtEl.innerText = fmt(fdpEndTime); }
         
         let cbnOffset = (code === 'TPE') ? 140 : (code === 'TSA' ? 90 : (code === 'KHH' ? 110 : 60));
         let cbnLimit = (app.crew === 'M' || app.crew === 'D') ? 20 * 60 : 14 * 60; let cbnEndRelative = cbnLimit - (cbnOffset - reportOffset); 
@@ -1930,6 +1947,17 @@
         }
 
         let isStaExceeded = false; if (schedElapsed > effectiveLimit) isStaExceeded = true;
+        
+        const maxFdtBox = document.getElementById('max-fdt-box-card'); const capMsg = document.getElementById('cap-msg-card');
+        if(maxFdtBox) {
+             maxFdtBox.querySelector('.lbo-time').style.color = 'var(--text-primary)'; maxFdtBox.querySelector('.lbo-label').style.color = 'var(--text-secondary)';
+             if (isActExceeded && hasAnyInput) { maxFdtBox.style.background = 'var(--brand-red)'; maxFdtBox.querySelector('.lbo-time').style.color = 'white'; maxFdtBox.querySelector('.lbo-label').style.color = 'white'; if(capMsg) capMsg.innerText = "⚠️ ACT EXCEEDS LIMIT"; } 
+             else if (isStaExceeded) { maxFdtBox.style.background = 'var(--brand-orange)'; maxFdtBox.querySelector('.lbo-time').style.color = 'white'; maxFdtBox.querySelector('.lbo-label').style.color = 'white'; if(capMsg) capMsg.innerText = "⚠️ STA EXCEEDS LIMIT"; } 
+             else {
+                maxFdtBox.style.background = 'var(--bg-accent)'; maxFdtBox.classList.remove('station-divert'); maxFdtBox.style.borderColor = 'var(--border-light)';
+                if (cbnChoke) { if(capMsg) capMsg.innerText = `(CBN: ${cbnEndDisplay}Z)`; } else if (isCapped) { if(capMsg) capMsg.innerText = " (Cap 24h)"; } else { if(capMsg) capMsg.innerText = ""; }
+             }
+        }
         
         app._stats.fdpRem = globalMaxFdpMins - Math.max(projectedElapsed, schedElapsed);
         app._stats.rtRem = globalMaxFdpMins - elapsedSinceRepMins;
@@ -1978,13 +2006,13 @@
             finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (actualFdpMins < 0) actualFdpMins += 1440;
             if (actualFdpMins > globalMaxFdpMins && !isULR) { const fdpRestHours = Math.ceil(actualFdpMins / 60); finalRestHours = Math.max(tableRest, fdpRestHours); }
             
-            calculatedRestMins = finalRestHours * 60; const postDuty = 30; let arrivalZAbs = estimatedDutyEndTime; nextRptZAbs = arrivalZAbs + postDuty + calculatedRestMins;
+            calculatedRestMins = finalRestHours * 60; const postDuty = 30; 
+            nextRptZAbs = absEstimatedDutyEndTime + postDuty + calculatedRestMins;
             const destCode = app.stations[lastIdx].code; let nextRptHtml = fmt(nextRptZAbs % 1440) + " Z"; 
 
             if (destCode in airportIanaZones) {
                 const zone = airportIanaZones[destCode]; const anchor = new Date(refDate);
-                let flowMins = estimatedDutyEndTime - rep; if(flowMins < 0) flowMins += 1440;
-                const arrDate = new Date(anchor.getTime() + (rep * 60000) + (flowMins * 60000)); const nextDate = new Date(arrDate.getTime() + (postDuty + calculatedRestMins) * 60000);
+                const arrDate = new Date(anchor.getTime() + (absEstimatedDutyEndTime * 60000)); const nextDate = new Date(anchor.getTime() + (nextRptZAbs * 60000));
                 const fmtLocal = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23', day: 'numeric' });
                 const arrParts = fmtLocal.formatToParts(arrDate); const nextParts = fmtLocal.formatToParts(nextDate);
                 const arrDay = arrParts.find(p => p.type === 'day').value; const nextDay = nextParts.find(p => p.type === 'day').value;
@@ -2028,38 +2056,38 @@
 
         // 🚀 POPULATE TERMINAL END DUTY CARD
         const edArr = document.getElementById('ed-arr'); const edRest = document.getElementById('ed-rest'); const edReport = document.getElementById('ed-report'); const edReportZ = document.getElementById('ed-report-z'); const edWarning = document.getElementById('ed-warning'); const endCard = document.getElementById('endDutyCard');
-        if (estimatedDutyEndTime !== null && edArr && endCard) {
-            edArr.innerText = fmt(estimatedDutyEndTime) + "Z";
-            edRest.innerText = finalRestHours + "h";
+        if (estimatedDutyEndTime !== null && endCard) {
+            if(edArr) edArr.innerText = fmt(estimatedDutyEndTime) + "Z";
+            if(edRest) edRest.innerText = finalRestHours + "h";
             
             if (isULR && destIsHome) {
-                edReport.innerText = "4 Local Nights";
-                edReportZ.innerText = "";
-                edRest.innerText = "96+h";
+                if(edReport) edReport.innerText = "4 Local Nights";
+                if(edReportZ) edReportZ.innerText = "";
+                if(edRest) edRest.innerText = "96+h";
             } else {
                 if (localReportStr) {
-                    edReport.innerHTML = `${localReportStr}${dayOffsetStr}`;
-                    edReportZ.innerText = `(${fmt(nextRptZAbs % 1440)}Z)`;
+                    if(edReport) edReport.innerHTML = `${localReportStr}${dayOffsetStr}`;
+                    if(edReportZ) edReportZ.innerText = `(${fmt(nextRptZAbs % 1440)}Z)`;
                 } else {
-                    edReport.innerText = fmt(nextRptZAbs % 1440) + "Z";
-                    edReportZ.innerText = "";
+                    if(edReport) edReport.innerText = fmt(nextRptZAbs % 1440) + "Z";
+                    if(edReportZ) edReportZ.innerText = "";
                 }
             }
 
             let warns = [];
+            // UI Warning localization changed to purely English
             if (app._stats.fdpExcessMins > 0) warns.push(`FDP +${fmt(app._stats.fdpExcessMins, false)}`);
             if (app._stats.ftExcessMins > 0) warns.push(`FT +${fmt(app._stats.ftExcessMins, false)}`);
             let landingCount = 0; for(let k=0; k<app.stations.length-1; k++) { if (!app.stations[k].isAcm) landingCount++; }
             if (landingCount > 6) warns.push(`Ldg > 6`);
-            if (app._stats.restShortMins > 0) warns.push(`⚠️ 休時不足 (Rest Short) +${fmt(app._stats.restShortMins, false)}`);
+            if (app._stats.restShortMins > 0) warns.push(`Rest Short +${fmt(app._stats.restShortMins, false)}`);
             
             if (warns.length > 0) {
-                edWarning.style.display = 'block';
-                edWarning.innerText = "❌ 違規 (EXCEEDED): " + warns.join(' ｜ ');
+                if(edWarning) { edWarning.style.display = 'block'; edWarning.innerText = "⚠️ EXCEEDED: " + warns.join(' | '); }
                 endCard.style.borderColor = 'var(--brand-red)';
                 endCard.style.background = 'var(--danger-bg-soft)';
             } else {
-                edWarning.style.display = 'none';
+                if(edWarning) edWarning.style.display = 'none';
                 endCard.style.borderColor = 'var(--brand-blue)';
                 endCard.style.background = 'var(--bg-accent)';
                 if(document.body.classList.contains('dark-mode')) endCard.style.background = 'rgba(59, 130, 246, 0.05)';
