@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.5.2)</title>
+    <title>CAL Duty (Pro v6.5.3)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -694,7 +694,7 @@
         .changelog-summary::-webkit-details-marker { display: none; }
 
 
-        /* === iPad TIMELINE HEIGHT FIX (v6.5.2) ===
+        /* === iPad TIMELINE HEIGHT FIX (v6.5.3) ===
            Goal: reduce Duty Timeline vertical footprint on iPad WebKit to prevent leg cards from being squeezed.
         */
         @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
@@ -706,7 +706,7 @@
             .dt-ruler { height: 18px !important; margin-top: 2px !important; }
             .dt-tick { font-size: 8px !important; }
             /* reclaim vertical space above the leg cards */
-            #timeline-container { padding-top: 10px !important; padding-bottom: 58px !important; align-items: flex-start !important; }
+            #timeline-container { padding-top: 10px !important; padding-bottom: 58px !important; align-items: center !important; }
         }
 
         /* 🚨 RESPONSIVE RESET */
@@ -799,7 +799,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.2：iPad 時間條高度修正（UI，不更動計算公式）" onclick="showInfo('changelog')">Pro v6.5.2 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.3：iPad 航段卡重新置中（保留時間條高度修正；UI，不更動計算公式）" onclick="showInfo('changelog')">Pro v6.5.3 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1070,9 +1070,19 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.5.2 iPad 時間條高度修正（UI；不更動計算公式）</b><br>
+            text: `<div class="info-zh"><b>v6.5.3 iPad 航段卡重新置中（UI；不更動計算公式）</b><br>
+                   • <b>修正</b>：在保留 v6.5.2「時間條高度縮減」的前提下，讓 iPad（Safari/Chrome）航段卡回到垂直置中顯示，不再貼齊頂部。<br>
+                   • <b>影響範圍</b>：僅版面配置（CSS）；不更動任何計算公式與功能。<br>
+                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+                   </div>
+                   <div class="info-zh"><b>v6.5.2 iPad 時間條高度修正（UI；不更動計算公式）</b><br>
                    • <b>iPad Safari/Chrome</b>：Duty Timeline（時間條）改為 Compact（降低刻度/間距），避免擠壓航段卡區塊。<br>
                    • <b>Viewport 校正</b>：使用 Visual Viewport 高度鎖定 App 版面，降低 iPad 動態工具列造成的高度誤判。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.3 iPad Leg Card Re-centering (UI-only; no formula changes)</b><br>
+                   • <b>Fix</b>: while preserving the compact timeline from v6.5.2, restore vertical centering of leg cards on iPad (Safari/Chrome) instead of top-alignment.<br>
+                   • <b>Scope</b>: layout/CSS only; no calculation or logic changes.<br>
+                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+                   </div>
                    <div class="info-en" style="margin-top:8px;"><b>v6.5.2 iPad Timeline Height Fix (UI-only; no formula changes)</b><br>
                    • <b>iPad Safari/Chrome</b>: compact the duty timeline (ruler/track spacing) so leg cards are not squeezed.<br>
                    • <b>Viewport stabilization</b>: use the visual viewport height to keep flex layout stable when browser toolbars resize.</div>
