@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.5.3)</title>
+    <title>CAL Duty (Pro v6.5.2)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -79,7 +79,7 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
+            height: var(--app-height, 100%);
             overflow: hidden; 
             position: fixed;
             overscroll-behavior-y: none;
@@ -352,16 +352,16 @@
 
         /* LEGAL STATUS STRIP */
         .legal-status-strip {
-            margin: 4px 16px 0 16px;
-            min-height: 26px;
+            margin: 6px 16px 0 16px;
+            min-height: 28px;
             border-radius: 10px;
             border: 1px solid var(--border-light);
             background: var(--bg-card);
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 4px 8px;
-            font-size: 10px;
+            padding: 5px 10px;
+            font-size: 11px;
             line-height: 1;
             flex-shrink: 0;
             transition: all 0.3s ease;
@@ -407,8 +407,8 @@
         .stats-dashboard {
             display: grid;
             grid-template-columns: 1.2fr 1fr 1fr 1fr;
-            gap: 6px;
-            padding: 6px 12px;
+            gap: 8px;
+            padding: 8px 16px;
             background: var(--bg-app);
             position: relative;
             flex-shrink: 0;
@@ -417,7 +417,7 @@
         }
         .stat-card {
             background: var(--bg-card);
-            padding: 6px;
+            padding: 8px;
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-sm);
             display: flex;
@@ -482,22 +482,22 @@
         .duty-timeline-wrapper {
             position: relative;
             flex-shrink: 0;
-            margin: 0px 16px 0 16px; 
+            margin: 2px 16px 0 16px; 
             width: calc(100% - 32px);
             z-index: 80; 
             display: flex;
             flex-direction: column;
-            gap: 1px; 
+            gap: 2px; 
             animation: fadeIn 0.3s ease;
         }
 
         .dt-content { display: flex; width: 100%; flex-direction: column;}
-        .dt-header { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0px; }
+        .dt-header { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2px; }
         .dt-header-col { display: flex; flex-direction: column; gap: 2px; }
-        .dt-title { font-size: 8.5px; color: var(--text-tertiary); font-weight: bold; }
-        .dt-val { font-size: 11px; font-weight: 800; font-family: monospace; color: var(--text-primary); }
+        .dt-title { font-size: 9px; color: var(--text-tertiary); font-weight: bold; }
+        .dt-val { font-size: 12px; font-weight: 800; font-family: monospace; color: var(--text-primary); }
         
-        .dt-track { position: relative; width: 100%; height: 8px; margin-top: 8px; }
+        .dt-track { position: relative; width: 100%; height: 10px; margin-top: 14px; }
         .dt-track-inner {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-card); border: 1px solid var(--border-light);
@@ -523,65 +523,15 @@
         .dt-limit-marker::before { content: '▼'; position: absolute; top: 0px; left: -4px; font-size: 8px; color: var(--brand-red); line-height: 1; }
         .dt-limit-text { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); font-size: 8px; font-weight: 900; color: var(--brand-red); letter-spacing: 0.5px; white-space: nowrap; background: var(--bg-card); padding: 1px 3px; border-radius: 4px; box-shadow: 0 1px 2px rgba(255, 59, 48, 0.2); border: 1px solid rgba(255, 59, 48, 0.1); }
         body.dark-mode .dt-limit-text { border-color: rgba(255, 59, 48, 0.3); background: #2a1111;}
-        .dt-ruler { position: relative; width: 100%; height: 18px; margin-top: 1px; }
+        .dt-ruler { position: relative; width: 100%; height: 24px; margin-top: 2px; }
         .dt-tick { position: absolute; display: flex; flex-direction: column; align-items: center; font-size: 9px; color: var(--text-tertiary); transform: translateX(-50%); white-space: nowrap; font-weight: 700; transition: left 0.5s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .dt-tick span:first-child { font-family: monospace; font-size: 10px; }
         .dt-tick.stagger { transform: translateX(-50%) translateY(12px); } 
         .dt-tick.minor span:first-child { color: var(--text-tertiary); font-size: 9px; }
         .dt-tick.actual-out span:first-child { color: var(--brand-green); font-size: 10px; font-weight: 800;}
         .dt-tick.actual-in span:first-child { color: var(--brand-blue); font-size: 10px; font-weight: 800;}
-        .dt-segment-info { text-align: center; height: 12px; margin-top: 2px; font-size: 9.5px; font-weight: 800; color: var(--brand-blue); opacity: 0; transition: opacity 0.3s; background: rgba(0,122,255,0.05); border-radius: 4px; padding: 2px 0; display:flex; justify-content:center; align-items:center; }
+        .dt-segment-info { text-align: center; height: 16px; margin-top: 4px; font-size: 10px; font-weight: 800; color: var(--brand-blue); opacity: 0; transition: opacity 0.3s; background: rgba(0,122,255,0.05); border-radius: 4px; padding: 2px 0; display:flex; justify-content:center; align-items:center; }
         body.dark-mode .dt-segment-info { background: rgba(59,130,246,0.15); color: #60a5fa; }
-
-        /* === DT RULER DENSITY (iPad-friendly) === */
-        .dt-density-toggle{
-            appearance:none; -webkit-appearance:none;
-            border: 1px solid var(--border-light);
-            background: var(--bg-input);
-            color: var(--text-tertiary);
-            font-size: 12px;
-            font-weight: 900;
-            width: 28px; height: 20px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transform: translateY(1px);
-            box-shadow: var(--shadow-xs);
-            -webkit-tap-highlight-color: transparent;
-        }
-        .dt-density-toggle:active{ transform: translateY(1px) scale(0.97); }
-        .dt-density-toggle.detail{
-            color: var(--brand-blue);
-            border-color: color-mix(in srgb, var(--brand-blue) 35%, var(--border-light) 65%);
-            background: color-mix(in srgb, var(--brand-blue) 8%, var(--bg-input) 92%);
-        }
-
-        /* Prevent tick labels from causing horizontal layout pressure */
-        .dt-ruler{ overflow: hidden; }
-
-        /* Compact mode: hide text, keep colored markers */
-        .dt-ruler.compact .dt-tick span{ display:none; }
-        .dt-ruler.compact .dt-tick{
-            height: 18px;
-            justify-content: center;
-        }
-        .dt-ruler.compact .dt-tick::before{
-            content:'';
-            width: 5px; height: 5px;
-            border-radius: 50%;
-            background: color-mix(in srgb, var(--text-tertiary) 70%, transparent);
-            box-shadow: 0 0 0 2px var(--bg-app);
-        }
-        .dt-ruler.compact .dt-tick.actual-out::before{ background: var(--brand-green); }
-        .dt-ruler.compact .dt-tick.actual-in::before{ background: var(--brand-blue); }
-
-        /* Edge alignment in detail mode to reduce overflow near ends */
-        .dt-tick.edge-left{ transform: translateX(0); align-items:flex-start; }
-        .dt-tick.edge-right{ transform: translateX(-100%); align-items:flex-end; }
-        .dt-tick.edge-left.stagger{ transform: translateX(0) translateY(12px); }
-        .dt-tick.edge-right.stagger{ transform: translateX(-100%) translateY(12px); }
 
         /* === TIMELINE CONTAINERS === */
         #timeline-container {
@@ -743,6 +693,22 @@
         .changelog-summary { cursor: pointer; font-size: 12px; font-weight: 800; color: var(--brand-blue); outline: none; user-select: none; }
         .changelog-summary::-webkit-details-marker { display: none; }
 
+
+        /* === iPad TIMELINE HEIGHT FIX (v6.5.2) ===
+           Goal: reduce Duty Timeline vertical footprint on iPad WebKit to prevent leg cards from being squeezed.
+        */
+        @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
+            .duty-timeline-wrapper { margin-top: 6px !important; gap: 0px !important; }
+            .dt-header { margin-top: 0 !important; align-items: flex-end; }
+            .dt-title { font-size: 8px !important; }
+            .dt-val { font-size: 11px !important; }
+            .dt-track { height: 8px !important; margin-top: 8px !important; }
+            .dt-ruler { height: 18px !important; margin-top: 2px !important; }
+            .dt-tick { font-size: 8px !important; }
+            /* reclaim vertical space above the leg cards */
+            #timeline-container { padding-top: 10px !important; padding-bottom: 58px !important; align-items: flex-start !important; }
+        }
+
         /* 🚨 RESPONSIVE RESET */
         @media screen and (max-width: 820px) and (orientation: portrait), 
                screen and (max-height: 600px) and (orientation: landscape) {
@@ -805,10 +771,10 @@
     <div id="uiToast" class="ui-toast" role="status" aria-live="polite"><span id="uiToastMsg" class="ui-toast-msg"></span></div>
 
     <!-- REST SWAP (ALARM) POPOVER -->
-    <div id="rbPopover" class="popover rb-popover" role="dialog" aria-label="輸休換班鬧鐘">
+    <div id="rbPopover" class="popover rb-popover" role="dialog" aria-label="In-flight Rest Alarm Helper">
         <div class="rb-popover-head">
             <div>
-                <div class="rb-popover-title">輸休換班鬧鐘</div>
+                <div class="rb-popover-title">In-flight Rest Alarm Helper</div>
                 <div id="rbPopSub" class="rb-popover-sub">—</div>
             </div>
             <button id="rbCloseBtn" class="rb-close" type="button" aria-label="Close">✕</button>
@@ -833,7 +799,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.3：時間條欄高壓縮（iPad 航段卡空間優化；不更動計算公式 / 不改動視覺風格）" onclick="showInfo('changelog')">Pro v6.5.3 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.2：iPad 時間條高度修正（UI，不更動計算公式）" onclick="showInfo('changelog')">Pro v6.5.2 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1012,7 +978,8 @@
                 <div style="display:flex; align-items:baseline; gap: 8px; transform: translateY(1px);">
                     <span style="font-size:9px; font-weight:700; color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
                     <span style="color:var(--brand-blue); font-size:15px; font-weight:800; font-family:monospace; letter-spacing:-0.5px;" id="dt-pct-label">0%</span>
-                    <span style="font-size:9px; font-weight:700; color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span> </div>
+                    <span style="font-size:9px; font-weight:700; color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
+                </div>
 
                 <div class="dt-header-col" style="align-items:flex-end;">
                     <span class="dt-title" id="dt-end-title">MAX LIMIT</span>
@@ -1035,7 +1002,7 @@
                 <div class="dt-now-marker" id="dtNowMarker"></div>
             </div>
             
-            <div class="dt-ruler compact" id="dtRuler"></div>
+            <div class="dt-ruler" id="dtRuler"></div>
             <div id="dtSegmentInfo" class="dt-segment-info"></div>
         </div>
     </div>
@@ -1081,32 +1048,42 @@
     </footer>
 
 <script>
+
+    // === VIEWPORT HEIGHT STABILIZER (iPad/iOS WebKit) ===
+    // Keeps the main flex column from mis-sizing when Safari/Chrome UI toolbars expand/collapse.
+    (function(){
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (!isIOS) return;
+
+        const setAppH = () => {
+            const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+            document.documentElement.style.setProperty('--app-height', `${Math.round(h)}px`);
+        };
+
+        setAppH();
+        window.addEventListener('resize', setAppH, { passive: true });
+        window.addEventListener('orientationchange', setAppH, { passive: true });
+        if (window.visualViewport) window.visualViewport.addEventListener('resize', setAppH, { passive: true });
+    })();
+
     // === INFO SYSTEM DATA & BILINGUAL TEXTS ===
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.5.3 時間條欄高壓縮（iPad 航段卡空間優化；不更動計算公式 / 不改動視覺風格）</b><br>
-                   • <b>縮小 REPORT/SCHED/ACT 與時間條間距</b>：降低 dt-header 與 dt-track 的垂直留白，減少整體欄高。<br>
-                   • <b>縮小時間條本體</b>：bar 高度與 ruler 高度下修，釋放航段卡可視空間。<br>
-                   • <b>移除刻度收折/展開按鈕</b>：時間條固定以彩色標記呈現（OUT=綠、IN=藍），避免額外控制造成干擾。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.3 Timeline Height Compression (More room for leg cards; No formula/style changes)</b><br>
-                   • Reduced vertical spacing between the header (REPORT/SCHED/ACT) and the duty bar.<br>
-                   • Reduced bar/ruler heights to reclaim vertical space.<br>
-                   • Removed the tick density toggle; timeline stays in compact marker mode (OUT=green, IN=blue).</div>
+            text: `<div class="info-zh"><b>v6.5.2 iPad 時間條高度修正（UI；不更動計算公式）</b><br>
+                   • <b>iPad Safari/Chrome</b>：Duty Timeline（時間條）改為 Compact（降低刻度/間距），避免擠壓航段卡區塊。<br>
+                   • <b>Viewport 校正</b>：使用 Visual Viewport 高度鎖定 App 版面，降低 iPad 動態工具列造成的高度誤判。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.2 iPad Timeline Height Fix (UI-only; no formula changes)</b><br>
+                   • <b>iPad Safari/Chrome</b>: compact the duty timeline (ruler/track spacing) so leg cards are not squeezed.<br>
+                   • <b>Viewport stabilization</b>: use the visual viewport height to keep flex layout stable when browser toolbars resize.</div>
 <div class="info-divider"></div>
-                   <div class="info-zh"><b>v6.5.2 時間條刻度密度切換（iPad 版面優化；不更動計算公式 / 不改動視覺風格）</b><br>
-                   • <b>預設收折</b>：Duty Timeline 刻度預設只顯示彩色標記（OUT=綠、IN=藍），避免 iPad Safari/Chrome 因刻度文字造成橫向擠壓。<br>
-                   • <b>邊界對齊</b>：展開模式下，靠近左右邊緣的刻度會自動左/右對齊，降低溢出與擠壓。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.2 Tick Density Toggle (iPad layout fix; No formula/style changes)</b><br>
-                   • Default is compact markers only (OUT=green, IN=blue) to avoid horizontal squeeze on iPad Safari/Chrome.<br>
-                   • Edge-aligned labels in detail mode to reduce overflow near ends.</div>
-<div class="info-divider"></div>
-                   <div class="info-zh"><b>v6.5.1 輸休換班鬧鐘（不更動計算公式 / 不改動視覺風格）</b><br>
+<div class="info-zh"><b>v6.5.1 輸休換班鬧鐘（不更動計算公式 / 不改動視覺風格）</b><br>
                    • <b>輸休展開</b>：點擊航段卡的 💤 輸休時間，可展開輸入 Block Off（OUT）時間。<br>
-                   • <b>自動計算換班時間</b>：<span style="font-weight:800;">D Crew</span> 顯示 2 段、<span style="font-weight:800;">M Crew</span> 顯示 3 段。<br>
-                     &nbsp;&nbsp;第1段 = Block Off + 00:15 + 輪休時間<br>
-                     &nbsp;&nbsp;第2段 = Block Off + 00:15 + 2×輪休時間<br>
-                     &nbsp;&nbsp;第3段 = Block Off + 00:15 + 3×輪休時間（僅 M Crew）<br>
+                   • <b>自動計算換班時間</b>：
+                       <span style="font-weight:800;">D Crew</span> 顯示 2 段、<span style="font-weight:800;">M Crew</span> 顯示 3 段，依序計算：<br>
+                       &nbsp;&nbsp;第1段 = Block Off + 00:15 + 輪休時間<br>
+                       &nbsp;&nbsp;第2段 = Block Off + 00:15 + 2×輪休時間<br>
+                       &nbsp;&nbsp;第3段 = Block Off + 00:15 + 3×輪休時間（僅 M Crew）<br>
                    • <b>同步更新</b>：輪休時間採用既有機上輪休估算（依 FT 或 Plan），輸入/更動後即時更新。</div>
                    <div class="info-en" style="margin-top:8px;"><b>v6.5.1 In-flight Rest Alarm Helper (No formula/style changes)</b><br>
                    • Tap the 💤 rest chip to expand a small panel for Block Off (OUT).<br>
@@ -1117,7 +1094,7 @@
                    • Uses the existing rest estimate (FT/Plan-based) and updates live.</div>
 <div class="info-divider"></div>
                    <details class="changelog-details">
-                       <summary class="changelog-summary">查看歷史版本 (Previous 5 Versions) ▼</summary>
+                       <summary class="changelog-summary">查看歷史版本 (Previous Versions) ▼</summary>
                        <div class="info-zh" style="margin-top:8px; font-size:12px; line-height:1.6;">
                            <b>v6.5.0 UI/可用性強化</b><br>• Legal Status Strip 診斷（可點擊原因/數值）。<br>• Routes 全改內建 Modal/Toast（移除瀏覽器彈窗）。<br>• HHMM 輸入防呆擴充；Guided Focus 自動捲動；Info/Dialogs 無障礙鍵盤支援。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
                            <b>v6.4.2 引導光環強化</b><br>• 加強引導輸入脈衝光暈；新增 Safari WebKit 動畫支援。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
@@ -1276,15 +1253,15 @@
 
         if (!segCount || restMins <= 0) {
             timesEl.innerHTML = '';
-            hintEl.innerHTML = '目前無可用輪休時間（僅 D/M Crew 顯示）。';
+            hintEl.innerHTML = 'No rest estimate available (D/M Crew only).';
             return;
         }
 
-        hintEl.innerHTML = `輪休時間（每段）：<b>${fmt(restMins, false)}</b>　｜　公式：Block Off + 00:15 + n×輪休`;
+        hintEl.innerHTML = `Rest per segment: <b>${fmt(restMins, false)}</b> ｜ Formula: Block Off + 00:15 + n×Rest`;
 
         const p = rbParseStrictHHMM(offEl.value);
         if (!p.valid) {
-            timesEl.innerHTML = `<div class="rb-time-row"><span class="k">提示</span><span class="v">請輸入 Block Off</span></div>`;
+            timesEl.innerHTML = `<div class="rb-time-row"><span class="k">Hint</span><span class="v">Enter Block Off</span></div>`;
             return;
         }
 
@@ -1295,7 +1272,7 @@
             const t = fmt(raw, true);
             const compact = rbFormatCompact(raw);
             const dayBadge = day > 0 ? `<span class="rb-badge">+${day}</span>` : '';
-            rows += `<div class="rb-time-row"><span class="k">第${n}段</span><span class="v">${t}<small>${compact}</small>${dayBadge}</span></div>`;
+            rows += `<div class="rb-time-row"><span class="k">Seg ${n}</span><span class="v">${t}<small>${compact}</small>${dayBadge}</span></div>`;
         }
         timesEl.innerHTML = rows;
     }
@@ -1403,7 +1380,7 @@ function uiToast(message, tone = 'info') {
         __uiToastTimer = setTimeout(() => { toast.classList.remove('show'); }, 1800);
     }
 
-    // === DT RULER DENSITY (default compact to avoid iPad horizontal squeeze) ===
+    
     // --- ACCESSIBLE MODAL MANAGER (Info & UI dialogs) ---
     const __FOCUSABLE_SEL = 'a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     let __modalActiveId = null;
@@ -3133,18 +3110,17 @@ function uiToast(message, tone = 'info') {
                     let isProjected = (out !== null) || (ft !== null) || (outRel > stdRel); let inLabel = isProjected ? "EST IN" : "STA";
                     if (inPct > 2 && inPct < 98 && (std !== null || out !== null)) rawTicks.push({ pct: inPct, time: fmt((rep + inRel) % 1440), label: inLabel, cls: '' });
                 }
-                let turn = 45; if (st.hotel && i < app.stations.length - 1) { const hTime = calcRest(st.ci, st.co); if (hTime >= 180) turn = hTime;  }
+                let turn = 45; if (st.hotel && i < app.stations.length - 1) { const hTime = calcRest(st.ci, co); if (hTime >= 180) turn = hTime;  }
                 tickLastProgElapsed = inRel + turn;
             }
             rawTicks.sort((a, b) => a.pct - b.pct); let lastRenderedPct = -100; let isStaggered = false; let rulerHtml = '';
             rawTicks.forEach(tick => {
                 if (tick.pct - lastRenderedPct < 8) isStaggered = !isStaggered; else isStaggered = false; let stgClass = isStaggered ? ' stagger' : '';
-                let edgeClass = (tick.pct < 6) ? " edge-left" : (tick.pct > 94 ? " edge-right" : "");
-                rulerHtml += `<div class="dt-tick minor ${tick.cls}${stgClass}${edgeClass}" title="${tick.label} ${tick.time}" style="left: ${tick.pct}%;"><span>${tick.time}</span><span>${tick.label}</span></div>`;
+                rulerHtml += `<div class="dt-tick minor ${tick.cls}${stgClass}" style="left: ${tick.pct}%;"><span>${tick.time}</span><span>${tick.label}</span></div>`;
                 lastRenderedPct = tick.pct;
             });
             ruler.innerHTML = rulerHtml;
-}
+        }
     }
 
     function updateBar(elId, val, limit) {
@@ -3429,7 +3405,7 @@ function uiToast(message, tone = 'info') {
 
         setCrew(savedCrew);
         initHHMMUX();
-drawTimeline(); 
+        drawTimeline(); 
         updateGuidedFocus(); // Initialize focus on load
     };
 </script>
