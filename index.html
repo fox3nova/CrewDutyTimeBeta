@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.4.1)</title>
+    <title>CAL Duty (Pro v6.5.2)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -365,7 +365,13 @@
             line-height: 1;
             flex-shrink: 0;
             transition: all 0.3s ease;
+            cursor: pointer;
+                }
+        .legal-status-strip:focus {
+            outline: 2px solid color-mix(in srgb, var(--brand-blue) 35%, transparent);
+            outline-offset: 2px;
         }
+
         .legal-status-strip .status-dot {
             width: 8px; height: 8px; border-radius: 999px;
             background: var(--semantic-info);
@@ -527,6 +533,56 @@
         .dt-segment-info { text-align: center; height: 16px; margin-top: 4px; font-size: 10px; font-weight: 800; color: var(--brand-blue); opacity: 0; transition: opacity 0.3s; background: rgba(0,122,255,0.05); border-radius: 4px; padding: 2px 0; display:flex; justify-content:center; align-items:center; }
         body.dark-mode .dt-segment-info { background: rgba(59,130,246,0.15); color: #60a5fa; }
 
+        /* === DT RULER DENSITY (iPad-friendly) === */
+        .dt-density-toggle{
+            appearance:none; -webkit-appearance:none;
+            border: 1px solid var(--border-light);
+            background: var(--bg-input);
+            color: var(--text-tertiary);
+            font-size: 12px;
+            font-weight: 900;
+            width: 28px; height: 20px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transform: translateY(1px);
+            box-shadow: var(--shadow-xs);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .dt-density-toggle:active{ transform: translateY(1px) scale(0.97); }
+        .dt-density-toggle.detail{
+            color: var(--brand-blue);
+            border-color: color-mix(in srgb, var(--brand-blue) 35%, var(--border-light) 65%);
+            background: color-mix(in srgb, var(--brand-blue) 8%, var(--bg-input) 92%);
+        }
+
+        /* Prevent tick labels from causing horizontal layout pressure */
+        .dt-ruler{ overflow: hidden; }
+
+        /* Compact mode: hide text, keep colored markers */
+        .dt-ruler.compact .dt-tick span{ display:none; }
+        .dt-ruler.compact .dt-tick{
+            height: 24px;
+            justify-content: center;
+        }
+        .dt-ruler.compact .dt-tick::before{
+            content:'';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--text-tertiary) 70%, transparent);
+            box-shadow: 0 0 0 2px var(--bg-app);
+        }
+        .dt-ruler.compact .dt-tick.actual-out::before{ background: var(--brand-green); }
+        .dt-ruler.compact .dt-tick.actual-in::before{ background: var(--brand-blue); }
+
+        /* Edge alignment in detail mode to reduce overflow near ends */
+        .dt-tick.edge-left{ transform: translateX(0); align-items:flex-start; }
+        .dt-tick.edge-right{ transform: translateX(-100%); align-items:flex-end; }
+        .dt-tick.edge-left.stagger{ transform: translateX(0) translateY(12px); }
+        .dt-tick.edge-right.stagger{ transform: translateX(-100%) translateY(12px); }
+
         /* === TIMELINE CONTAINERS === */
         #timeline-container {
             position: relative; flex: 1; min-height: 0; width: 100%; z-index: 85; display: flex; overflow-x: auto;
@@ -629,12 +685,51 @@
         
         .popover { position: absolute; top: calc(100% + 4px); right: 16px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 12px; padding: 12px; box-shadow: var(--shadow-float); z-index: 300; width: 250px; display: none; animation: fadeIn 0.2s ease; }
         .popover.show { display: block; }
+
+        /* === REST SWAP (ALARM) POPOVER === */
+        .rb-popover { position: fixed; width: 290px; max-width: calc(100vw - 24px); z-index: 1200; display: none; }
+        .rb-popover.show { display: block; }
+        .rb-popover-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+        .rb-popover-title { font-size: 12px; font-weight: 900; color: var(--text-primary); letter-spacing: 0.2px; }
+        .rb-popover-sub { margin-top: 2px; font-size: 10px; font-weight: 800; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.6px; }
+        .rb-close { width: 28px; height: 28px; border-radius: 10px; border: 1px solid var(--border-light); background: var(--bg-input); color: var(--text-secondary); cursor: pointer; display:flex; align-items:center; justify-content:center; font-weight: 900; }
+        .rb-close:active { transform: scale(0.98); opacity: 0.92; }
+        .rb-popover-body { margin-top: 10px; }
+        .rb-field { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+        .rb-field label { font-size: 10px; font-weight: 900; color: var(--text-secondary); }
+        .rb-field input { width: 120px; text-align: center; font-weight: 900; letter-spacing: 0.8px; }
+        .rb-hint { margin-top: 8px; font-size: 10px; color: var(--text-tertiary); line-height: 1.4; }
+        .rb-times { margin-top: 8px; display:flex; flex-direction: column; gap: 6px; }
+        .rb-time-row { display:flex; align-items:center; justify-content:space-between; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--border-light); background: color-mix(in srgb, var(--bg-input) 65%, transparent); }
+        .rb-time-row .k { font-size: 10px; font-weight: 900; color: var(--text-secondary); }
+        .rb-time-row .v { font-size: 12px; font-weight: 1000; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+        .rb-time-row .v small { font-size: 10px; font-weight: 800; color: var(--text-tertiary); margin-left: 6px; }
+        .rb-badge { font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 999px; background: rgba(255,149,0,0.12); color: var(--brand-orange); border: 1px solid rgba(255,149,0,0.25); margin-left: 6px; }
+        .rb-chip-clickable { cursor: pointer; user-select: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: 0; } }
 
         /* === INFO MODAL === */
         .info-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; }
         .info-modal-overlay.show { display: flex; opacity: 1; }
-        .info-modal-card { background: var(--bg-card); width: 85%; max-width: 360px; border-radius: var(--radius-lg); padding: 0; box-shadow: var(--shadow-float); transform: scale(0.95); transition: transform 0.2s ease; border: 1px solid var(--border-light); overflow: hidden; }
+        
+        /* === NON-BLOCKING UI DIALOGS (MATCH EXISTING STYLE) === */
+        .ui-modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top: 12px; flex-wrap: wrap; }
+        .ui-modal-btn { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--border-light); background: var(--bg-input); color: var(--text-primary); font-weight: 800; cursor: pointer; transition: transform 0.15s, opacity 0.15s; }
+        .ui-modal-btn:active { transform: scale(0.98); opacity: 0.92; }
+        .ui-modal-btn.primary { background: var(--brand-blue); border-color: transparent; color: white; box-shadow: var(--shadow-sm); }
+        .ui-modal-btn.danger { background: var(--brand-red); border-color: transparent; color: white; box-shadow: 0 2px 6px rgba(255, 59, 48, 0.25); }
+        .ui-modal-btn.ghost { background: transparent; }
+
+        .ui-toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 62px);
+            background: var(--bg-glass); border: 1px solid var(--border-light); box-shadow: var(--shadow-md);
+            padding: 10px 12px; border-radius: 12px; z-index: 1200; min-width: 240px; max-width: min(520px, calc(100vw - 32px));
+            display: none; align-items: center; justify-content: center; gap: 8px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        }
+        .ui-toast.show { display:flex; }
+        .ui-toast .ui-toast-msg { font-size: 12px; font-weight: 800; color: var(--text-primary); text-align: center; }
+        .ui-toast.warn { border-color: color-mix(in srgb, var(--brand-orange) 50%, var(--border-light) 50%); }
+        .ui-toast.danger { border-color: color-mix(in srgb, var(--brand-red) 55%, var(--border-light) 45%); }
+.info-modal-card { background: var(--bg-card); width: 85%; max-width: 360px; border-radius: var(--radius-lg); padding: 0; box-shadow: var(--shadow-float); transform: scale(0.95); transition: transform 0.2s ease; border: 1px solid var(--border-light); overflow: hidden; }
         .info-modal-overlay.show .info-modal-card { transform: scale(1); }
         .info-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-light);}
         .info-modal-body { padding: 20px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); max-height: 70vh; overflow-y: auto;}
@@ -684,8 +779,8 @@
 <body class="light-mode">
 
     <!-- GLOBAL INFO MODAL -->
-    <div id="infoModal" class="info-modal-overlay">
-        <div class="info-modal-card">
+    <div id="infoModal" class="info-modal-overlay" aria-hidden="true">
+        <div class="info-modal-card" role="dialog" aria-modal="true" aria-labelledby="infoTitle" tabindex="-1">
             <div class="info-modal-header">
                 <h3 id="infoTitle" style="margin:0; font-size:16px; color:var(--brand-blue);">Title</h3>
                 <button onclick="closeInfo()" style="background:var(--bg-input); border-radius:50%; width:28px; height:28px; font-size:14px; font-weight:bold; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-light);">✕</button>
@@ -693,6 +788,42 @@
             <div id="infoBody" class="info-modal-body"></div>
         </div>
     </div>
+
+    <!-- GLOBAL UI MODAL (NON-BLOCKING DIALOGS) -->
+    <div id="uiModal" class="info-modal-overlay" aria-hidden="true">
+        <div class="info-modal-card" role="dialog" aria-modal="true" aria-labelledby="uiModalTitle">
+            <div class="info-modal-header">
+                <h3 id="uiModalTitle" style="margin:0; font-size:16px; color:var(--brand-blue);">Dialog</h3>
+                <button onclick="uiModalClose()" style="background:var(--bg-input); border-radius:50%; width:28px; height:28px; font-size:14px; font-weight:bold; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-light);">✕</button>
+            </div>
+            <div id="uiModalBody" class="info-modal-body"></div>
+            <div id="uiModalActions" class="ui-modal-actions" style="padding: 0 16px 14px 16px;"></div>
+        </div>
+    </div>
+
+    <!-- GLOBAL TOAST -->
+    <div id="uiToast" class="ui-toast" role="status" aria-live="polite"><span id="uiToastMsg" class="ui-toast-msg"></span></div>
+
+    <!-- REST SWAP (ALARM) POPOVER -->
+    <div id="rbPopover" class="popover rb-popover" role="dialog" aria-label="輸休換班鬧鐘">
+        <div class="rb-popover-head">
+            <div>
+                <div class="rb-popover-title">輸休換班鬧鐘</div>
+                <div id="rbPopSub" class="rb-popover-sub">—</div>
+            </div>
+            <button id="rbCloseBtn" class="rb-close" type="button" aria-label="Close">✕</button>
+        </div>
+        <div class="rb-popover-body">
+            <div class="rb-field">
+                <label for="rb-off">Block Off (OUT)</label>
+                <input id="rb-off" type="tel" class="glass-input" placeholder="HHMM" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="4" inputmode="numeric">
+            </div>
+            <div id="rbPopHint" class="rb-hint">—</div>
+            <div id="rbPopTimes" class="rb-times"></div>
+        </div>
+    </div>
+
+
 
     <header class="app-header">
         
@@ -702,7 +833,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" onclick="showInfo('changelog')">Pro v6.4.2 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.2：時間條刻度密度切換（預設收折；不更動計算公式）" onclick="showInfo('changelog')">Pro v6.5.2 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -747,7 +878,7 @@
                         <span style="display:flex; align-items:center; font-size:10px;">
                             JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
                         </span>
-                        <input type="tel" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
+                        <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
                     </div>
 
                     <div class="toggle-wrapper" id="extFdtContainer">
@@ -811,11 +942,11 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-xs text-secondary">IN (Z)</span>
-                    <input type="tel" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                    <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" id="pf-in" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-xs text-secondary">FT</span>
-                    <input type="tel" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
+                    <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" id="pf-dur" class="glass-input" style="width:70px;" placeholder="HHMM" oninput="calc24hOverlap(); runAllCalc()">
                 </div>
                 <div style="margin-top:8px; display:flex; justify-content:center;">
                     <button onclick="togglePrevPopup()" class="crew-btn active" style="width:100%; background:var(--brand-green); color:white;">✅ OK</button>
@@ -840,7 +971,7 @@
     </header>
 
     <!-- LEGAL STATUS STRIP -->
-    <div class="legal-status-strip" id="legalStatusStrip" data-state="info">
+    <div class="legal-status-strip" id="legalStatusStrip" data-state="info" tabindex="0" role="button" aria-label="Legal status details" title="Click for details" onclick="openLegalStatusDetails()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openLegalStatusDetails();}">
         <span class="status-dot"></span>
         <span class="status-title" id="legalStatusTitle">STATUS</span>
         <span class="status-text" id="legalStatusText">Ready</span>
@@ -882,6 +1013,7 @@
                     <span style="font-size:9px; font-weight:700; color:var(--text-tertiary);">SCHED <span id="dt-sch-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
                     <span style="color:var(--brand-blue); font-size:15px; font-weight:800; font-family:monospace; letter-spacing:-0.5px;" id="dt-pct-label">0%</span>
                     <span style="font-size:9px; font-weight:700; color:var(--brand-blue);" id="dt-act-title">ACT <span id="dt-act-val" style="font-family:monospace; font-size:10px;">--:--</span></span>
+                    <button id="dtDensityBtn" class="dt-density-toggle" onclick="toggleDtDensity(event)" type="button" aria-label="Toggle tick labels" title="Tick labels: OFF (tap to toggle)">⋯</button>
                 </div>
 
                 <div class="dt-header-col" style="align-items:flex-end;">
@@ -955,16 +1087,37 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.4.2 引導光環強化 (Enhanced Guided Focus)</b><br>• <b>視覺衝擊提升</b>：加強了引導輸入的脈衝光暈（加粗邊框與更廣的擴散半徑），讓下一個必填欄位更醒目。<br>• <b>跨平台相容</b>：新增 Safari WebKit 專屬動畫支援，確保在 iPad/iOS 的 Safari 與 Chrome 上皆能完美順暢呈現呼吸燈效果。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.4.2 Enhanced Guided Focus</b><br>• Strengthened the visual impact of the pulse animation and added full WebKit support for iOS Safari and Chrome.</div>
-                   <div class="info-divider"></div>
+            text: `<div class="info-zh"><b>v6.5.2 時間條刻度密度切換（iPad 版面優化；不更動計算公式 / 不改動視覺風格）</b><br>
+                   • <b>預設收折</b>：Duty Timeline 刻度預設只顯示彩色標記（OUT=綠、IN=藍），避免 iPad Safari/Chrome 因刻度文字造成橫向擠壓。<br>
+                   • <b>一鍵展開/收折</b>：點 Duty Timeline 右上角「⋯ / ≡」切換刻度文字顯示；設定會自動記住。<br>
+                   • <b>邊界對齊</b>：展開模式下，靠近左右邊緣的刻度會自動左/右對齊，降低溢出與擠壓。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.2 Tick Density Toggle (iPad layout fix; No formula/style changes)</b><br>
+                   • Default is compact markers only (OUT=green, IN=blue) to avoid horizontal squeeze on iPad Safari/Chrome.<br>
+                   • One-tap toggle via “⋯ / ≡” to show/hide tick labels; the setting is remembered.<br>
+                   • Edge-aligned labels in detail mode to reduce overflow near ends.</div>
+<div class="info-divider"></div>
+                   <div class="info-zh"><b>v6.5.1 輸休換班鬧鐘（不更動計算公式 / 不改動視覺風格）</b><br>
+                   • <b>輸休展開</b>：點擊航段卡的 💤 輸休時間，可展開輸入 Block Off（OUT）時間。<br>
+                   • <b>自動計算換班時間</b>：<span style="font-weight:800;">D Crew</span> 顯示 2 段、<span style="font-weight:800;">M Crew</span> 顯示 3 段。<br>
+                     &nbsp;&nbsp;第1段 = Block Off + 00:15 + 輪休時間<br>
+                     &nbsp;&nbsp;第2段 = Block Off + 00:15 + 2×輪休時間<br>
+                     &nbsp;&nbsp;第3段 = Block Off + 00:15 + 3×輪休時間（僅 M Crew）<br>
+                   • <b>同步更新</b>：輪休時間採用既有機上輪休估算（依 FT 或 Plan），輸入/更動後即時更新。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.1 In-flight Rest Alarm Helper (No formula/style changes)</b><br>
+                   • Tap the 💤 rest chip to expand a small panel for Block Off (OUT).<br>
+                   • Auto swap-time schedule: <b>D Crew</b> shows 2 times, <b>M Crew</b> shows 3 times.<br>
+                     1) Block Off + 00:15 + 1×Rest<br>
+                     2) Block Off + 00:15 + 2×Rest<br>
+                     3) Block Off + 00:15 + 3×Rest (M only)<br>
+                   • Uses the existing rest estimate (FT/Plan-based) and updates live.</div>
+<div class="info-divider"></div>
                    <details class="changelog-details">
-                       <summary class="changelog-summary">查看歷史版本 (Previous Versions) ▼</summary>
+                       <summary class="changelog-summary">查看歷史版本 (Previous 5 Versions) ▼</summary>
                        <div class="info-zh" style="margin-top:8px; font-size:12px; line-height:1.6;">
-                           <b>v6.4.1 Safari 相容性修復</b><br>• 修復 iOS/macOS Safari 瀏覽器專屬的 Flexbox 高度崩塌問題。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.4.0 智慧引導輸入</b><br>• 視覺脈衝引導填寫；支援智慧捷徑 (Smart Bypass)。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.3.0 智慧機上輪休計算</b><br>• 航段卡新增輪休預估，支援 M/D Crew 動態雙重計算。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.2.4 智慧字典反向判定</b><br>• 自動將非機場代碼識別為地面任務 (-0m)。
+                           <b>v6.5.0 UI/可用性強化</b><br>• Legal Status Strip 診斷（可點擊原因/數值）。<br>• Routes 全改內建 Modal/Toast（移除瀏覽器彈窗）。<br>• HHMM 輸入防呆擴充；Guided Focus 自動捲動；Info/Dialogs 無障礙鍵盤支援。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.4.2 引導光環強化</b><br>• 加強引導輸入脈衝光暈；新增 Safari WebKit 動畫支援。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.4.1 Safari 相容性修復</b><br>• 修復 iOS/macOS Safari Flexbox 高度崩塌問題。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.4.0 智慧引導輸入</b><br>• 視覺脈衝引導填寫；支援智慧捷徑 (Smart Bypass)。
                        </div>
                    </details>`
         },
@@ -1038,14 +1191,363 @@
         if(!data) return;
         document.getElementById('infoTitle').innerHTML = data.title;
         document.getElementById('infoBody').innerHTML = data.text;
-        document.getElementById('infoModal').classList.add('show');
-    }
-    
-    function closeInfo() { 
-        document.getElementById('infoModal').classList.remove('show'); 
+
+        __openOverlayModal('infoModal', '#infoModal button, #infoModal [tabindex], #infoModal a, #infoModal input');
     }
 
-    // --- TOOLBAR TOGGLE & DYNAMIC SUMMARY ---
+    function closeInfo() { 
+        __closeOverlayModal('infoModal');
+    }
+
+    // === NON-BLOCKING UI HELPERS (TOAST & MODAL) ===
+    let __uiToastTimer = null;
+
+    
+    // === REST SWAP (ALARM) POPOVER ===
+    let __rbOpen = false;
+    let __rbLeg = null;
+    let __rbAnchor = null;
+    let __rbLastFocus = null;
+
+    function rbEl(id) { return document.getElementById(id); }
+
+    function rbFormatCompact(mins) {
+        const h = Math.floor((mins % 1440) / 60);
+        const m = (mins % 1440) % 60;
+        return `${String(h).padStart(2,'0')}${String(m).padStart(2,'0')}`;
+    }
+
+    function rbParseStrictHHMM(v) {
+        const raw = String(v || '').replace(/\D/g,'').slice(0,4);
+        if (!raw) return { valid:false, mins:null, norm:'' };
+        const norm = raw.length < 4 ? raw.padStart(4,'0') : raw;
+        const h = parseInt(norm.slice(0,2), 10);
+        const m = parseInt(norm.slice(2,4), 10);
+        if (!(h >= 0 && h <= 23 && m >= 0 && m <= 59)) return { valid:false, mins:null, norm };
+        return { valid:true, mins: h*60 + m, norm };
+    }
+
+    function rbGetLegLabel(i) {
+        const dep = app.stations?.[i]?.code || '---';
+        const arr = app.stations?.[i+1]?.code || '---';
+        const crew = app.crew === 'M' ? 'MULTI' : (app.crew === 'D' ? 'DOUBLE' : 'SINGLE');
+        return `${dep}-${arr} • ${crew}`;
+    }
+
+    function rbPositionPopover() {
+        const pop = rbEl('rbPopover');
+        if (!pop || !__rbAnchor) return;
+        const r = __rbAnchor.getBoundingClientRect();
+        const pad = 10;
+        const desiredTop = r.bottom + 10;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const w = pop.offsetWidth || 290;
+
+        let left = r.left + (r.width/2) - (w/2);
+        left = Math.max(pad, Math.min(left, vw - w - pad));
+
+        // If bottom overflow, place above
+        let top = desiredTop;
+        const h = pop.offsetHeight || 220;
+        if (top + h + pad > vh) {
+            top = Math.max(pad, r.top - h - 10);
+        }
+        pop.style.left = `${left}px`;
+        pop.style.top = `${top}px`;
+    }
+
+    function rbRenderTimes() {
+        const timesEl = rbEl('rbPopTimes');
+        const hintEl = rbEl('rbPopHint');
+        const offEl  = rbEl('rb-off');
+        if (!timesEl || !hintEl || !offEl || __rbLeg === null) return;
+
+        const crew = app.crew;
+        const restMins = (app._rbRestMins && app._rbRestMins[__rbLeg]) ? app._rbRestMins[__rbLeg] : 0;
+        const segCount = crew === 'M' ? 3 : (crew === 'D' ? 2 : 0);
+
+        if (!segCount || restMins <= 0) {
+            timesEl.innerHTML = '';
+            hintEl.innerHTML = '目前無可用輪休時間（僅 D/M Crew 顯示）。';
+            return;
+        }
+
+        hintEl.innerHTML = `輪休時間（每段）：<b>${fmt(restMins, false)}</b>　｜　公式：Block Off + 00:15 + n×輪休`;
+
+        const p = rbParseStrictHHMM(offEl.value);
+        if (!p.valid) {
+            timesEl.innerHTML = `<div class="rb-time-row"><span class="k">提示</span><span class="v">請輸入 Block Off</span></div>`;
+            return;
+        }
+
+        let rows = '';
+        for (let n=1; n<=segCount; n++) {
+            const raw = p.mins + 15 + restMins*n;
+            const day = Math.floor(raw / 1440);
+            const t = fmt(raw, true);
+            const compact = rbFormatCompact(raw);
+            const dayBadge = day > 0 ? `<span class="rb-badge">+${day}</span>` : '';
+            rows += `<div class="rb-time-row"><span class="k">第${n}段</span><span class="v">${t}<small>${compact}</small>${dayBadge}</span></div>`;
+        }
+        timesEl.innerHTML = rows;
+    }
+
+    function openRestPopover(legIndex) {
+        // Single crew: no popover
+        if (!(app.crew === 'M' || app.crew === 'D')) return;
+
+        const restMins = (app._rbRestMins && app._rbRestMins[legIndex]) ? app._rbRestMins[legIndex] : 0;
+        if (restMins <= 0) return;
+
+        const pop = rbEl('rbPopover');
+        const sub = rbEl('rbPopSub');
+        const off = rbEl('rb-off');
+        if (!pop || !sub || !off) return;
+
+        __rbLastFocus = document.activeElement;
+        __rbOpen = true;
+        __rbLeg = legIndex;
+        __rbAnchor = rbEl(`rb-${legIndex}`) || null;
+
+        sub.textContent = rbGetLegLabel(legIndex);
+
+        // Prefill: prefer OUT value for that leg, fallback to STD
+        let preset = '';
+        const outV = (app.stations?.[legIndex]?.out || '').toString();
+        const stdV = (app.stations?.[legIndex]?.std || '').toString();
+        if (outV && outV.replace(/\D/g,'').length) preset = outV;
+        else if (stdV && stdV.replace(/\D/g,'').length) preset = stdV;
+
+        if (!app._rbBlockOff) app._rbBlockOff = {};
+        off.value = (app._rbBlockOff[legIndex] ?? preset ?? '');
+        // Normalize triggers HHMM UX via existing handler
+        off.dispatchEvent(new Event('input', { bubbles: true }));
+
+        pop.classList.add('show');
+        rbRenderTimes();
+        rbPositionPopover();
+        // focus after paint
+        setTimeout(() => { off.focus(); off.select?.(); }, 0);
+    }
+
+    function closeRestPopover() {
+        const pop = rbEl('rbPopover');
+        if (pop) pop.classList.remove('show');
+        __rbOpen = false;
+        const anchor = __rbAnchor;
+        __rbLeg = null;
+        __rbAnchor = null;
+
+        if (anchor && typeof anchor.focus === 'function') anchor.focus();
+        else if (__rbLastFocus && typeof __rbLastFocus.focus === 'function') __rbLastFocus.focus();
+        __rbLastFocus = null;
+    }
+
+    function refreshRestPopoverIfOpen() {
+        if (!__rbOpen) return;
+        if (!(app.crew === 'M' || app.crew === 'D')) { closeRestPopover(); return; }
+        rbRenderTimes();
+        rbPositionPopover();
+    }
+
+    // Wire popover events once DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        const closeBtn = rbEl('rbCloseBtn');
+        const pop = rbEl('rbPopover');
+        const off = rbEl('rb-off');
+
+        if (closeBtn) closeBtn.addEventListener('click', closeRestPopover);
+
+        if (off) off.addEventListener('input', () => {
+            if (__rbLeg === null) return;
+            if (!app._rbBlockOff) app._rbBlockOff = {};
+            app._rbBlockOff[__rbLeg] = off.value;
+            rbRenderTimes();
+        });
+
+        // Click outside to close
+        document.addEventListener('pointerdown', (e) => {
+            if (!__rbOpen) return;
+            const t = e.target;
+            const insidePop = pop && pop.contains(t);
+            const isChip = (t && t.id && /^rb-\d+$/.test(t.id)) || (t && t.closest && t.closest('[id^="rb-"]') && t.closest('[id^="rb-"]').id && /^rb-\d+$/.test(t.closest('[id^="rb-"]').id));
+            if (!insidePop && !isChip) closeRestPopover();
+        }, true);
+
+        window.addEventListener('resize', () => { if (__rbOpen) rbPositionPopover(); }, { passive:true });
+        window.addEventListener('scroll', () => { if (__rbOpen) rbPositionPopover(); }, { passive:true });
+        document.addEventListener('keydown', (e) => { if (__rbOpen && e.key === 'Escape') closeRestPopover(); }, true);
+    });
+
+function uiToast(message, tone = 'info') {
+        const toast = document.getElementById('uiToast');
+        const msg = document.getElementById('uiToastMsg');
+        if (!toast || !msg) return;
+
+        toast.classList.remove('warn', 'danger', 'show');
+        if (tone === 'warn') toast.classList.add('warn');
+        if (tone === 'danger') toast.classList.add('danger');
+
+        msg.textContent = String(message || '');
+        toast.classList.add('show');
+
+        if (__uiToastTimer) clearTimeout(__uiToastTimer);
+        __uiToastTimer = setTimeout(() => { toast.classList.remove('show'); }, 1800);
+    }
+
+    // === DT RULER DENSITY (default compact to avoid iPad horizontal squeeze) ===
+    function getDtRulerDensity() {
+        return localStorage.getItem('dtRulerDensity') || 'compact'; // 'compact' | 'detail'
+    }
+    function applyDtRulerDensity() {
+        const ruler = document.getElementById('dtRuler');
+        const btn = document.getElementById('dtDensityBtn');
+        const mode = getDtRulerDensity();
+        if (ruler) ruler.classList.toggle('compact', mode === 'compact');
+        if (btn) {
+            btn.classList.toggle('detail', mode === 'detail');
+            btn.innerText = (mode === 'compact') ? '⋯' : '≡';
+            btn.setAttribute('aria-pressed', mode === 'detail' ? 'true' : 'false');
+            btn.title = (mode === 'compact') ? 'Tick labels: OFF (tap to toggle)' : 'Tick labels: ON (tap to toggle)';
+        }
+    }
+    function toggleDtDensity(e) {
+        if (e) e.stopPropagation();
+        const cur = getDtRulerDensity();
+        const next = (cur === 'compact') ? 'detail' : 'compact';
+        localStorage.setItem('dtRulerDensity', next);
+        applyDtRulerDensity();
+        uiToast(next === 'compact' ? 'Tick labels: OFF' : 'Tick labels: ON');
+    }
+
+
+    
+    // --- ACCESSIBLE MODAL MANAGER (Info & UI dialogs) ---
+    const __FOCUSABLE_SEL = 'a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    let __modalActiveId = null;
+    let __modalReturnFocus = null;
+    let __modalKeyHandler = null;
+
+    function __getFocusable(container) {
+        if (!container) return [];
+        return Array.from(container.querySelectorAll(__FOCUSABLE_SEL))
+            .filter(el => !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+    }
+
+    function __openOverlayModal(overlayId, focusFirstSelector) {
+        const overlay = document.getElementById(overlayId);
+        if (!overlay) return;
+
+        // Only one modal at a time
+        if (__modalActiveId && __modalActiveId !== overlayId) {
+            __closeOverlayModal(__modalActiveId);
+        }
+
+        __modalReturnFocus = document.activeElement;
+        __modalActiveId = overlayId;
+
+        overlay.classList.add('show');
+        overlay.setAttribute('aria-hidden', 'false');
+
+        overlay.onclick = function (e) {
+            if (e.target === overlay) __closeOverlayModal(overlayId);
+        };
+
+        __modalKeyHandler = function (e) {
+            if (!__modalActiveId) return;
+
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                __closeOverlayModal(__modalActiveId);
+                return;
+            }
+
+            if (e.key === 'Tab') {
+                const f = __getFocusable(overlay);
+                if (f.length === 0) { e.preventDefault(); return; }
+                const first = f[0];
+                const last = f[f.length - 1];
+                const active = document.activeElement;
+
+                if (e.shiftKey) {
+                    if (active === first || !overlay.contains(active)) { e.preventDefault(); last.focus(); }
+                } else {
+                    if (active === last) { e.preventDefault(); first.focus(); }
+                }
+            }
+        };
+
+        document.addEventListener('keydown', __modalKeyHandler);
+
+        // Focus first actionable element
+        setTimeout(() => {
+            let target = null;
+            if (focusFirstSelector) target = overlay.querySelector(focusFirstSelector);
+            if (!target) {
+                const f = __getFocusable(overlay);
+                target = f[0];
+            }
+            if (target && target.focus) target.focus();
+        }, 0);
+    }
+
+    function __closeOverlayModal(overlayId) {
+        const overlay = document.getElementById(overlayId);
+        if (!overlay) return;
+
+        overlay.classList.remove('show');
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.onclick = null;
+
+        if (__modalKeyHandler) {
+            document.removeEventListener('keydown', __modalKeyHandler);
+            __modalKeyHandler = null;
+        }
+
+        const ret = __modalReturnFocus;
+        __modalActiveId = null;
+        __modalReturnFocus = null;
+
+        setTimeout(() => {
+            if (ret && ret.focus) { try { ret.focus(); } catch (_) {} }
+        }, 0);
+    }
+
+    function uiModalOpen(title, bodyHtml, actionsHtml) {
+        const overlay = document.getElementById('uiModal');
+        const t = document.getElementById('uiModalTitle');
+        const b = document.getElementById('uiModalBody');
+        const a = document.getElementById('uiModalActions');
+        if (!overlay || !t || !b || !a) return;
+
+        t.innerHTML = title || 'Dialog';
+        b.innerHTML = bodyHtml || '';
+        a.innerHTML = actionsHtml || '';
+
+        __openOverlayModal('uiModal', '#uiModalActions button, #uiModalActions .ui-modal-btn');
+    }
+
+    function uiModalClose() {
+        __closeOverlayModal('uiModal');
+        // leave DOM stable for iOS selection/copy edge cases
+    }
+
+
+    function uiConfirm(title, messageHtml, confirmText, confirmTone, onConfirm) {
+        const body = `<div style="font-size:13px; font-weight:700; color:var(--text-primary); line-height:1.4;">${messageHtml || ''}</div>`;
+        const actions = `
+            <button class="ui-modal-btn" onclick="uiModalClose()">Cancel</button>
+            <button class="ui-modal-btn ${confirmTone || 'primary'}" id="uiConfirmBtn">${confirmText || 'OK'}</button>
+        `;
+        uiModalOpen(title || 'Confirm', body, actions);
+        setTimeout(() => {
+            const btn = document.getElementById('uiConfirmBtn');
+            if (!btn) return;
+            btn.onclick = () => { uiModalClose(); try { onConfirm && onConfirm(); } catch(_){} };
+        }, 0);
+    }
+// --- TOOLBAR TOGGLE & DYNAMIC SUMMARY ---
     function toggleToolbar() {
         const wrapper = document.getElementById('toolbarWrapper');
         const btn = document.getElementById('headerToggleBtn');
@@ -1091,8 +1593,8 @@
     function isHHMMFieldTarget(el) {
         if (!el || el.tagName !== 'INPUT' || el.type !== 'tel' || el.classList.contains('taxi-val') || el.readOnly) return false;
         const id = el.id || '';
-        if (['acarsLbo', 'pf-in', 'pf-dur', 'nd-time'].includes(id)) return true;
-        if (/^(in|out|ci|co)-\d+$/.test(id)) return true;
+        if (['acarsLbo', 'pf-in', 'pf-dur', 'nd-time', 'rb-off'].includes(id)) return true;
+        if (/^(in|out|ci|co|std|sta|sft)-\d+$/.test(id)) return true;
         return false;
     }
     
@@ -1102,7 +1604,7 @@
             if (!isHHMMFieldTarget(el)) return;
             const before = String(el.value || '');
             const trimmed = before.replace(/\D/g, '').slice(0, 4);
-            if (!trimmed) { el.classList.remove('hhmm-invalid', 'hhmm-valid'); return; }
+            if (!trimmed) { el.classList.remove('hhmm-invalid', 'hhmm-valid'); el.title = ''; return; }
 
             let finalVal = trimmed;
             if (trimmed.length > 0 && trimmed.length < 4) finalVal = trimmed.padStart(4, '0');
@@ -1116,8 +1618,10 @@
             const m = parseInt(finalVal.slice(2,4), 10);
             if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
                 el.classList.add('hhmm-valid'); el.classList.remove('hhmm-invalid');
+                el.title = '';
             } else {
                 el.classList.add('hhmm-invalid'); el.classList.remove('hhmm-valid');
+                el.title = '格式錯誤：請輸入 HHMM（0000–2359）';
             }
         }, true);
         
@@ -1429,12 +1933,12 @@
                         <div class="flex justify-between text-xs text-secondary mb-1">
                             <span>Plan</span> <span id="p-${i-1}" class="font-mono">--</span>
                         </div>
-                        <input type="tel" class="glass-input mb-1" style="height:28px; font-size:14px;" 
+                        <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" class="glass-input mb-1" style="height:28px; font-size:14px;" 
                             placeholder="FT" value="${sft}" oninput="updSft(${i-1}, this.value)" id="sft-${i-1}">
                         <div class="flex justify-between text-xs font-bold text-primary">
                             <span>Act</span> <span id="a-${i-1}" class="font-mono" style="color:var(--brand-blue);">--</span>
                         </div>
-                        <div id="rb-${i-1}" style="font-size:10px; font-weight:800; color:var(--brand-purple); margin-top:4px; display:none; background:rgba(175,82,222,0.1); border-radius:4px; padding:2px 0;">
+                        <div id="rb-${i-1}" class="rb-chip-clickable" style="font-size:10px; font-weight:800; color:var(--brand-purple); margin-top:4px; display:none; background:rgba(175,82,222,0.1); border-radius:4px; padding:2px 0;">
                             💤 --:--
                         </div>
                     </div>
@@ -1467,9 +1971,9 @@
                 <div class="hotel-section">
                     <span style="font-size:10px; font-weight:bold; color:var(--text-tertiary);">REST PERIOD</span>
                     <div class="hotel-inputs">
-                        <input type="tel" class="glass-input hotel-time" style="width:60px;" id="ci-${i}" value="${st.ci||''}" oninput="updVal(${i},'ci',this.value)" placeholder="C/I">
+                        <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" class="glass-input hotel-time" style="width:60px;" id="ci-${i}" value="${st.ci||''}" oninput="updVal(${i},'ci',this.value)" placeholder="C/I">
                         <span style="align-self:center; color:var(--text-tertiary);">-</span>
-                        <input type="tel" class="glass-input hotel-time" style="width:60px;" id="co-${i}" value="${st.co||''}" oninput="updVal(${i},'co',this.value)" placeholder="C/O">
+                        <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" class="glass-input hotel-time" style="width:60px;" id="co-${i}" value="${st.co||''}" oninput="updVal(${i},'co',this.value)" placeholder="C/O">
                     </div>
                 </div>`;
             }
@@ -1484,9 +1988,9 @@
                                     <span style="font-size:9px; font-weight:700; color:var(--text-tertiary);">TX</span>
                                     <input type="tel" class="taxi-val" value="${st.taxiIn!==undefined?st.taxiIn:15}" oninput="updVal(${i},'taxiIn',this.value)">
                                 </div>
-                                <input type="tel" class="glass-input" id="in-${i}" placeholder="ACT IN" value="${st.in||''}" oninput="updVal(${i},'in',this.value)" style="border-color:var(--brand-blue);">
+                                <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" class="glass-input" id="in-${i}" placeholder="ACT IN" value="${st.in||''}" oninput="updVal(${i},'in',this.value)" style="border-color:var(--brand-blue);">
                                 <div class="smart-input-wrapper">
-                                    <input type="tel" id="sta-${i}" class="glass-input" placeholder="STA" value="${staDisplay}" oninput="handleSmartInput(${i}, 'sta', this.value)" onfocus="updateGhostText(${i}, 'sta', this.value)" onblur="document.getElementById('sta-ghost-${i}').innerText=''">
+                                    <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" id="sta-${i}" class="glass-input" placeholder="STA" value="${staDisplay}" oninput="handleSmartInput(${i}, 'sta', this.value)" onfocus="updateGhostText(${i}, 'sta', this.value)" onblur="document.getElementById('sta-ghost-${i}').innerText=''">
                                     <div class="mode-badge ${staMode==='L'?'mode-l':'mode-z'}" onclick="toggleInputMode(${i}, 'sta')">${staMode}</div>
                                     <div id="sta-ghost-${i}" class="ghost-text"></div>
                                 </div>
@@ -1503,11 +2007,11 @@
                             <span class="input-label">Departure (OUT)</span>
                             <div class="time-input-row">
                                 <div class="smart-input-wrapper">
-                                    <input type="tel" id="std-${i}" class="glass-input" placeholder="STD" value="${stdDisplay}" oninput="handleSmartInput(${i}, 'std', this.value)" onfocus="updateGhostText(${i}, 'std', this.value)" onblur="document.getElementById('std-ghost-${i}').innerText=''">
+                                    <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" id="std-${i}" class="glass-input" placeholder="STD" value="${stdDisplay}" oninput="handleSmartInput(${i}, 'std', this.value)" onfocus="updateGhostText(${i}, 'std', this.value)" onblur="document.getElementById('std-ghost-${i}').innerText=''">
                                     <div class="mode-badge ${stdMode==='L'?'mode-l':'mode-z'}" onclick="toggleInputMode(${i}, 'std')">${stdMode}</div>
                                     <div id="std-ghost-${i}" class="ghost-text"></div>
                                 </div>
-                                <input type="tel" class="glass-input" id="out-${i}" placeholder="ACT OUT" value="${st.out||''}" oninput="updVal(${i},'out',this.value)" style="border-color:var(--brand-green);">
+                                <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" class="glass-input" id="out-${i}" placeholder="ACT OUT" value="${st.out||''}" oninput="updVal(${i},'out',this.value)" style="border-color:var(--brand-green);">
                                 <div class="taxi-badge" title="Act Taxi Out (Not for LBO)">
                                     <span style="font-size:9px; font-weight:700; color:var(--text-tertiary);">TX</span>
                                     <input type="tel" class="taxi-val" value="${st.taxiOut!==undefined?st.taxiOut:15}" oninput="updVal(${i},'taxiOut',this.value)">
@@ -1599,7 +2103,7 @@
                     <div class="ed-input-row">
                         <input type="date" id="nd-date" class="glass-input" style="width:115px; height:30px; font-size:11px; padding:0 2px;" value="${app.nextDuty.date || ''}" onchange="updNd('date', this.value)">
                         <div class="smart-input-wrapper" style="flex:1;">
-                            <input type="tel" id="nd-time" class="glass-input" placeholder="STD" style="height:30px; font-size:14px; width:100%; text-align:center;" value="${getNdDisplayValue()}" oninput="handleNdSmartInput(this.value)" onfocus="updateGhostTextNd(this.value)" onblur="document.getElementById('nd-ghost').innerText=''">
+                            <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" id="nd-time" class="glass-input" placeholder="STD" style="height:30px; font-size:14px; width:100%; text-align:center;" value="${getNdDisplayValue()}" oninput="handleNdSmartInput(this.value)" onfocus="updateGhostTextNd(this.value)" onblur="document.getElementById('nd-ghost').innerText=''">
                             <div class="mode-badge ${app.nextDuty.timeMode==='L'?'mode-l':'mode-z'}" onclick="toggleNdMode()">${app.nextDuty.timeMode||'Z'}</div>
                             <div id="nd-ghost" class="ghost-text"></div>
                         </div>
@@ -1673,27 +2177,30 @@
         if(isClosed) { el.classList.add('show'); renderRouteList(); }
     }
 
+    
     function saveRoute() {
         const name = document.getElementById('routeName').value.trim();
-        if(!name) { alert('Please enter a name'); return; }
+        if(!name) { uiToast('Please enter a name', 'warn'); return; }
         savedRoutes.push({ 
             name: name, 
             stations: JSON.parse(JSON.stringify(app.stations)), 
             sfts: JSON.parse(JSON.stringify(app.sfts)), 
-            crew: app.crew, 
-            isNight: document.getElementById('nightOps').checked, 
-            isNoBunk: document.getElementById('noBunk').checked, 
-            extFdt: document.getElementById('extFdt').checked 
+            nextDuty: JSON.parse(JSON.stringify(app.nextDuty)), 
+            isNight: document.getElementById('nightOps')?.checked || false,
+            isNoBunk: document.getElementById('noBunk')?.checked || false,
+            extFdt: document.getElementById('extFdt')?.checked || false,
+            crew: app.crew
         });
         localStorage.setItem('calSavedRoutes', JSON.stringify(savedRoutes));
-        const btn = document.getElementById('saveBtn'); const origText = btn.innerText;
-        btn.innerText = "Saved!";
-        setTimeout(() => { btn.innerText = origText; document.getElementById('routeName').value = ''; renderRouteList(); }, 1000);
+        renderRouteList();
+        uiToast('Route saved');
     }
+
 
     function loadRoute(idx) {
         if(!savedRoutes[idx]) return; const r = savedRoutes[idx];
         app.stations = JSON.parse(JSON.stringify(r.stations)); app.sfts = JSON.parse(JSON.stringify(r.sfts));
+        if (r.nextDuty) app.nextDuty = JSON.parse(JSON.stringify(r.nextDuty));
         if (r.isNight !== undefined) document.getElementById('nightOps').checked = r.isNight;
         if (r.isNoBunk !== undefined) document.getElementById('noBunk').checked = r.isNoBunk;
         if (r.extFdt !== undefined) document.getElementById('extFdt').checked = r.extFdt;
@@ -1701,9 +2208,16 @@
         document.getElementById('routePopup').classList.remove('show');
     }
 
+    
     function deleteRoute(idx) {
-        if(confirm('Delete this route?')) { savedRoutes.splice(idx, 1); localStorage.setItem('calSavedRoutes', JSON.stringify(savedRoutes)); renderRouteList(); }
+        uiConfirm('Delete Route', 'Delete this route from saved list?', 'Delete', 'danger', () => {
+            savedRoutes.splice(idx, 1);
+            localStorage.setItem('calSavedRoutes', JSON.stringify(savedRoutes));
+            renderRouteList();
+            uiToast('Route deleted');
+        });
     }
+
 
     function renderRouteList() {
         const list = document.getElementById('routeList');
@@ -1718,23 +2232,117 @@
         list.innerHTML = html;
     }
 
+    
     function exportRoutes() {
-        if(savedRoutes.length === 0) { alert('No routes to export.'); return; }
+        if(savedRoutes.length === 0) { uiToast('No routes to export.', 'warn'); return; }
         const dataStr = JSON.stringify(savedRoutes);
-        navigator.clipboard.writeText(dataStr).then(() => alert('Routes copied!')).catch(() => prompt('Copy manually:', dataStr));
+
+        // try copy first (preserve original behavior), then open a consistent in-app modal as fallback/visibility
+        const openModal = (copied=false) => {
+            const copiedTag = copied ? `<span style="font-size:11px; font-weight:900; color:var(--brand-green);">Copied</span>` : ``;
+            const body = `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                    <div style="font-size:12px; font-weight:800; color:var(--text-secondary);">Export your routes (JSON)</div>
+                    ${copiedTag}
+                </div>
+                <textarea id="routeTransferText" class="glass-input" readonly
+                    style="width:100%; min-height:160px; margin-top:10px; font-family:'SF Mono', monospace; font-size:12px; line-height:1.45; padding:10px; resize:vertical;">${dataStr}</textarea>
+                <div style="margin-top:8px; font-size:11px; font-weight:700; color:var(--text-tertiary); line-height:1.35;">
+                    Tip: If clipboard copy is blocked, select the text and copy manually.
+                </div>
+            `;
+            const actions = `
+                <button class="ui-modal-btn" onclick="(function(){ const t=document.getElementById('routeTransferText'); if(t){ t.focus(); t.select(); } })()">Select</button>
+                <button class="ui-modal-btn primary" id="routeCopyBtn">Copy</button>
+                <button class="ui-modal-btn" id="routeDownloadBtn">Download</button>
+                <button class="ui-modal-btn" onclick="uiModalClose()">Close</button>
+            `;
+            uiModalOpen('Route Export', body, actions);
+
+            setTimeout(() => {
+                const copyBtn = document.getElementById('routeCopyBtn');
+                const dlBtn = document.getElementById('routeDownloadBtn');
+                if (copyBtn) copyBtn.onclick = async () => {
+                    try {
+                        await navigator.clipboard.writeText(dataStr);
+                        uiToast('Routes copied!');
+                    } catch(e) {
+                        uiToast('Copy blocked — use Select then copy manually.', 'warn');
+                    }
+                };
+                if (dlBtn) dlBtn.onclick = () => {
+                    try {
+                        const blob = new Blob([dataStr], { type: 'application/json;charset=utf-8' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        const stamp = new Date();
+                        const y = stamp.getFullYear();
+                        const m = String(stamp.getMonth()+1).padStart(2,'0');
+                        const d = String(stamp.getDate()).padStart(2,'0');
+                        a.download = `cal-duty-routes-${y}${m}${d}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        setTimeout(()=>URL.revokeObjectURL(url), 500);
+                        uiToast('Download started');
+                    } catch(e) {
+                        uiToast('Download failed.', 'danger');
+                    }
+                };
+            }, 0);
+        };
+
+        navigator.clipboard.writeText(dataStr).then(() => {
+            uiToast('Routes copied!');
+            openModal(true);
+        }).catch(() => {
+            uiToast('Clipboard blocked — export shown.', 'warn');
+            openModal(false);
+        });
     }
 
+
+    
     function importRoutes() {
-        const dataStr = prompt('Paste your exported route data here:');
-        if(!dataStr) return;
-        try {
-            const imported = JSON.parse(dataStr);
-            if(Array.isArray(imported)) {
-                if(imported.length > 0 && (!imported[0].stations || !imported[0].crew)) { alert('Invalid data format.'); return; }
-                savedRoutes = imported; localStorage.setItem('calSavedRoutes', JSON.stringify(savedRoutes)); renderRouteList(); alert('Routes imported successfully!');
-            } else alert('Invalid data format.');
-        } catch(e) { alert('Error parsing data.'); }
+        const body = `
+            <div style="font-size:12px; font-weight:800; color:var(--text-secondary);">Paste exported routes JSON</div>
+            <textarea id="routeImportText" class="glass-input"
+                style="width:100%; min-height:160px; margin-top:10px; font-family:'SF Mono', monospace; font-size:12px; line-height:1.45; padding:10px; resize:vertical;"
+                placeholder="Paste JSON here..."></textarea>
+            <div style="margin-top:8px; font-size:11px; font-weight:700; color:var(--text-tertiary); line-height:1.35;">
+                Import replaces your current saved routes on this device.
+            </div>
+        `;
+        const actions = `
+            <button class="ui-modal-btn" onclick="uiModalClose()">Cancel</button>
+            <button class="ui-modal-btn primary" id="routeImportBtn">Import</button>
+        `;
+        uiModalOpen('Route Import', body, actions);
+
+        setTimeout(() => {
+            const btn = document.getElementById('routeImportBtn');
+            const ta = document.getElementById('routeImportText');
+            if (!btn || !ta) return;
+
+            btn.onclick = () => {
+                const dataStr = String(ta.value || '').trim();
+                if(!dataStr) { uiToast('No data provided.', 'warn'); return; }
+                try {
+                    const imported = JSON.parse(dataStr);
+                    if(Array.isArray(imported)) {
+                        if(imported.length > 0 && (!imported[0].stations || !imported[0].crew)) { uiToast('Invalid data format.', 'danger'); return; }
+                        savedRoutes = imported;
+                        localStorage.setItem('calSavedRoutes', JSON.stringify(savedRoutes));
+                        renderRouteList();
+                        uiModalClose();
+                        uiToast('Routes imported successfully!');
+                    } else uiToast('Invalid data format.', 'danger');
+                } catch(e) { uiToast('Error parsing data.', 'danger'); }
+            };
+        }, 0);
     }
+
 
     function updVal(i, f, v) { 
         if (f==='ci' || f==='co') { app.stations[i][f] = v; } 
@@ -1783,8 +2391,11 @@
         let s_state = 'info';
         let s_text = 'Set report time / route to begin legal status evaluation';
 
+        let d_msgs = [];
+        let c_msgs = [];
+
         if (st.isReady) {
-            let d_msgs = [];
+            d_msgs = [];
             if (st.ldg > 6) d_msgs.push('Ldg > 6');
             if (st.isFtExceeded) d_msgs.push(`FT Limit (+${fmt(st.ftExcessMins, false)})`);
             if (st.isFdpExceeded) d_msgs.push(`FDP Limit (+${fmt(st.fdpExcessMins, false)})`);
@@ -1796,7 +2407,7 @@
                 s_state = 'danger';
                 s_text = `Exceeded: ${d_msgs.join(' | ')}`;
             } else {
-                let c_msgs = [];
+                c_msgs = [];
                 if (st.ftRem >= 0 && st.ftRem <= 60) c_msgs.push(`FT Rem: ${fmt(st.ftRem, false)}`);
                 if (st.fdpRem >= 0 && st.fdpRem <= 90) c_msgs.push(`FDP Rem: ${fmt(st.fdpRem, false)}`);
                 
@@ -1816,9 +2427,127 @@
             }
         }
 
+        // snapshot for diagnostics (UI only; does not affect calculations)
+        window.__legalStatusSnapshot = {
+            ready: !!st.isReady,
+            state: s_state,
+            summary: s_text,
+            exceeded: Array.isArray(d_msgs) ? d_msgs.slice() : [],
+            caution: Array.isArray(c_msgs) ? c_msgs.slice() : [],
+            locked: !!app.isLocked,
+            metrics: {
+                ldg: st.ldg,
+                maxFdpMins: st.maxFdpMins,
+                ftRem: st.ftRem,
+                fdpRem: st.fdpRem,
+                rtRem: st.rtRem,
+                restShortMins: st.restShortMins,
+                isLiveTracking: st.isLiveTracking,
+                isDutyFinished: st.isDutyFinished,
+                elapsedSinceRep: st.elapsedSinceRep,
+                isFtExceeded: st.isFtExceeded,
+                isFdpExceeded: st.isFdpExceeded,
+                isLiveDutyExceeded: st.isLiveDutyExceeded,
+                ftExcessMins: st.ftExcessMins,
+                fdpExcessMins: st.fdpExcessMins
+            }
+        };
+
         strip.dataset.state = s_state;
         if (title) title.textContent = s_state === 'danger' ? 'ALERT' : s_state === 'caution' ? 'CAUTION' : s_state === 'safe' ? 'SAFE' : 'STATUS';
         if (text) text.textContent = s_text;
+    }
+
+
+    function openLegalStatusDetails() {
+        const snap = window.__legalStatusSnapshot || null;
+        const st = (app && app._stats) ? app._stats : null;
+
+        const state = snap && snap.state ? snap.state : 'info';
+        const badge = state === 'danger' ? 'ALERT' : state === 'caution' ? 'CAUTION' : state === 'safe' ? 'SAFE' : 'STATUS';
+
+        const badgeColor = state === 'danger' ? 'var(--semantic-danger)'
+                          : state === 'caution' ? 'var(--semantic-warning)'
+                          : state === 'safe' ? 'var(--semantic-success)'
+                          : 'var(--semantic-info)';
+
+        const summary = snap && snap.summary ? snap.summary : 'Set report time / route to begin legal status evaluation';
+
+        const metrics = snap && snap.metrics ? snap.metrics : {};
+        const exceeded = snap && Array.isArray(snap.exceeded) ? snap.exceeded : [];
+        const caution = snap && Array.isArray(snap.caution) ? snap.caution : [];
+
+        function row(label, value) {
+            return `<div style="display:flex; justify-content:space-between; gap:10px; padding:6px 8px; border:1px solid var(--border-light); border-radius:10px; background:var(--bg-input); margin-top:6px;">
+                        <span style="font-size:11px; font-weight:800; color:var(--text-tertiary);">${label}</span>
+                        <span style="font-family:monospace; font-size:12px; font-weight:800; color:var(--text-primary);">${value}</span>
+                    </div>`;
+        }
+
+        let body = `
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="width:10px; height:10px; border-radius:999px; background:${badgeColor}; box-shadow: 0 0 0 2px color-mix(in srgb, ${badgeColor} 18%, transparent 82%);"></span>
+                    <div style="font-size:13px; font-weight:900; color:${badgeColor}; letter-spacing:0.2px;">${badge}</div>
+                </div>
+                <div style="font-size:11px; font-weight:800; color:var(--text-tertiary);">${(snap && snap.locked) ? 'LOCKED' : ''}</div>
+            </div>
+            <div style="margin-top:8px; font-size:12px; font-weight:700; color:var(--text-primary); line-height:1.4;">${summary}</div>
+        `;
+
+        if (!snap || !snap.ready) {
+            body += `
+                <div class="info-divider" style="margin:10px 0;"></div>
+                <div style="font-size:12px; font-weight:800; color:var(--text-secondary);">Next actions</div>
+                <ul style="margin:6px 0 0 18px; padding:0; font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                    <li>Set report time (Report / STD) and fill route legs (OUT/IN).</li>
+                    <li>If checking 24h limits, fill Previous Flight (IN/FT).</li>
+                </ul>
+            `;
+        } else {
+            body += `<div class="info-divider" style="margin:10px 0;"></div>
+                     <div style="font-size:12px; font-weight:900; color:var(--text-secondary);">Key numbers</div>`;
+
+            // Key metrics (UI only; does not affect calculations)
+            const maxFdt = (typeof metrics.maxFdpMins === 'number') ? fmt(metrics.maxFdpMins, false) : '--';
+            body += row('Max FDT', maxFdt);
+
+            if (typeof metrics.ftRem === 'number') body += row('FT Remaining', fmt(metrics.ftRem, false));
+            if (typeof metrics.fdpRem === 'number') body += row('FDP Remaining', fmt(metrics.fdpRem, false));
+            if (typeof metrics.restShortMins === 'number' && metrics.restShortMins > 0) body += row('Rest Short', `+${fmt(metrics.restShortMins, false)}`);
+            if (typeof metrics.ldg === 'number') body += row('Landings', `${metrics.ldg}`);
+
+            if (metrics.isLiveTracking && !metrics.isDutyFinished && metrics.elapsedSinceRep > 0 && typeof metrics.rtRem === 'number') {
+                body += row('Live FDP Remaining', `${Math.floor(metrics.rtRem)}m`);
+            }
+
+            if (exceeded.length > 0) {
+                body += `<div style="margin-top:10px; font-size:12px; font-weight:900; color:var(--semantic-danger);">Exceeded</div>
+                         <div style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+                         ${exceeded.map(x => `<div style="padding:7px 10px; border-radius:10px; border:1px solid color-mix(in srgb, var(--semantic-danger) 30%, var(--border-light)); background: var(--danger-bg-soft); font-size:12px; font-weight:800; color: var(--text-primary);">${x}</div>`).join('')}
+                         </div>`;
+            }
+
+            if (caution.length > 0) {
+                body += `<div style="margin-top:10px; font-size:12px; font-weight:900; color:var(--semantic-warning);">Approaching</div>
+                         <div style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+                         ${caution.map(x => `<div style="padding:7px 10px; border-radius:10px; border:1px solid color-mix(in srgb, var(--semantic-warning) 30%, var(--border-light)); background: var(--warning-bg-soft); font-size:12px; font-weight:800; color: var(--text-primary);">${x}</div>`).join('')}
+                         </div>`;
+            }
+
+            body += `
+                <div class="info-divider" style="margin:10px 0;"></div>
+                <div style="font-size:12px; font-weight:900; color:var(--text-secondary);">Next actions</div>
+                <ul style="margin:6px 0 0 18px; padding:0; font-size:12px; color:var(--text-secondary); line-height:1.5;">
+                    <li>Verify FT/FDP inputs (OUT/IN/CI/CO) if numbers look unexpected.</li>
+                    <li>If delayed, consider using Report Lock to keep original basis for limits.</li>
+                    <li>Use Next Rpt panel to confirm minimum rest compliance.</li>
+                </ul>
+            `;
+        }
+
+        const actions = `<button class="ui-modal-btn primary" onclick="uiModalClose()">Close</button>`;
+        uiModalOpen('Legal Status · Details', body, actions);
     }
 
     function runAllCalc(redraw = false) { 
@@ -1831,6 +2560,16 @@
     }
 
     // 🚀 NEW: Smart Guided Input Focus Logic
+    
+    let __lastGuidedTargetId = null;
+
+    function __isInViewport(el, topPad = 72, bottomPad = 120) {
+        if (!el) return true;
+        const r = el.getBoundingClientRect();
+        const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+        return (r.top >= topPad) && (r.bottom <= (vh - bottomPad));
+    }
+
     function updateGuidedFocus() {
         document.querySelectorAll('.guided-focus').forEach(el => el.classList.remove('guided-focus'));
 
@@ -1870,8 +2609,20 @@
         if (targetId) {
             const el = document.getElementById(targetId);
             if (el) el.classList.add('guided-focus');
+
+            // Auto-scroll ONLY when target changes and user isn't actively typing
+            const active = document.activeElement;
+            const typing = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+
+            if (!typing && targetId !== __lastGuidedTargetId && el && !__isInViewport(el)) {
+                requestAnimationFrame(() => {
+                    try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch(_) { el.scrollIntoView(true); }
+                });
+            }
+            __lastGuidedTargetId = targetId;
         }
     }
+
     
     function calc24hOverlap() {
         const pfDateStr = document.getElementById('pf-date').value; const pfInStr = document.getElementById('pf-in').value; const pfDurStr = document.getElementById('pf-dur').value; const curDateStr = document.getElementById('flightDate').value;
@@ -2401,16 +3152,18 @@
                     let isProjected = (out !== null) || (ft !== null) || (outRel > stdRel); let inLabel = isProjected ? "EST IN" : "STA";
                     if (inPct > 2 && inPct < 98 && (std !== null || out !== null)) rawTicks.push({ pct: inPct, time: fmt((rep + inRel) % 1440), label: inLabel, cls: '' });
                 }
-                let turn = 45; if (st.hotel && i < app.stations.length - 1) { const hTime = calcRest(st.ci, co); if (hTime >= 180) turn = hTime;  }
+                let turn = 45; if (st.hotel && i < app.stations.length - 1) { const hTime = calcRest(st.ci, st.co); if (hTime >= 180) turn = hTime;  }
                 tickLastProgElapsed = inRel + turn;
             }
             rawTicks.sort((a, b) => a.pct - b.pct); let lastRenderedPct = -100; let isStaggered = false; let rulerHtml = '';
             rawTicks.forEach(tick => {
                 if (tick.pct - lastRenderedPct < 8) isStaggered = !isStaggered; else isStaggered = false; let stgClass = isStaggered ? ' stagger' : '';
-                rulerHtml += `<div class="dt-tick minor ${tick.cls}${stgClass}" style="left: ${tick.pct}%;"><span>${tick.time}</span><span>${tick.label}</span></div>`;
+                let edgeClass = (tick.pct < 6) ? " edge-left" : (tick.pct > 94 ? " edge-right" : "");
+                rulerHtml += `<div class="dt-tick minor ${tick.cls}${stgClass}${edgeClass}" title="${tick.label} ${tick.time}" style="left: ${tick.pct}%;"><span>${tick.time}</span><span>${tick.label}</span></div>`;
                 lastRenderedPct = tick.pct;
             });
             ruler.innerHTML = rulerHtml;
+            applyDtRulerDensity();
         }
     }
 
@@ -2482,16 +3235,38 @@
                             rbEl.style.color = 'var(--brand-blue)';
                             rbEl.style.background = 'rgba(0,122,255,0.1)';
                             rbEl.title = "Rest based on FT";
+                        // Make rest chip actionable (swap alarm helper)
+                        if (!app._rbRestMins) app._rbRestMins = {};
+                        app._rbRestMins[i] = restMins;
+                        rbEl.classList.add('rb-chip-clickable');
+                        rbEl.setAttribute('role','button');
+                        rbEl.tabIndex = 0;
+                        rbEl.onclick = () => openRestPopover(i);
+                        rbEl.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRestPopover(i); } };
+
                         } else {
                             rbEl.style.color = 'var(--brand-purple)';
                             rbEl.style.background = 'rgba(175,82,222,0.1)';
                             rbEl.title = "Rest based on Plan";
+                        // Make rest chip actionable (swap alarm helper)
+                        if (!app._rbRestMins) app._rbRestMins = {};
+                        app._rbRestMins[i] = restMins;
+                        rbEl.classList.add('rb-chip-clickable');
+                        rbEl.setAttribute('role','button');
+                        rbEl.tabIndex = 0;
+                        rbEl.onclick = () => openRestPopover(i);
+                        rbEl.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRestPopover(i); } };
+
                         }
                     } else {
                         rbEl.style.display = 'none';
+                        if (app._rbRestMins) app._rbRestMins[i] = 0;
+                        if (typeof __rbOpen !== 'undefined' && __rbOpen && typeof __rbLeg !== 'undefined' && __rbLeg === i) closeRestPopover();
                     }
                 } else {
                     rbEl.style.display = 'none';
+                        if (app._rbRestMins) app._rbRestMins[i] = 0;
+                        if (typeof __rbOpen !== 'undefined' && __rbOpen && typeof __rbLeg !== 'undefined' && __rbLeg === i) closeRestPopover();
                 }
             }
         }
@@ -2528,7 +3303,10 @@
         
         updateBar('bar-plan', aggPlan, maxFt); updateBar('bar-sched', aggSched, maxFt); updateBar('bar-act', totalActWithPrev > prevVal ? totalActWithPrev : 0, maxFt);
         document.getElementById('limits-out').innerText = `FT Limit: ${fmt(maxFt, false)}`;
-    }
+    
+        // Keep rest swap popover in sync (if open)
+        refreshRestPopoverIfOpen();
+}
     
     function calcLBO(rep, globalMaxFdpMins, stationLimitExtensions, globalPauseMinutes) {
         let acarsLboMins = parse(app.acarsLbo);
@@ -2671,6 +3449,7 @@
 
         setCrew(savedCrew);
         initHHMMUX();
+        applyDtRulerDensity();
         drawTimeline(); 
         updateGuidedFocus(); // Initialize focus on load
     };
