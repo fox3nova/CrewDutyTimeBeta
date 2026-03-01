@@ -728,7 +728,19 @@
             /* 3. 釋放卡片容器的上下多餘空間 */
             #timeline-container { padding-top: 2px !important; padding-bottom: 50px !important; align-items: center !important; }
         }
-
+        /* 🚀 NEW: Dynamic Keyboard Override (iPad Landscape Fix) */
+        body.keyboard-up {
+            position: static !important; overflow-y: auto !important; overflow-x: hidden !important; display: block !important; height: auto !important;
+        }
+        body.keyboard-up .app-header { position: sticky !important; top: 0 !important; z-index: 1000 !important; }
+        body.keyboard-up .stats-dashboard { position: static !important; margin-top: 8px !important; }
+        body.keyboard-up .duty-timeline-wrapper { position: relative !important; margin: 8px 16px 0 16px !important; z-index: 80 !important; width: calc(100% - 32px) !important; }
+        body.keyboard-up #timeline-container { 
+            position: relative !important; height: auto !important; overflow-x: auto !important; overflow-y: visible !important; 
+            padding-top: 16px !important; padding-bottom: 24px !important; gap: 0 !important; min-height: 380px !important; z-index: 85 !important; display: flex !important; 
+        }
+        /* 將 Footer 解除固定，推到畫面最底部，避免擋住鍵盤上方的輸入框 */
+        body.keyboard-up .hud-footer { position: static !important; margin-top: 16px !important; box-shadow: none !important; border-top: 1px solid var(--border-light) !important; padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important; }
         /* 🚨 RESPONSIVE RESET */
         @media screen and (max-width: 820px) and (orientation: portrait), 
                screen and (max-height: 600px) and (orientation: landscape) {
@@ -1069,15 +1081,20 @@
 
 <script>
 
-    // === VIEWPORT HEIGHT STABILIZER (iPad/iOS WebKit) ===
-    // Keeps the main flex column from mis-sizing when Safari/Chrome UI toolbars expand/collapse.
+    // === VIEWPORT HEIGHT STABILIZER & KEYBOARD DETECTION ===
+    // Keeps the main flex column from mis-sizing and handles iPad landscape keyboard popups.
     (function(){
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        if (!isIOS) return;
-
         const setAppH = () => {
             const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
             document.documentElement.style.setProperty('--app-height', `${Math.round(h)}px`);
+            
+            // 🚀 NEW: Detect severe height compression (Keyboard popped up on iPad/Tablets)
+            // 當視覺高度小於 650px (通常是鍵盤彈出時)，掛上 keyboard-up 讓畫面變為可滑動
+            if (h < 650) {
+                document.body.classList.add('keyboard-up');
+            } else {
+                document.body.classList.remove('keyboard-up');
+            }
         };
 
         setAppH();
