@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.5.4)</title>
+    <title>CAL Duty (Pro v6.5.6)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -694,53 +694,21 @@
         .changelog-summary::-webkit-details-marker { display: none; }
 
 
-/* === iPad TIMELINE HEIGHT FIX (Ultra-Compact) ===
-           Goal: Extreme reduction of vertical footprint to maximize leg card space.
+        /* === iPad TIMELINE HEIGHT FIX (v6.5.5) ===
+           Goal: reduce Duty Timeline vertical footprint on iPad WebKit to prevent leg cards from being squeezed.
         */
         @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
-            /* 1. 極限壓縮：Legal Strip & Stats Dashboard */
-            .legal-status-strip { margin-top: 2px !important; min-height: 24px !important; padding: 2px 8px !important; }
-            .stats-dashboard { padding: 4px 16px !important; gap: 6px !important; }
-            .stat-card { padding: 4px !important; }
-            .stat-label { margin-bottom: 0px !important; font-size: 8px !important; }
-            
-            /* 2. 極限壓縮：時間條 (Timeline) */
-            .duty-timeline-wrapper { margin-top: 2px !important; gap: 0px !important; }
+            .duty-timeline-wrapper { margin-top: 6px !important; gap: 0px !important; }
             .dt-header { margin-top: 0 !important; align-items: flex-end; }
-            .dt-header-col { gap: 0 !important; }
-            .dt-title { font-size: 8px !important; line-height: 1; }
-            .dt-val { font-size: 11px !important; line-height: 1.1; }
-            
-            /* 時間軌道與標記 */
-            .dt-track { height: 6px !important; margin-top: 10px !important; }
-            .dt-now-marker::before { top: -11px !important; font-size: 6px !important; padding: 0 2px !important; }
-            .dt-limit-text { top: -11px !important; font-size: 7px !important; padding: 0 2px !important; }
-            
-            /* 刻度尺與文字 */
-            .dt-ruler { height: 16px !important; margin-top: 1px !important; }
-            .dt-tick { font-size: 8px !important; line-height: 1 !important; }
-            .dt-tick span:first-child { font-size: 9px !important; }
-            .dt-tick.stagger { transform: translateX(-50%) translateY(8px) !important; } /* 縮小交錯落差 */
-            
-            /* 點擊航段時出現的 Block Time 資訊列 */
-            .dt-segment-info { height: 12px !important; margin-top: 0 !important; font-size: 9px !important; line-height: 12px !important; padding: 0 !important; }
+            .dt-title { font-size: 8px !important; }
+            .dt-val { font-size: 11px !important; }
+            .dt-track { height: 8px !important; margin-top: 8px !important; }
+            .dt-ruler { height: 18px !important; margin-top: 2px !important; }
+            .dt-tick { font-size: 8px !important; }
+            /* reclaim vertical space above the leg cards */
+            #timeline-container { padding-top: 10px !important; padding-bottom: 58px !important; align-items: center !important; }
+        }
 
-            /* 3. 釋放卡片容器的上下多餘空間 */
-            #timeline-container { padding-top: 2px !important; padding-bottom: 50px !important; align-items: center !important; }
-        }
-        /* 🚀 NEW: Dynamic Keyboard Override (iPad Landscape Fix) */
-        body.keyboard-up {
-            position: static !important; overflow-y: auto !important; overflow-x: hidden !important; display: block !important; height: auto !important;
-        }
-        body.keyboard-up .app-header { position: sticky !important; top: 0 !important; z-index: 1000 !important; }
-        body.keyboard-up .stats-dashboard { position: static !important; margin-top: 8px !important; }
-        body.keyboard-up .duty-timeline-wrapper { position: relative !important; margin: 8px 16px 0 16px !important; z-index: 80 !important; width: calc(100% - 32px) !important; }
-        body.keyboard-up #timeline-container { 
-            position: relative !important; height: auto !important; overflow-x: auto !important; overflow-y: visible !important; 
-            padding-top: 16px !important; padding-bottom: 24px !important; gap: 0 !important; min-height: 380px !important; z-index: 85 !important; display: flex !important; 
-        }
-        /* 將 Footer 解除固定，推到畫面最底部，避免擋住鍵盤上方的輸入框 */
-        body.keyboard-up .hud-footer { position: static !important; margin-top: 16px !important; box-shadow: none !important; border-top: 1px solid var(--border-light) !important; padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important; }
         /* 🚨 RESPONSIVE RESET */
         @media screen and (max-width: 820px) and (orientation: portrait), 
                screen and (max-height: 600px) and (orientation: landscape) {
@@ -770,6 +738,90 @@
         @media screen and (max-height: 600px) and (orientation: landscape),
                screen and (max-width: 1024px) and (orientation: landscape) {
             #timeline-container { flex-direction: row; padding-top: 16px;} 
+        }
+
+    
+        /* === v6.5.6 iPad Space Maximizer (UI only; no formula changes) === */
+        :root{
+            --dt-track-h: 8px;
+            --dt-ruler-h: 18px;
+            --dt-seg-h: 12px;
+            --dt-gap: 1px;
+            --dt-wrapper-mx: 12px;
+
+            --timeline-pad-x: 12px;
+            --timeline-pad-top: 12px;
+        }
+
+        /* Minimap: thinner and tighter by default */
+        .duty-timeline-wrapper { margin: 1px var(--dt-wrapper-mx) 0 var(--dt-wrapper-mx) !important; gap: var(--dt-gap) !important; }
+        .dt-header { margin-top: 0px !important; }
+        .dt-title { font-size: 8px !important; }
+        .dt-val { font-size: 11px !important; }
+        .dt-track { height: var(--dt-track-h) !important; margin-top: 8px !important; }
+        .dt-ruler { height: var(--dt-ruler-h) !important; margin-top: 1px !important; }
+        .dt-tick { font-size: 8px !important; }
+        .dt-tick span:first-child { font-size: 9px !important; }
+        .dt-segment-info { height: var(--dt-seg-h) !important; margin-top: 2px !important; font-size: 9px !important; padding: 1px 0 !important; }
+
+        /* Make bottom padding follow the real HUD height (measured by JS) */
+        #timeline-container {
+            padding:
+                var(--timeline-pad-top)
+                var(--timeline-pad-x)
+                calc(var(--hud-height, 65px) + 8px)
+                var(--timeline-pad-x) !important;
+        }
+
+        /* iPad (touch) extra compact */
+        @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
+            :root{
+                --dt-track-h: 6px;
+                --dt-ruler-h: 14px;
+                --dt-seg-h: 10px;
+                --dt-wrapper-mx: 10px;
+
+                --timeline-pad-x: 10px;
+                --timeline-pad-top: 8px;
+            }
+
+            .app-header { padding: 10px 12px 6px 12px !important; }
+            .stats-dashboard { padding: 6px 12px !important; gap: 6px !important; }
+            .legal-status-strip { margin: 4px 12px 0 12px !important; min-height: 24px !important; padding: 4px 8px !important; font-size: 10px !important; }
+            .station-card { padding: 12px !important; }
+        }
+
+        /* Keyboard-open mode (iPad landscape): maximize leg card viewport */
+        body.keyboard-open .stats-dashboard,
+        body.keyboard-open .legal-status-strip,
+        body.keyboard-open .duty-timeline-wrapper{
+            display: none !important;
+        }
+
+        body.keyboard-open .hud-footer{
+            display: none !important;
+        }
+
+        body.keyboard-open #timeline-container{
+            padding-top: 6px !important;
+            padding-bottom: 12px !important;
+            overflow-y: auto !important;
+            align-items: flex-start !important;
+            overscroll-behavior-y: auto !important;
+            touch-action: pan-x pan-y;
+        }
+
+        body.keyboard-open .station-card{
+            max-height: calc(var(--app-height, 100vh) - 16px);
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body.keyboard-open input,
+        body.keyboard-open select,
+        body.keyboard-open textarea{
+            scroll-margin-top: 10px;
+            scroll-margin-bottom: 40px;
         }
 
     </style>
@@ -831,7 +883,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.4：地面任務 (如 SIM) 豁免外站 48 小時休時限制" onclick="showInfo('changelog')">Pro v6.5.4 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.5：修正 48h Long Layover 僅適用於 Flight Duty（避免 SIM/訓練誤判）" onclick="showInfo('changelog')">Pro v6.5.5 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1081,20 +1133,15 @@
 
 <script>
 
-    // === VIEWPORT HEIGHT STABILIZER & KEYBOARD DETECTION ===
-    // Keeps the main flex column from mis-sizing and handles iPad landscape keyboard popups.
+    // === VIEWPORT HEIGHT STABILIZER (iPad/iOS WebKit) ===
+    // Keeps the main flex column from mis-sizing when Safari/Chrome UI toolbars expand/collapse.
     (function(){
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (!isIOS) return;
+
         const setAppH = () => {
             const h = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
             document.documentElement.style.setProperty('--app-height', `${Math.round(h)}px`);
-            
-            // 🚀 NEW: Detect severe height compression (Keyboard popped up on iPad/Tablets)
-            // 當視覺高度小於 650px (通常是鍵盤彈出時)，掛上 keyboard-up 讓畫面變為可滑動
-            if (h < 650) {
-                document.body.classList.add('keyboard-up');
-            } else {
-                document.body.classList.remove('keyboard-up');
-            }
         };
 
         setAppH();
@@ -1103,29 +1150,96 @@
         if (window.visualViewport) window.visualViewport.addEventListener('resize', setAppH, { passive: true });
     })();
 
+    /* === v6.5.6 iPad keyboard handling & HUD height measurement (UI only) === */
+    (function(){
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const vv = window.visualViewport || null;
+
+        function setHudHeight(){
+            const hud = document.querySelector('.hud-footer');
+            const h = hud ? hud.offsetHeight : 0;
+            document.documentElement.style.setProperty('--hud-height', `${Math.round(h)}px`);
+        }
+
+        function setKeyboardState(){
+            // Measure first (helps padding even if not iOS)
+            setHudHeight();
+
+            if (!isIOS || !vv) {
+                if (document.body) document.body.classList.remove('keyboard-open');
+                document.documentElement.style.setProperty('--kbd-height', `0px`);
+                return;
+            }
+
+            const diff = Math.max(0, Math.round(window.innerHeight - vv.height));
+            const kbOpen = diff > 120; // threshold to avoid toolbars/URL bar changes
+
+            if (document.body) document.body.classList.toggle('keyboard-open', kbOpen);
+            document.documentElement.style.setProperty('--kbd-height', `${diff}px`);
+
+            // Re-measure HUD after class changes
+            setHudHeight();
+        }
+
+        function onFocusIn(e){
+            const el = e && e.target;
+            if (!el) return;
+            const tag = (el.tagName || '').toUpperCase();
+            if (tag !== 'INPUT' && tag !== 'SELECT' && tag !== 'TEXTAREA') return;
+
+            // Give iOS time to open keyboard + resize viewport, then center the field
+            setTimeout(() => {
+                try {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                } catch (_) {}
+                setKeyboardState();
+            }, 90);
+        }
+
+        // Bind events
+        window.addEventListener('resize', setKeyboardState, { passive: true });
+        window.addEventListener('orientationchange', () => setTimeout(setKeyboardState, 50), { passive: true });
+        document.addEventListener('focusin', onFocusIn, true);
+        document.addEventListener('focusout', () => setTimeout(setKeyboardState, 120), true);
+
+        if (vv) {
+            vv.addEventListener('resize', setKeyboardState, { passive: true });
+            vv.addEventListener('scroll', setKeyboardState, { passive: true });
+        }
+
+        // Initial
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => setTimeout(setKeyboardState, 50), { passive: true });
+        } else {
+            setTimeout(setKeyboardState, 50);
+        }
+    })();
+
     // === INFO SYSTEM DATA & BILINGUAL TEXTS ===
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.5.4 修正地面任務 48h 豁免邏輯 (Bug Fix)</b><br>
-                   • <b>修正</b>：依據 FOM 3.4.3.2 規定，48 小時外站長休限制僅適用於後續之「飛行任務 (Flight Duty)」。若 Next Duty 安排為 SIM、CLASS 等地面任務，系統將正確識別並豁免 48h 限制，僅需滿足前趟航班之基本休時。<br>
+            text: `<div class="info-zh"><b>v6.5.6 iPad 視窗最大化（UI；不更動計算公式）</b><br>
+                   • <b>時間條極限瘦身</b>：Duty Timeline Minimap 進一步降低高度（Track／刻度／段落提示），釋放更多航段卡可視面積。<br>
+                   • <b>鍵盤彈出自動讓位</b>：iPad 橫向輸入時間時，偵測鍵盤開啟自動隱藏上方統計/狀態/時間條與底部 HUD，避免航段卡被擠到看不見；收鍵盤後自動復原。<br>
+                   • <b>輸入框置中</b>：點選時間欄位會自動 scrollIntoView 置中，降低被鍵盤遮擋。</div>
                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
-                   </div>
-                   <div class="info-zh"><b>v6.5.3 iPad 航段卡重新置中（UI；不更動計算公式）</b><br>
-                   • <b>修正</b>：在保留 v6.5.2「時間條高度縮減」的前提下，讓 iPad（Safari/Chrome）航段卡回到垂直置中顯示，不再貼齊頂部。<br>
-                   • <b>影響範圍</b>：僅版面配置（CSS）；不更動任何計算公式與功能。<br>
+                   <div class="info-zh"><b>v6.5.5 48h Long Layover 規則修正（邏輯）</b><br>
+                   • <b>修正</b>：依 FOM 3.4.3.2，「返台後 48 小時內不得再派遣 Flight Duty」僅適用於 Flight Duty。當 Planned Next Duty 為非機場代碼（例如 SIM／訓練）時，不再誤判為 Rest Short。<br>
+                   • <b>保留</b>：若下次 Flight Duty 目的地為前一 &gt;48h 外站或與其時差≤3h，仍自動豁免 48h 限制（但一般 minimum rest 仍需滿足）。<br>
                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
                    </div>
                    <div class="info-zh"><b>v6.5.2 iPad 時間條高度修正（UI；不更動計算公式）</b><br>
                    • <b>iPad Safari/Chrome</b>：Duty Timeline（時間條）改為 Compact（降低刻度/間距），避免擠壓航段卡區塊。<br>
                    • <b>Viewport 校正</b>：使用 Visual Viewport 高度鎖定 App 版面，降低 iPad 動態工具列造成的高度誤判。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.4 Ground Duty 48h Exemption (Bug Fix)</b><br>
-                   • <b>Fix</b>: Per FOM 3.4.3.2, the 48-hour rest rule applies only before a subsequent "Flight Duty". Ground duties like SIM or CLASS are now correctly exempted from the 48h requirement.<br>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.6 iPad Viewport Maximizer (UI; no formula changes)</b><br>
+                   • <b>Minimap ultra-compact</b>: further reduced Duty Timeline Minimap height to reclaim leg-card space.<br>
+                   • <b>Keyboard-aware layout</b>: on iPad landscape while editing time fields, auto-hides top strips and bottom HUD to prevent the leg cards from being squeezed; auto-restores when the keyboard closes.<br>
+                   • <b>Auto-centering inputs</b>: focused time fields are scrolled into the center of the viewport to avoid being covered by the keyboard.</div>
                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
-                   </div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.3 iPad Leg Card Re-centering (UI-only; no formula changes)</b><br>
-                   • <b>Fix</b>: while preserving the compact timeline from v6.5.2, restore vertical centering of leg cards on iPad (Safari/Chrome) instead of top-alignment.<br>
-                   • <b>Scope</b>: layout/CSS only; no calculation or logic changes.<br>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.5 48h Long Layover Rule Fix (Logic)</b><br>
+                   • <b>Fix</b>: per FOM 3.4.3.2, the “no flight duty within 48h after returning to home base” restriction applies to <u>flight duty</u> only. When the planned next duty is NOT a flight duty (non-airport code such as SIM/training), it will no longer be flagged as Rest Short.<br>
+                   • <b>Kept</b>: exemption still applies when the next <u>flight</u> is to the previous &gt;48h layover point or any point within ≤3h TZ difference (minimum required rest still applies).<br>
                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
                    </div>
                    <div class="info-en" style="margin-top:8px;"><b>v6.5.2 iPad Timeline Height Fix (UI-only; no formula changes)</b><br>
@@ -1163,9 +1277,9 @@
         'nextRpt': {
             title: '下次合法報到 (Next Report)',
             text: `<div class="info-ref">FOM 3.4.1 (H)(L) & 3.4.3.2</div>
-                   <div class="info-zh"><b>一般休時規定</b><br>系統計算的休息時間，是根據前趟飛行來決定。您必須休滿這段時間才能開始下一個任務。<br><br><b>外站長程 Layover 豁免條件</b><br>當從累積時差≥6小時且停留>48小時的外站返台時，依法需休48小時。但若您預排的下次目的地與前一外站「時差≤3小時」或為「同地點」，系統會自動計算並賦予豁免權！</div>
+                   <div class="info-zh"><b>一般休時規定</b><br>系統計算的休息時間，是根據前趟飛行來決定。您必須休滿這段時間才能開始下一個任務。<br><br><b>外站長程 Layover（時差≥6h 且停留>48h）</b><br>手冊條文限制的是：返台後至少 48 小時內不得再派遣「Flight Duty」（不包含 SIM／訓練等非 Flight Duty）。本版本僅在「下次任務代碼為機場代碼（Flight Duty）」時才套用 48h 限制；若下次 Flight Duty 目的地為前一 >48h 外站或與其時差≤3h，系統會自動豁免（仍需滿足一般 minimum rest）。</div>
                    <div class="info-divider"></div>
-                   <div class="info-en"><b>Rest applies to ANY Duty</b><br>Rest must be completed before starting ANY subsequent duty.<br><br><b>Long Layover Exemption</b><br>Returning from an outstation with TZ diff ≥6h and layover >48h requires 48h rest. However, if your next planned duty is to the same outstation or one within 3h TZ diff, the system will automatically exempt the 48h rule!</div>`
+                   <div class="info-en"><b>Rest applies to ANY Duty</b><br>Rest must be completed before starting ANY subsequent duty.<br><br><b>Long Layover (TZ diff ≥6h & layover &gt;48h)</b><br>The FOM clause restricts assignment of <u>flight duty</u> (not SIM/training) for at least 48h after returning to home base. This tool applies the 48h restriction only when your planned next duty is a flight duty (recognized airport code). Exemption: if the next flight is to the previous 48-hour layover point, or any point within ≤3h TZ diff from it, the 48h restriction is automatically exempted (minimum required rest still applies).</div>`
         },
         'jz': { 
             title: '聯管通報 JZ LBO', 
@@ -1708,6 +1822,31 @@ function uiToast(message, tone = 'info') {
         'SYD': 'Australia/Sydney', 'MEL': 'Australia/Melbourne', 'BNE': 'Australia/Brisbane', 'AKL': 'Pacific/Auckland', 'GUM': 'Pacific/Guam'
     };
 
+    // Flight duty code classifier (robust for airports not in the timezone dictionary)
+    // Treat as Flight Duty when it looks like an airport code (IATA/ICAO) and is NOT a known ground/training code.
+    const NON_FLIGHT_DUTY_CODES = new Set([
+        'SIM','SIMU','TRG','TRAIN','TRAINING','CLASS','CLS','MEET','MTG','ADMIN',
+        'OFF','REST','VAC','LEAVE','LV','SICK','MED','CHK','CHECK','LOE','LPC',
+        'STBY','SBY','RSV','RESERVE','HOTEL'
+    ]);
+
+    function normalizeDutyCode(raw) {
+        if (!raw) return '';
+        let c = String(raw).toUpperCase().trim();
+        // If ICAO is provided, normalize to IATA when possible
+        if (c.length === 4 && icaoToIata[c]) c = icaoToIata[c];
+        return c;
+    }
+
+    function isFlightDutyCode(raw) {
+        const c = normalizeDutyCode(raw);
+        // IATA (3 letters) is the common case in this tool; allow ICAO input via normalizeDutyCode().
+        if (!/^[A-Z]{3}$/.test(c)) return false;
+        if (NON_FLIGHT_DUTY_CODES.has(c)) return false;
+        return true;
+    }
+
+
     function getUtcDate(dateStr) {
         if (!dateStr) return null;
         const [y, m, d] = dateStr.split('-').map(Number);
@@ -1741,7 +1880,7 @@ function uiToast(message, tone = 'info') {
         return info ? info.timeStr.replace(':','') : utcVal;
     }
 
-// 🚀 NEW: Absolute Timezone Offset Getter (Robust 24h Parsing)
+    // 🚀 NEW: Absolute Timezone Offset Getter
     function getZoneOffset(code) {
         if (!code) return null;
         let c = code.toUpperCase().trim();
@@ -1751,13 +1890,8 @@ function uiToast(message, tone = 'info') {
         const refDate = getUtcDate(document.getElementById('flightDate').value) || new Date();
         const utcDate = new Date(Date.UTC(refDate.getUTCFullYear(), refDate.getUTCMonth(), refDate.getUTCDate(), 12, 0));
         try {
-            // 強制使用 en-US 與 hour12: false 提取純數字，避免 AM/PM 解析錯誤
-            const fmt = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: 'numeric', hour12: false });
-            const parts = fmt.formatToParts(utcDate);
-            const localHStr = parts.find(p => p.type === 'hour').value;
-            let localH = parseInt(localHStr, 10);
-            if (localH === 24) localH = 0; // 處理部分瀏覽器午夜回傳 24 的例外
-            
+            const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: 'numeric', hourCycle: 'h23' });
+            const localH = parseInt(fmt.format(utcDate).split(':')[0]); 
             let offset = localH - 12; 
             if (offset < -12) offset += 24; 
             if (offset > 12) offset -= 24;
@@ -1870,8 +2004,7 @@ function uiToast(message, tone = 'info') {
     }
 
     function updNdCode(val) {
-        let code = val.toUpperCase().trim();
-        if (code.length === 4 && icaoToIata[code]) code = icaoToIata[code];
+        let code = normalizeDutyCode(val);
         app.nextDuty.code = code;
 
         // Auto-determine offset based on the CURRENT duty's final arrival station
@@ -1881,10 +2014,10 @@ function uiToast(message, tone = 'info') {
         // Smart Dictionary Inverse Check: If it's a known airport, treat as flight. Otherwise, ground duty.
         if (!code) {
             app.nextDuty.offset = 0;
-        } else if (airportIanaZones[code]) {
+        } else if (isFlightDutyCode(code)) {
             app.nextDuty.offset = isDepartingHome ? 90 : 60;
         } else {
-            // Not in the airport database -> Auto-categorize as Ground Duty (0 mins)
+            // Not a flight-duty code -> Auto-categorize as Ground Duty (0 mins)
             app.nextDuty.offset = 0;
         }
         
@@ -2907,59 +3040,57 @@ function uiToast(message, tone = 'info') {
                 else { nextLegCheck.classList.add('hidden'); }
             } else { nextLegCheck.classList.add('hidden'); }
             
-            // 🚀 48h Long Layover Rule Check Engine
+            // 🚀 48h Long Layover Rule Check Engine (FOM 3.4.3.2 — Flight Duty only)
             if (app.nextDuty && app.nextDuty.isLongLayover && destIsHome && !isULR) {
-                let prevOutstation = app.stations[0].code.toUpperCase().trim();
-                let nextOutstation = app.nextDuty.code.toUpperCase().trim();
-                
-                // Final safety check for TZ >= 6h
-                let isValidLongLayover = false;
-                let offPrev = getZoneOffset(prevOutstation);
-                let offHome = getZoneOffset(destCode);
-                if (offPrev !== null && offHome !== null) {
-                    let d = Math.abs(offPrev - offHome);
-                    if (Math.min(d, 24 - d) >= 6) isValidLongLayover = true;
-                }
-                
-                if (isValidLongLayover) {
-                    let requires48h = true;
-                    
-                    // 判斷是否為地面任務 (非機場代碼即視為地面任務，如 SIM, CLASS, TRG, OFC)
-                    let isGroundDuty = nextOutstation !== '' && !airportIanaZones[nextOutstation];
+                const prevOutstation = normalizeDutyCode((app.stations[0].code || ''));
+                const nextOutstation = normalizeDutyCode(app.nextDuty.code || '');
 
-                    if (isGroundDuty) {
-                        // FOM 3.4.3.2: "shall not be assigned any FLIGHT duty for at least 48 hours"
-                        // 地面任務不受 48h 限制，給予豁免，僅需滿足前趟航班之基本休時
-                        requires48h = false;
-                        exempted48hRule = true;
-                        tzExemptText = `Exempt (Ground Duty: ${nextOutstation})`;
-                    } else if (nextOutstation && !['TPE','TSA','KHH'].includes(nextOutstation)) {
-                        if (prevOutstation === nextOutstation) {
-                            requires48h = false;
-                            exempted48hRule = true;
-                            tzExemptText = `Exempt (Same Port: ${nextOutstation})`;
-                        } else {
-                            let offNext = getZoneOffset(nextOutstation);
-                            if (offPrev !== null && offNext !== null) {
-                                let rawDiff = Math.abs(offPrev - offNext);
-                                let actualTzDiff = Math.min(rawDiff, 24 - rawDiff);
-                                if (actualTzDiff <= 3) {
-                                    requires48h = false;
-                                    exempted48hRule = true;
-                                    tzExemptText = `Exempt TZ≤3 (${prevOutstation} vs ${nextOutstation})`;
+                // Rule scope: applies only when the NEXT duty is a flight duty.
+                const nextIsFlightDuty = isFlightDutyCode(nextOutstation) || !!airportIanaZones[nextOutstation];
+                if (nextIsFlightDuty) {
+
+                    // Final safety check for cumulative TZ >= 6h (between previous outstation and home base)
+                    let isValidLongLayover = false;
+                    const offPrev = getZoneOffset(prevOutstation);
+                    const offHome = getZoneOffset(destCode);
+                    if (offPrev !== null && offHome !== null) {
+                        const d = Math.abs(offPrev - offHome);
+                        if (Math.min(d, 24 - d) >= 6) isValidLongLayover = true;
+                    }
+
+                    if (isValidLongLayover) {
+                        let requires48h = true;
+
+                        // Exemption: may be scheduled to fly to the previous 48-hour layover point
+                        // or any point with <= 3h TZ difference from that point (when applicable minimum rest is given).
+                        if (nextOutstation && !['TPE', 'TSA', 'KHH'].includes(nextOutstation)) {
+                            if (prevOutstation === nextOutstation) {
+                                requires48h = false;
+                                exempted48hRule = true;
+                                tzExemptText = `Exempt (Same Port: ${nextOutstation})`;
+                            } else {
+                                const offNext = getZoneOffset(nextOutstation);
+                                if (offPrev !== null && offNext !== null) {
+                                    const rawDiff = Math.abs(offPrev - offNext);
+                                    const actualTzDiff = Math.min(rawDiff, 24 - rawDiff);
+                                    if (actualTzDiff <= 3) {
+                                        requires48h = false;
+                                        exempted48hRule = true;
+                                        tzExemptText = `Exempt TZ≤3 (${prevOutstation} vs ${nextOutstation})`;
+                                    }
                                 }
                             }
                         }
-                    }
-                    
-                    if (requires48h) {
-                        tableRest = Math.max(tableRest, 48);
-                        applied48hRule = true;
+
+                        if (requires48h) {
+                            tableRest = Math.max(tableRest, 48);
+                            applied48hRule = true;
+                        }
                     }
                 }
             }
 
-            finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (actualFdpMins < 0) actualFdpMins += 1440;
+finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (actualFdpMins < 0) actualFdpMins += 1440;
             if (actualFdpMins > globalMaxFdpMins && !isULR) { const fdpRestHours = Math.ceil(actualFdpMins / 60); finalRestHours = Math.max(tableRest, fdpRestHours); }
             
             calculatedRestMins = finalRestHours * 60; const postDuty = 30; 
