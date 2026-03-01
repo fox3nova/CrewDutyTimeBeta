@@ -1704,7 +1704,7 @@ function uiToast(message, tone = 'info') {
         return info ? info.timeStr.replace(':','') : utcVal;
     }
 
-    // 🚀 NEW: Absolute Timezone Offset Getter
+// 🚀 NEW: Absolute Timezone Offset Getter (Robust 24h Parsing)
     function getZoneOffset(code) {
         if (!code) return null;
         let c = code.toUpperCase().trim();
@@ -1714,8 +1714,13 @@ function uiToast(message, tone = 'info') {
         const refDate = getUtcDate(document.getElementById('flightDate').value) || new Date();
         const utcDate = new Date(Date.UTC(refDate.getUTCFullYear(), refDate.getUTCMonth(), refDate.getUTCDate(), 12, 0));
         try {
-            const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: 'numeric', hourCycle: 'h23' });
-            const localH = parseInt(fmt.format(utcDate).split(':')[0]); 
+            // 強制使用 en-US 與 hour12: false 提取純數字，避免 AM/PM 解析錯誤
+            const fmt = new Intl.DateTimeFormat('en-US', { timeZone: zone, hour: 'numeric', hour12: false });
+            const parts = fmt.formatToParts(utcDate);
+            const localHStr = parts.find(p => p.type === 'hour').value;
+            let localH = parseInt(localHStr, 10);
+            if (localH === 24) localH = 0; // 處理部分瀏覽器午夜回傳 24 的例外
+            
             let offset = localH - 12; 
             if (offset < -12) offset += 24; 
             if (offset > 12) offset -= 24;
