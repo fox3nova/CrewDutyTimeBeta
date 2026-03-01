@@ -694,19 +694,39 @@
         .changelog-summary::-webkit-details-marker { display: none; }
 
 
-        /* === iPad TIMELINE HEIGHT FIX (v6.5.3) ===
-           Goal: reduce Duty Timeline vertical footprint on iPad WebKit to prevent leg cards from being squeezed.
+/* === iPad TIMELINE HEIGHT FIX (Ultra-Compact) ===
+           Goal: Extreme reduction of vertical footprint to maximize leg card space.
         */
         @media (hover: none) and (pointer: coarse) and (min-width: 768px) and (max-width: 1366px) {
-            .duty-timeline-wrapper { margin-top: 6px !important; gap: 0px !important; }
+            /* 1. 極限壓縮：Legal Strip & Stats Dashboard */
+            .legal-status-strip { margin-top: 2px !important; min-height: 24px !important; padding: 2px 8px !important; }
+            .stats-dashboard { padding: 4px 16px !important; gap: 6px !important; }
+            .stat-card { padding: 4px !important; }
+            .stat-label { margin-bottom: 0px !important; font-size: 8px !important; }
+            
+            /* 2. 極限壓縮：時間條 (Timeline) */
+            .duty-timeline-wrapper { margin-top: 2px !important; gap: 0px !important; }
             .dt-header { margin-top: 0 !important; align-items: flex-end; }
-            .dt-title { font-size: 8px !important; }
-            .dt-val { font-size: 11px !important; }
-            .dt-track { height: 8px !important; margin-top: 8px !important; }
-            .dt-ruler { height: 18px !important; margin-top: 2px !important; }
-            .dt-tick { font-size: 8px !important; }
-            /* reclaim vertical space above the leg cards */
-            #timeline-container { padding-top: 10px !important; padding-bottom: 58px !important; align-items: center !important; }
+            .dt-header-col { gap: 0 !important; }
+            .dt-title { font-size: 8px !important; line-height: 1; }
+            .dt-val { font-size: 11px !important; line-height: 1.1; }
+            
+            /* 時間軌道與標記 */
+            .dt-track { height: 6px !important; margin-top: 10px !important; }
+            .dt-now-marker::before { top: -11px !important; font-size: 6px !important; padding: 0 2px !important; }
+            .dt-limit-text { top: -11px !important; font-size: 7px !important; padding: 0 2px !important; }
+            
+            /* 刻度尺與文字 */
+            .dt-ruler { height: 16px !important; margin-top: 1px !important; }
+            .dt-tick { font-size: 8px !important; line-height: 1 !important; }
+            .dt-tick span:first-child { font-size: 9px !important; }
+            .dt-tick.stagger { transform: translateX(-50%) translateY(8px) !important; } /* 縮小交錯落差 */
+            
+            /* 點擊航段時出現的 Block Time 資訊列 */
+            .dt-segment-info { height: 12px !important; margin-top: 0 !important; font-size: 9px !important; line-height: 12px !important; padding: 0 !important; }
+
+            /* 3. 釋放卡片容器的上下多餘空間 */
+            #timeline-container { padding-top: 2px !important; padding-bottom: 50px !important; align-items: center !important; }
         }
 
         /* 🚨 RESPONSIVE RESET */
