@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.5.3)</title>
+    <title>CAL Duty (Pro v6.5.4)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -799,7 +799,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.3：iPad 航段卡重新置中（保留時間條高度修正；UI，不更動計算公式）" onclick="showInfo('changelog')">Pro v6.5.3 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.4：地面任務 (如 SIM) 豁免外站 48 小時休時限制" onclick="showInfo('changelog')">Pro v6.5.4 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1070,7 +1070,11 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.5.3 iPad 航段卡重新置中（UI；不更動計算公式）</b><br>
+            text: `<div class="info-zh"><b>v6.5.4 修正地面任務 48h 豁免邏輯 (Bug Fix)</b><br>
+                   • <b>修正</b>：依據 FOM 3.4.3.2 規定，48 小時外站長休限制僅適用於後續之「飛行任務 (Flight Duty)」。若 Next Duty 安排為 SIM、CLASS 等地面任務，系統將正確識別並豁免 48h 限制，僅需滿足前趟航班之基本休時。<br>
+                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+                   </div>
+                   <div class="info-zh"><b>v6.5.3 iPad 航段卡重新置中（UI；不更動計算公式）</b><br>
                    • <b>修正</b>：在保留 v6.5.2「時間條高度縮減」的前提下，讓 iPad（Safari/Chrome）航段卡回到垂直置中顯示，不再貼齊頂部。<br>
                    • <b>影響範圍</b>：僅版面配置（CSS）；不更動任何計算公式與功能。<br>
                    <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
@@ -1078,6 +1082,10 @@
                    <div class="info-zh"><b>v6.5.2 iPad 時間條高度修正（UI；不更動計算公式）</b><br>
                    • <b>iPad Safari/Chrome</b>：Duty Timeline（時間條）改為 Compact（降低刻度/間距），避免擠壓航段卡區塊。<br>
                    • <b>Viewport 校正</b>：使用 Visual Viewport 高度鎖定 App 版面，降低 iPad 動態工具列造成的高度誤判。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.4 Ground Duty 48h Exemption (Bug Fix)</b><br>
+                   • <b>Fix</b>: Per FOM 3.4.3.2, the 48-hour rest rule applies only before a subsequent "Flight Duty". Ground duties like SIM or CLASS are now correctly exempted from the 48h requirement.<br>
+                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+                   </div>
                    <div class="info-en" style="margin-top:8px;"><b>v6.5.3 iPad Leg Card Re-centering (UI-only; no formula changes)</b><br>
                    • <b>Fix</b>: while preserving the compact timeline from v6.5.2, restore vertical centering of leg cards on iPad (Safari/Chrome) instead of top-alignment.<br>
                    • <b>Scope</b>: layout/CSS only; no calculation or logic changes.<br>
@@ -2873,8 +2881,17 @@ function uiToast(message, tone = 'info') {
                 
                 if (isValidLongLayover) {
                     let requires48h = true;
+                    
+                    // 判斷是否為地面任務 (非機場代碼即視為地面任務，如 SIM, CLASS, TRG, OFC)
+                    let isGroundDuty = nextOutstation !== '' && !airportIanaZones[nextOutstation];
 
-                    if (nextOutstation && nextOutstation !== 'SIM' && nextOutstation !== 'CLASS' && nextOutstation !== 'TRG' && !['TPE','TSA','KHH'].includes(nextOutstation)) {
+                    if (isGroundDuty) {
+                        // FOM 3.4.3.2: "shall not be assigned any FLIGHT duty for at least 48 hours"
+                        // 地面任務不受 48h 限制，給予豁免，僅需滿足前趟航班之基本休時
+                        requires48h = false;
+                        exempted48hRule = true;
+                        tzExemptText = `Exempt (Ground Duty: ${nextOutstation})`;
+                    } else if (nextOutstation && !['TPE','TSA','KHH'].includes(nextOutstation)) {
                         if (prevOutstation === nextOutstation) {
                             requires48h = false;
                             exempted48hRule = true;
