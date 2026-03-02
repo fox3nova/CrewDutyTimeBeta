@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.5.6)</title>
+    <title>CAL Duty (Pro v6.5.13)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -683,7 +683,94 @@
         .info-modal-overlay.show .info-modal-card { transform: scale(1); }
         .info-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: var(--bg-input); border-bottom: 1px solid var(--border-light);}
         .info-modal-body { padding: 20px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); max-height: 70vh; overflow-y: auto;}
-        .info-ref { display: inline-block; background: var(--bg-accent); color: var(--brand-blue); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; letter-spacing: 0.5px; border: 1px solid rgba(0,122,255,0.1); }
+        
+        /* === HELP MODAL (Bilingual User Guide) === */
+        .help-modal-card {
+            background: var(--bg-card);
+            width: 92%;
+            max-width: 980px;
+            border-radius: var(--radius-lg);
+            padding: 0;
+            box-shadow: var(--shadow-float);
+            transform: scale(0.98);
+            transition: transform 0.2s ease;
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+        .info-modal-overlay.show .help-modal-card { transform: scale(1); }
+
+        .help-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: var(--bg-input);
+            border-bottom: 1px solid var(--border-light);
+            gap: 10px;
+        }
+
+        .help-modal-body {
+            padding: 14px 16px 18px 16px;
+            font-size: 13px;
+            line-height: 1.65;
+            color: var(--text-secondary);
+            max-height: 78vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .help-tabs {
+            display: inline-flex;
+            background: color-mix(in srgb, var(--bg-input) 65%, transparent 35%);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 3px;
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+        .help-tab {
+            cursor: pointer;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 700;
+            font-size: 12px;
+            min-width: 92px;
+        }
+        .help-tab.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .help-title {
+            font-weight: 800;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin: 4px 0 12px 0;
+        }
+        .help-block { margin: 10px 0 14px 0; }
+        .help-h { font-weight: 800; color: var(--text-primary); margin-bottom: 6px; }
+        .help-step { font-weight: 800; color: var(--brand-blue); margin-bottom: 6px; }
+        .help-p { margin: 0 0 6px 0; }
+        .help-ul { margin: 6px 0 0 18px; padding: 0; }
+        .help-ul li { margin: 6px 0; }
+        .help-tip {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: color-mix(in srgb, var(--brand-blue) 7%, var(--bg-card) 93%);
+            border: 1px solid color-mix(in srgb, var(--brand-blue) 18%, var(--border-light) 82%);
+            border-radius: 12px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 430px) {
+            .help-modal-card { width: 94%; }
+            .help-tab { min-width: 86px; padding: 8px 8px; }
+        }
+.info-ref { display: inline-block; background: var(--bg-accent); color: var(--brand-blue); font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 12px; letter-spacing: 0.5px; border: 1px solid rgba(0,122,255,0.1); }
         .info-zh { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 6px; line-height: 1.5; letter-spacing: 0.02em; }
         .info-en { font-size: 14px; font-weight: 500; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; letter-spacing: 0.01em; }
         .info-divider { height: 1px; background: var(--border-light); margin: 16px 0; }
@@ -741,7 +828,7 @@
         }
 
     
-        /* === v6.5.6 iPad Space Maximizer (UI only; no formula changes) === */
+        /* === v6.5.10 Next Duty input stability (UI only; no formula changes) === */
         :root{
             --dt-track-h: 8px;
             --dt-ruler-h: 18px;
@@ -875,7 +962,178 @@
 
 
 
-    <header class="app-header">
+    
+
+    <!-- HELP / USER GUIDE MODAL -->
+    <div id="helpModal" class="info-modal-overlay" aria-hidden="true">
+        <div class="help-modal-card" role="dialog" aria-modal="true" aria-labelledby="helpTitle" tabindex="-1">
+            <div class="help-modal-header">
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                    <h3 id="helpTitle" style="margin:0; font-size:16px; color:var(--brand-blue);">📖 使用手冊 / User Guide</h3>
+                    <div class="text-xs" style="color:var(--text-tertiary);">CAL Duty (Pro) — 內建離線說明</div>
+                </div>
+                <button onclick="closeHelp()" aria-label="Close" style="background:var(--bg-input); border-radius:50%; width:32px; height:32px; font-size:14px; font-weight:bold; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-light);">
+                    ✕
+                </button>
+            </div>
+
+            <div class="help-modal-body">
+                <div class="help-tabs" role="tablist" aria-label="Language Tabs">
+                    <button class="help-tab active" id="helpTabZh" role="tab" aria-selected="true" onclick="switchHelpLang('zh')">🇹🇼 中文</button>
+                    <button class="help-tab" id="helpTabEn" role="tab" aria-selected="false" onclick="switchHelpLang('en')">🇺🇸 English</button>
+                </div>
+
+                <div id="help-zh" class="help-section" role="tabpanel" aria-labelledby="helpTabZh">
+                    <div class="help-title">✈️ CAL Duty (Pro v6.5.4) 雙語使用手冊 / Bilingual User Guide</div>
+
+                    <div class="help-block">
+                        <div class="help-h">【中文版使用說明】</div>
+                        <div class="help-p">這是一款專為中華航空飛行員設計的「法定飛時與休時計算工具」，嚴格遵循 FOM 3.4 Crew Scheduling 規範。</div>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-h">⏱️ 快速上手：標準使用 5 步驟</div>
+                        <div class="help-p">這套系統的設計邏輯是 <b>「由上到下、由左到右」</b>，並區分 <b>「計畫階段 (Plan)」</b> 與 <b>「執行階段 (Actual)」</b>。</div>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">1. 初始基本設定</div>
+                        <ul class="help-ul">
+                            <li><b>選擇航班日期 (Flight Date)</b>：位於頂部左側。此日期作為換算 UTC 與 Local Time 的基準。</li>
+                            <li><b>選擇派遣配置 (Crew)</b>：點選 Single (單重)、Multi (多重) 或 Double (雙重)，這會決定 Max FDT 與休時基準。</li>
+                            <li><b>選擇時區模式</b>：點擊 ALL UTC / ALL LOCAL 一鍵切換所有時間輸入格的預設時區。</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">2. 建立航段與計畫時間</div>
+                        <ul class="help-ul">
+                            <li><b>輸入機場代碼 (Code)</b>：輸入 3 碼 IATA 或 4 碼 ICAO 代碼（如輸入 RJAA 會自動轉為 NRT）。</li>
+                            <li>點擊卡片下方的 <b>+</b> 新增航段，<b>⤵</b> 新增轉降 (Divert)。</li>
+                            <li><b>輸入表定時間 (STD / STA)</b>：輸入 4 位數字（如 0830），系統會自動換算時區。</li>
+                        </ul>
+                        <div class="help-tip">💡 提示：輸入完成後，底部 HUD 會自動算出您的報到時間 (Report) 與 最大任務時間 (Max FDT)。</div>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">3. 特殊條件與例外</div>
+                        <ul class="help-ul">
+                            <li>點擊頂部右上角 <b>🔽</b> 展開進階面板：</li>
+                            <li><b>Ext FDT</b>：M/D Crew 遇不可抗力，機長裁量權延長 2 小時。</li>
+                            <li><b>Night</b>：夜航自動扣減 2 小時。</li>
+                            <li><b>No Bunk</b>：M/D Crew 無床鋪，24h 飛時限縮為 12h。</li>
+                            <li><b>PREV FT</b>：檢查 24h Rolling，點擊輸入前趟 IN Z 與 FT。</li>
+                            <li><b>JZ LBO</b>：輸入聯管 ACARS 給予的最後合法後推時間。</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">4. 執行階段與實際時間</div>
+                        <ul class="help-ul">
+                            <li><b>遇到延誤 (Report Lock 🔒)</b>：航班延誤時，點擊底部 Report 旁的鎖頭，固定極限計算基準。</li>
+                            <li><b>填寫實際時間 (ACT OUT / IN / FT)</b>：輸入實際後推與靠橋時間。</li>
+                            <li><b>機上輪休 (Rest Swap Alarm 💤)</b>：(M/D Crew) 點擊紫色 💤 按鈕，輸入 Block Off 時間，系統自動算出輪換時間表。</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">5. 外站休息與 Next Duty</div>
+                        <ul class="help-ul">
+                            <li><b>外站休息 (Hotel / Split)</b>：休息 &gt;3h，開啟航段右上 HOTEL 開關，輸入 C/I 與 C/O 時間。</li>
+                            <li><b>Next Duty Planner</b>：輸入下趟目的地 (如 ANC) 或地面任務 (如 SIM)。系統自動檢查時差與 48h 豁免條件（如：同地、時差≤3h、地面任務皆豁免）。</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-h">🚦 狀態判讀與技巧</div>
+                        <ul class="help-ul">
+                            <li><b>SAFE / CAUTION / ALERT</b>：點擊頂部狀態條可看詳細診斷原因。</li>
+                            <li><b>LBO (最後後推)</b>：實際 OUT 晚於 LBO 即為超時 (紅線/橘線)。</li>
+                            <li><b>ACM (Deadhead)</b>：點擊兩站連線處的 Flight Leg 可切換為 ACM。</li>
+                            <li><b>儲存航線 (Routes 📂)</b>：點擊頂部資料夾可儲存/匯出/匯入常用航線。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="help-en" class="help-section" role="tabpanel" aria-labelledby="helpTabEn" style="display:none;">
+                    <div class="help-title">✈️ CAL Duty (Pro v6.5.4) Bilingual User Guide</div>
+
+                    <div class="help-block">
+                        <div class="help-h">【English User Guide】</div>
+                        <div class="help-p">This is a legal flight duty and rest time calculation tool designed for China Airlines pilots, strictly compliant with FOM 3.4 Crew Scheduling regulations.</div>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-h">⏱️ Quick Start: 5 Steps</div>
+                        <div class="help-p">The system is designed <b>"top-to-bottom, left-to-right"</b>, divided into <b>"Plan"</b> and <b>"Actual"</b> phases.</div>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">1. Initial Setup</div>
+                        <ul class="help-ul">
+                            <li><b>Flight Date</b>: Located at the top left. Used as the base date for UTC/Local Time conversions.</li>
+                            <li><b>Crew</b>: Select Single, Multi, or Double crew complement to determine Max FDT and rest limits.</li>
+                            <li><b>Timezone Mode</b>: Click ALL UTC / ALL LOCAL to toggle the default timezone for all input fields.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">2. Planning</div>
+                        <ul class="help-ul">
+                            <li><b>Code</b>: Input 3-letter IATA or 4-letter ICAO codes. Tap <b>+</b> to add legs, <b>⤵</b> to add diverts.</li>
+                            <li><b>STD / STA</b>: Input 4 digits (e.g., 0830). The system automatically formats and converts timezones.</li>
+                        </ul>
+                        <div class="help-tip">💡 Tip: Bottom HUD will auto-calculate your Report Time and Max FDT once STD/STA are entered.</div>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">3. Exceptions</div>
+                        <ul class="help-ul">
+                            <li>Click <b>🔽</b> top-right to expand advanced panel:</li>
+                            <li><b>Ext FDT</b>: PIC discretion extension (+2h) for M/D crew.</li>
+                            <li><b>Night</b>: Auto-detects 2100L-0700L departure, -2h FDP limit.</li>
+                            <li><b>No Bunk</b>: Limits 24h FT to 12h without bunk for M/D crew.</li>
+                            <li><b>PREV FT</b>: Input previous arrival/FT for 24h rolling check.</li>
+                            <li><b>JZ LBO</b>: Input JZ provided ACARS last block-out time.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">4. Execution</div>
+                        <ul class="help-ul">
+                            <li><b>Report Lock (🔒)</b>: Tap the lock icon near Report time during delays to freeze the limit baseline.</li>
+                            <li><b>ACT OUT / IN / FT</b>: Input actual block-out/in times or known block time (FT).</li>
+                            <li><b>Rest Swap Alarm (💤)</b>: (M/D Crew) Tap the purple 💤 chip and input Block Off to auto-calculate rest swap schedules.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-step">5. Rest & Next Duty</div>
+                        <ul class="help-ul">
+                            <li><b>Hotel / Split</b>: For rest &gt;3h, toggle HOTEL on the leg card and input C/I & C/O times.</li>
+                            <li><b>Next Duty Planner</b>: Input next destination or ground duty. Auto-checks TZ differences and 48h rule exemptions.</li>
+                        </ul>
+                    </div>
+
+                    <div class="help-block">
+                        <div class="help-h">🚦 Status Indicators & Pro Tips</div>
+                        <ul class="help-ul">
+                            <li><b>SAFE / CAUTION / ALERT</b>: Green (Legal), Yellow (Approaching Limit), Red (Exceeded). Tap for details.</li>
+                            <li><b>LBO</b>: Actual OUT later than LBO indicates a violation.</li>
+                            <li><b>ACM (Deadhead)</b>: Tap "Flight Leg" between stations to switch to ACM (Deadhead).</li>
+                            <li><b>Routes (📂)</b>: Click the folder icon to save, export, or import routes.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="help-footer text-xs" style="margin-top:14px; color:var(--text-tertiary);">
+                    Tip: 你可以用 <b>📖</b> 於頂部工具列隨時開啟本手冊（離線可用）。
+                </div>
+            </div>
+        </div>
+    </div>
+
+<header class="app-header">
         
         <!-- 🚀 DYNAMIC RESPONSIVE ONE-LINE HEADER TOP -->
         <div class="header-top">
@@ -883,7 +1141,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.5：修正 48h Long Layover 僅適用於 Flight Duty（避免 SIM/訓練誤判）" onclick="showInfo('changelog')">Pro v6.5.5 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.13：新增雙語使用手冊（Help）面板，支援 iPad 友善閱讀；不影響原公式與計算" onclick="showInfo('changelog')">Pro v6.5.13 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -894,6 +1152,9 @@
                 </button>
                 <button class="toggle-wrapper" id="routeBtn" onclick="toggleRoutePopup(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;" title="Saved Routes">
                     📂
+                </button>
+                <button class="toggle-wrapper" id="helpBtn" onclick="openHelp(event)" style="justify-content:center; font-weight:bold; font-size:11px; flex: 0 0 auto; min-width: 44px;" title="User Guide / 使用手冊">
+                    📖
                 </button>
                 <button class="toggle-wrapper" onclick="toggleNightMode()" style="justify-content:center; flex: 0 0 auto; min-width: 44px; padding:0;" title="Night Mode">
                     <span id="nightBtnIcon">🌙</span>
@@ -1150,7 +1411,7 @@
         if (window.visualViewport) window.visualViewport.addEventListener('resize', setAppH, { passive: true });
     })();
 
-    /* === v6.5.6 iPad keyboard handling & HUD height measurement (UI only) === */
+    /* === v6.5.10 iPad keyboard handling & HUD height measurement (UI only) === */
     (function(){
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const vv = window.visualViewport || null;
@@ -1219,7 +1480,7 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.5.6 iPad 視窗最大化（UI；不更動計算公式）</b><br>
+            text: `<div class="info-zh"><b>v6.5.10 Next Duty 輸入穩定性（刪除不卡頓＋ICAO=Ground 規則）</b><br>
                    • <b>時間條極限瘦身</b>：Duty Timeline Minimap 進一步降低高度（Track／刻度／段落提示），釋放更多航段卡可視面積。<br>
                    • <b>鍵盤彈出自動讓位</b>：iPad 橫向輸入時間時，偵測鍵盤開啟自動隱藏上方統計/狀態/時間條與底部 HUD，避免航段卡被擠到看不見；收鍵盤後自動復原。<br>
                    • <b>輸入框置中</b>：點選時間欄位會自動 scrollIntoView 置中，降低被鍵盤遮擋。</div>
@@ -1232,7 +1493,7 @@
                    <div class="info-zh"><b>v6.5.2 iPad 時間條高度修正（UI；不更動計算公式）</b><br>
                    • <b>iPad Safari/Chrome</b>：Duty Timeline（時間條）改為 Compact（降低刻度/間距），避免擠壓航段卡區塊。<br>
                    • <b>Viewport 校正</b>：使用 Visual Viewport 高度鎖定 App 版面，降低 iPad 動態工具列造成的高度誤判。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.6 iPad Viewport Maximizer (UI; no formula changes)</b><br>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.5.10 Next Duty input stability (smooth delete + ICAO-as-ground rule)</b><br>
                    • <b>Minimap ultra-compact</b>: further reduced Duty Timeline Minimap height to reclaim leg-card space.<br>
                    • <b>Keyboard-aware layout</b>: on iPad landscape while editing time fields, auto-hides top strips and bottom HUD to prevent the leg cards from being squeezed; auto-restores when the keyboard closes.<br>
                    • <b>Auto-centering inputs</b>: focused time fields are scrolled into the center of the viewport to avoid being covered by the keyboard.</div>
@@ -1352,6 +1613,40 @@
         __closeOverlayModal('infoModal');
     }
 
+
+    // === HELP / USER GUIDE MODAL ===
+    let __helpLang = (localStorage.getItem('calDutyHelpLang') || 'zh');
+
+    function switchHelpLang(lang) {
+        __helpLang = (lang === 'en') ? 'en' : 'zh';
+        localStorage.setItem('calDutyHelpLang', __helpLang);
+
+        const zh = document.getElementById('help-zh');
+        const en = document.getElementById('help-en');
+        const tZh = document.getElementById('helpTabZh');
+        const tEn = document.getElementById('helpTabEn');
+
+        if (zh && en && tZh && tEn) {
+            const isZh = (__helpLang === 'zh');
+            zh.style.display = isZh ? '' : 'none';
+            en.style.display = isZh ? 'none' : '';
+            tZh.classList.toggle('active', isZh);
+            tEn.classList.toggle('active', !isZh);
+            tZh.setAttribute('aria-selected', isZh ? 'true' : 'false');
+            tEn.setAttribute('aria-selected', !isZh ? 'true' : 'false');
+        }
+    }
+
+    function openHelp(e) {
+        // Avoid iOS focusing side effects
+        if (e && typeof e.preventDefault === 'function') e.preventDefault();
+        switchHelpLang(__helpLang);
+        __openOverlayModal('helpModal', '#helpModal button, #helpModal [tabindex], #helpModal a, #helpModal input');
+    }
+
+    function closeHelp() {
+        __closeOverlayModal('helpModal');
+    }
     // === NON-BLOCKING UI HELPERS (TOAST & MODAL) ===
     let __uiToastTimer = null;
 
@@ -1763,18 +2058,33 @@ function uiToast(message, tone = 'info') {
 
     // === CORE LOGIC & STATE ===
     const icaoToIata = {
-        'RCTP': 'TPE', 'RCSS': 'TSA', 'RCKH': 'KHH', 'VHHH': 'HKG', 'VMMC': 'MFM',
-        'ZSPD': 'PVG', 'ZBAA': 'PEK', 'RJAA': 'NRT', 'RJTT': 'HND', 'RJBB': 'KIX',
-        'RJFF': 'FUK', 'RJGG': 'NGO', 'RJCC': 'CTS', 'ROAH': 'OKA', 
-        'RKSI': 'ICN', 'RKSS': 'GMP', 'RKPK': 'PUS', 
-        'VTBS': 'BKK', 'WSSS': 'SIN', 'WMKK': 'KUL', 'RPLL': 'MNL', 'WIII': 'CGK', 'WADD': 'DPS',
-        'VVTS': 'SGN', 'VVNB': 'HAN', 'VVDN': 'DAD', 'WMKP': 'PEN', 
-        'VIDP': 'DEL', 
-        'EHAM': 'AMS', 'EDDF': 'FRA', 'LOWW': 'VIE', 'EGLL': 'LHR', 'LFPG': 'CDG', 'ELLX': 'LUX', 'LIRF': 'FCO',
-        'LKPR': 'PRG', 
-        'KLAX': 'LAX', 'KSFO': 'SFO', 'KSEA': 'SEA', 'KJFK': 'JFK', 'CYVR': 'YVR', 'PHNL': 'HNL', 'PANC': 'ANC',
-        'KORD': 'ORD', 'KONT': 'ONT', 
-        'YSSY': 'SYD', 'YMML': 'MEL', 'YBBN': 'BNE', 'NZAA': 'AKL', 'PGUM': 'GUM'
+        'CYVR': 'YVR', 'CYYZ': 'YYZ', 'EDDF': 'FRA', 'EGKK': 'LGW',
+        'EGLL': 'LHR', 'EHAM': 'AMS', 'ELLX': 'LUX', 'KATL': 'ATL',
+        'KDFW': 'DFW', 'KIAH': 'IAH', 'KJFK': 'JFK', 'KLAX': 'LAX',
+        'KLCK': 'LCK', 'KMIA': 'MIA', 'KONT': 'ONT', 'KORD': 'ORD',
+        'KPHX': 'PHX', 'KSEA': 'SEA', 'KSFO': 'SFO', 'LIRF': 'FCO',
+        'LKPR': 'PRG', 'LOWW': 'VIE', 'NZAA': 'AKL', 'NZCH': 'CHC',
+        'OMDB': 'DXB', 'OMDW': 'DWC', 'PANC': 'ANC', 'PGUM': 'GUM',
+        'PHNL': 'HNL', 'PTRO': 'ROR', 'RCKH': 'KHH', 'RCMQ': 'RMQ',
+        'RCNN': 'TNN', 'RCSS': 'TSA', 'RCTP': 'TPE', 'RJAA': 'NRT',
+        'RJBB': 'KIX', 'RJCC': 'CTS', 'RJFF': 'FUK', 'RJFK': 'KOJ',
+        'RJFT': 'KMJ', 'RJGG': 'NGO', 'RJNS': 'FSZ', 'RJNT': 'TOY',
+        'RJOA': 'HIJ', 'RJOT': 'TAK', 'RJTT': 'HND', 'RKPK': 'PUS',
+        'RKSI': 'ICN', 'RKSS': 'GMP', 'ROAH': 'OKA', 'ROIG': 'ISG',
+        'RPLL': 'MNL', 'RPVK': 'KLO', 'RPVM': 'CEB', 'VDPP': 'PNH',
+        'VDTI': 'KTI', 'VHHH': 'HKG', 'VIDP': 'DEL', 'VMMC': 'MFM',
+        'VTBS': 'BKK', 'VTCC': 'CNX', 'VVDN': 'DAD', 'VVNB': 'HAN',
+        'VVTS': 'SGN', 'VYYY': 'RGN', 'WADD': 'DPS', 'WARR': 'SUB',
+        'WIII': 'CGK', 'WMKK': 'KUL', 'WMKP': 'PEN', 'WSSS': 'SIN',
+        'YBBN': 'BNE', 'YMML': 'MEL', 'YSSY': 'SYD', 'ZBAA': 'PEK',
+        'ZGGG': 'CAN', 'ZGHA': 'CSX', 'ZGSZ': 'SZX', 'ZHCC': 'CGO',
+        'ZHHH': 'WUH', 'ZJHK': 'HAK', 'ZJSY': 'SYX', 'ZLXY': 'XIY',
+        'ZSAM': 'XMN', 'ZSCG': 'CZX', 'ZSCN': 'KHN', 'ZSFZ': 'FOC',
+        'ZSHC': 'HGH', 'ZSNB': 'NGB', 'ZSNJ': 'NKG', 'ZSOF': 'HFE',
+        'ZSPD': 'PVG', 'ZSQD': 'TAO', 'ZSSS': 'SHA', 'ZSWH': 'WEH',
+        'ZSWX': 'WUX', 'ZSWZ': 'WNZ', 'ZSXZ': 'XUZ', 'ZSYA': 'YTY',
+        'ZSYN': 'YNZ', 'ZUCK': 'CKG', 'ZUTF': 'TFU', 'ZUUU': 'CTU',
+        'ZWWW': 'URC', 'ZYCC': 'CGQ', 'ZYTL': 'DLC', 'ZYTX': 'SHE'
     };
 
     const DEFAULTS = [
@@ -1805,21 +2115,34 @@ function uiToast(message, tone = 'info') {
 
     // IANA 時區對應表
     const airportIanaZones = {
-        'TPE': 'Asia/Taipei', 'TSA': 'Asia/Taipei', 'KHH': 'Asia/Taipei', 
-        'HKG': 'Asia/Hong_Kong', 'MFM': 'Asia/Macau', 'PVG': 'Asia/Shanghai', 'PEK': 'Asia/Shanghai', 
-        'NRT': 'Asia/Tokyo', 'HND': 'Asia/Tokyo', 'KIX': 'Asia/Tokyo', 
-        'FUK': 'Asia/Tokyo', 'NGO': 'Asia/Tokyo', 'CTS': 'Asia/Tokyo', 'OKA': 'Asia/Tokyo',
-        'ICN': 'Asia/Seoul', 'GMP': 'Asia/Seoul', 'PUS': 'Asia/Seoul',
-        'BKK': 'Asia/Bangkok', 'SIN': 'Asia/Singapore', 'KUL': 'Asia/Kuala_Lumpur', 
-        'MNL': 'Asia/Manila', 'CGK': 'Asia/Jakarta', 'DPS': 'Asia/Makassar',
-        'SGN': 'Asia/Ho_Chi_Minh', 'HAN': 'Asia/Ho_Chi_Minh', 'DAD': 'Asia/Ho_Chi_Minh', 'PEN': 'Asia/Kuala_Lumpur',
-        'DEL': 'Asia/Kolkata',
-        'AMS': 'Europe/Amsterdam', 'FRA': 'Europe/Berlin', 'VIE': 'Europe/Vienna', 'LHR': 'Europe/London', 
-        'CDG': 'Europe/Paris', 'LUX': 'Europe/Luxembourg', 'FCO': 'Europe/Rome', 'PRG': 'Europe/Prague',
-        'LAX': 'America/Los_Angeles', 'SFO': 'America/Los_Angeles', 'SEA': 'America/Los_Angeles', 
-        'JFK': 'America/New_York', 'YVR': 'America/Vancouver', 'HNL': 'Pacific/Honolulu', 'ANC': 'America/Anchorage',
-        'ORD': 'America/Chicago', 'ONT': 'America/Los_Angeles',
-        'SYD': 'Australia/Sydney', 'MEL': 'Australia/Melbourne', 'BNE': 'Australia/Brisbane', 'AKL': 'Pacific/Auckland', 'GUM': 'Pacific/Guam'
+        'AKL': 'Pacific/Auckland', 'AMS': 'Europe/Amsterdam', 'ANC': 'America/Anchorage', 'ATL': 'America/New_York',
+        'BKK': 'Asia/Bangkok', 'BNE': 'Australia/Brisbane', 'CAN': 'Asia/Shanghai', 'CDG': 'Europe/Paris',
+        'CEB': 'Asia/Manila', 'CGK': 'Asia/Jakarta', 'CGO': 'Asia/Shanghai', 'CGQ': 'Asia/Shanghai',
+        'CHC': 'Pacific/Auckland', 'CKG': 'Asia/Shanghai', 'CNX': 'Asia/Bangkok', 'CSX': 'Asia/Shanghai',
+        'CTS': 'Asia/Tokyo', 'CTU': 'Asia/Shanghai', 'CZX': 'Asia/Shanghai', 'DAD': 'Asia/Ho_Chi_Minh',
+        'DEL': 'Asia/Kolkata', 'DFW': 'America/Chicago', 'DLC': 'Asia/Shanghai', 'DPS': 'Asia/Makassar',
+        'DWC': 'Asia/Dubai', 'DXB': 'Asia/Dubai', 'FCO': 'Europe/Rome', 'FOC': 'Asia/Shanghai',
+        'FRA': 'Europe/Berlin', 'FSZ': 'Asia/Tokyo', 'FUK': 'Asia/Tokyo', 'GMP': 'Asia/Seoul',
+        'GUM': 'Pacific/Guam', 'HAK': 'Asia/Shanghai', 'HAN': 'Asia/Ho_Chi_Minh', 'HFE': 'Asia/Shanghai',
+        'HGH': 'Asia/Shanghai', 'HIJ': 'Asia/Tokyo', 'HKG': 'Asia/Hong_Kong', 'HND': 'Asia/Tokyo',
+        'HNL': 'Pacific/Honolulu', 'IAH': 'America/Chicago', 'ICN': 'Asia/Seoul', 'ISG': 'Asia/Tokyo',
+        'JFK': 'America/New_York', 'KHH': 'Asia/Taipei', 'KHN': 'Asia/Shanghai', 'KIX': 'Asia/Tokyo',
+        'KLO': 'Asia/Manila', 'KMJ': 'Asia/Tokyo', 'KOJ': 'Asia/Tokyo', 'KTI': 'Asia/Phnom_Penh',
+        'KUL': 'Asia/Kuala_Lumpur', 'LAX': 'America/Los_Angeles', 'LCK': 'America/New_York', 'LGW': 'Europe/London',
+        'LHR': 'Europe/London', 'LUX': 'Europe/Luxembourg', 'MEL': 'Australia/Melbourne', 'MFM': 'Asia/Macau',
+        'MIA': 'America/New_York', 'MNL': 'Asia/Manila', 'NGB': 'Asia/Shanghai', 'NGO': 'Asia/Tokyo',
+        'NKG': 'Asia/Shanghai', 'NRT': 'Asia/Tokyo', 'OKA': 'Asia/Tokyo', 'ONT': 'America/Los_Angeles',
+        'ORD': 'America/Chicago', 'PEK': 'Asia/Shanghai', 'PEN': 'Asia/Kuala_Lumpur', 'PHX': 'America/Phoenix',
+        'PNH': 'Asia/Phnom_Penh', 'PRG': 'Europe/Prague', 'PUS': 'Asia/Seoul', 'PVG': 'Asia/Shanghai',
+        'RGN': 'Asia/Yangon', 'RMQ': 'Asia/Taipei', 'ROR': 'Pacific/Palau', 'SEA': 'America/Los_Angeles',
+        'SFO': 'America/Los_Angeles', 'SGN': 'Asia/Ho_Chi_Minh', 'SHA': 'Asia/Shanghai', 'SHE': 'Asia/Shanghai',
+        'SIN': 'Asia/Singapore', 'SUB': 'Asia/Jakarta', 'SYD': 'Australia/Sydney', 'SYX': 'Asia/Shanghai',
+        'SZX': 'Asia/Shanghai', 'TAK': 'Asia/Tokyo', 'TAO': 'Asia/Shanghai', 'TFU': 'Asia/Shanghai',
+        'TNN': 'Asia/Taipei', 'TOY': 'Asia/Tokyo', 'TPE': 'Asia/Taipei', 'TSA': 'Asia/Taipei',
+        'URC': 'Asia/Shanghai', 'VIE': 'Europe/Vienna', 'WEH': 'Asia/Shanghai', 'WNZ': 'Asia/Shanghai',
+        'WUH': 'Asia/Shanghai', 'WUX': 'Asia/Shanghai', 'XIY': 'Asia/Shanghai', 'XMN': 'Asia/Shanghai',
+        'XUZ': 'Asia/Shanghai', 'YNZ': 'Asia/Shanghai', 'YTY': 'Asia/Shanghai', 'YVR': 'America/Vancouver',
+        'YYZ': 'America/Toronto'
     };
 
     // Flight duty code classifier (robust for airports not in the timezone dictionary)
@@ -1833,17 +2156,37 @@ function uiToast(message, tone = 'info') {
     function normalizeDutyCode(raw) {
         if (!raw) return '';
         let c = String(raw).toUpperCase().trim();
-        // If ICAO is provided, normalize to IATA when possible
-        if (c.length === 4 && icaoToIata[c]) c = icaoToIata[c];
+        // If ICAO is provided, normalize to IATA when possible (explicit map + safe heuristics)
+        if (c.length === 4) {
+            if (icaoToIata[c]) {
+                c = icaoToIata[c];
+            } else {
+                // Heuristic: for common ICAO prefixes where IATA is the last 3 letters AND we have TZ data for it.
+                // (e.g., KJFK->JFK, CYVR->YVR, PANC->ANC, PHNL->HNL, YSSY->SSY? (only if present in TZ dict))
+                const last3 = c.slice(1);
+                const pfx = c[0];
+                if ((pfx === 'K' || pfx === 'C' || pfx === 'P' || pfx === 'Y') && airportIanaZones[last3]) {
+                    c = last3;
+                }
+            }
+        }
         return c;
     }
 
     function isFlightDutyCode(raw) {
-        const c = normalizeDutyCode(raw);
-        // IATA (3 letters) is the common case in this tool; allow ICAO input via normalizeDutyCode().
-        if (!/^[A-Z]{3}$/.test(c)) return false;
-        if (NON_FLIGHT_DUTY_CODES.has(c)) return false;
-        return true;
+        const rawUp = String(raw || '').toUpperCase().trim();
+        const c = normalizeDutyCode(rawUp);
+
+        // Exclude known non-flight duties (covers both 3-letter and 4+ letter ground/training codes).
+        if (NON_FLIGHT_DUTY_CODES.has(rawUp) || NON_FLIGHT_DUTY_CODES.has(c)) return false;
+
+        // IATA (3 letters) => Flight duty ONLY when it exists in our IATA TZ DB
+        if (/^[A-Z]{3}$/.test(c)) return !!airportIanaZones[c];
+
+        // ICAO (4 letters) => Flight duty ONLY when it can be normalized to a KNOWN IATA (in our TZ DB)
+        if (/^[A-Z]{4}$/.test(rawUp)) return (/^[A-Z]{3}$/.test(c) && !!airportIanaZones[c]);
+
+        return false;
     }
 
 
@@ -2003,26 +2346,92 @@ function uiToast(message, tone = 'info') {
         saveData(); runAllCalc(false);
     }
 
+    let _ndCodeDebounceTimer = null;
+    let _ndCodeDebounceSeq = 0;
+    function updNdCodeDebounced(val) {
+        const rawUp = String(val || '').toUpperCase().trim();
+
+        // Always cancel any pending commit so backspace/delete is never "reverted" by a stale timer.
+        _ndCodeDebounceSeq++;
+        const seq = _ndCodeDebounceSeq;
+        clearTimeout(_ndCodeDebounceTimer);
+
+        // Persist what the user is typing (lightweight only).
+        app.nextDuty.code = rawUp;
+        saveData();
+
+        const len = rawUp.length;
+        if (len < 3) return;
+
+        // Delay rules:
+        // - Known IATA (we have TZ data): commit quickly
+        // - Unknown 3-letter: wait a bit (user may be typing a 4-letter ICAO)
+        // - 4+ letters: commit quickly
+        let delay = 160;
+        if (len === 3) {
+            delay = airportIanaZones[rawUp] ? 160 : 420;
+        } else if (len === 4) {
+            delay = 160;
+        } else {
+            delay = 200;
+        }
+
+        _ndCodeDebounceTimer = setTimeout(() => {
+            if (seq !== _ndCodeDebounceSeq) return;
+            const latest = (document.getElementById('nd-code') && document.getElementById('nd-code').value) ? document.getElementById('nd-code').value : rawUp;
+            updNdCode(latest);
+        }, delay);
+    }
+
     function updNdCode(val) {
-        let code = normalizeDutyCode(val);
+        const rawUp = String(val || '').toUpperCase().trim();
+
+        // Partial input: keep it, but do NOT trigger recalculation / rerender (prevents iPad Safari focus "jump").
+        if (rawUp.length < 3) {
+            app.nextDuty.code = rawUp;
+            saveData();
+            return;
+        }
+
+        const el = document.getElementById('nd-code');
+        const wasActive = (document.activeElement && document.activeElement.id === 'nd-code');
+
+        const code = normalizeDutyCode(rawUp);
         app.nextDuty.code = code;
+
+        // Only reflect normalization back to the input when it is a real normalization (typically ICAO->IATA),
+        // to avoid caret jumps while typing.
+        if (el && code.length === 3 && rawUp.length === 4 && el.value.toUpperCase().trim() !== code) {
+            el.value = code;
+            try { el.setSelectionRange(code.length, code.length); } catch(e) {}
+        }
 
         // Auto-determine offset based on the CURRENT duty's final arrival station
         const lastDest = app.stations[app.stations.length-1].code.toUpperCase().trim();
         const isDepartingHome = ['TPE', 'TSA', 'KHH'].includes(lastDest);
 
-        // Smart Dictionary Inverse Check: If it's a known airport, treat as flight. Otherwise, ground duty.
+        // If it looks like an airport code (IATA/ICAO) -> treat as flight duty; otherwise ground duty.
         if (!code) {
             app.nextDuty.offset = 0;
-        } else if (isFlightDutyCode(code)) {
+        } else if (isFlightDutyCode(rawUp)) {
             app.nextDuty.offset = isDepartingHome ? 90 : 60;
         } else {
-            // Not a flight-duty code -> Auto-categorize as Ground Duty (0 mins)
             app.nextDuty.offset = 0;
         }
-        
+
         saveData();
-        runAllCalc(true); 
+        runAllCalc(true);
+
+        // If we committed while the user was still editing the field, keep focus stable (iPad Safari).
+        if (wasActive) {
+            setTimeout(() => {
+                const e2 = document.getElementById('nd-code');
+                if (!e2) return;
+                try { e2.focus(); } catch(e) {}
+                const L = (e2.value || '').length;
+                try { e2.setSelectionRange(L, L); } catch(e) {}
+            }, 0);
+        }
     }
 
     function handleNdSmartInput(rawVal) {
@@ -2244,7 +2653,7 @@ function uiToast(message, tone = 'info') {
                         </label>
                     </div>
                     <div class="ed-input-row" style="margin-top:2px;">
-                        <input type="text" class="glass-input" id="nd-code" placeholder="Next Dest / Duty" style="flex:1; height:30px; font-size:12px; text-transform:uppercase; font-weight:800; letter-spacing:1px;" value="${app.nextDuty.code || ''}" onchange="updNdCode(this.value)">
+                        <input type="text" class="glass-input" id="nd-code" placeholder="Next Dest / Duty" style="flex:1; height:30px; font-size:12px; text-transform:uppercase; font-weight:800; letter-spacing:1px;" value="${app.nextDuty.code || ''}" oninput="updNdCodeDebounced(this.value)" onchange="updNdCode(this.value)" onblur="updNdCode(this.value)">
                         <select id="nd-offset" class="glass-input" style="width:75px; height:30px; font-size:11px; padding:0 4px;" onchange="updNd('offset', this.value)">
                             <option value="90" ${app.nextDuty.offset==90?'selected':''}>RPT -90</option>
                             <option value="60" ${app.nextDuty.offset==60?'selected':''}>RPT -60</option>
