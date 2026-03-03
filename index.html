@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.5.13)</title>
+    <title>CAL Duty (Pro v6.6.0)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -349,6 +349,7 @@
         
         .badge-prev-ft { background: var(--bg-accent); color: var(--brand-blue); border-color: rgba(0,122,255,0.1); cursor: pointer; }
         .badge-acars { background: rgba(175, 82, 222, 0.05); color: var(--brand-purple); border-color: rgba(175, 82, 222, 0.2); }
+        .badge-lboWarn { background: var(--warning-bg-soft); color: var(--brand-orange); border-color: rgba(255,149,0,0.25); }
 
         /* LEGAL STATUS STRIP */
         .legal-status-strip {
@@ -597,6 +598,7 @@
         .lbo-time { font-size: 18px; font-weight: 800; color: var(--text-primary); line-height: 1.2; }
         .lbo-safe { border-left: 4px solid var(--brand-green); }
         .lbo-warn { border-left: 4px solid var(--brand-orange); background: var(--warning-bg-soft) !important; }
+        .lbo-alert { border-left: 4px solid var(--brand-red); background: var(--danger-bg-soft) !important; }
         .lbo-acars { border: 2px solid var(--brand-purple); background: rgba(175, 82, 222, 0.05); }
         .lbo-acars .lbo-time { color: var(--brand-purple); }
         .lbo-locked { background-color: var(--bg-input); border: 1px dashed var(--text-tertiary) !important; color: var(--text-secondary) !important; position: relative; }
@@ -984,7 +986,7 @@
                 </div>
 
                 <div id="help-zh" class="help-section" role="tabpanel" aria-labelledby="helpTabZh">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.5.4) 雙語使用手冊 / Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.6.0) 雙語使用手冊 / Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【中文版使用說明】</div>
@@ -1024,6 +1026,7 @@
                             <li><b>No Bunk</b>：M/D Crew 無床鋪，24h 飛時限縮為 12h。</li>
                             <li><b>PREV FT</b>：檢查 24h Rolling，點擊輸入前趟 IN Z 與 FT。</li>
                             <li><b>JZ LBO</b>：輸入聯管 ACARS 給予的最後合法後推時間。</li>
+                            <li><b>LBO Warn（倒數預警）</b>：以「目前時間」計算距離下一個尚未 OUT 航段的 LBO 剩餘分鐘（LBO Rem）。LBO Rem ≤ <b>C</b> 進入 CAUTION；≤ <b>A</b> 或超過 LBO 進入 ALERT。<b>Pop</b> 為進入警戒時彈出一次提示。</li>
                         </ul>
                     </div>
 
@@ -1056,7 +1059,7 @@
                 </div>
 
                 <div id="help-en" class="help-section" role="tabpanel" aria-labelledby="helpTabEn" style="display:none;">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.5.4) Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.6.0) Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【English User Guide】</div>
@@ -1095,6 +1098,7 @@
                             <li><b>No Bunk</b>: Limits 24h FT to 12h without bunk for M/D crew.</li>
                             <li><b>PREV FT</b>: Input previous arrival/FT for 24h rolling check.</li>
                             <li><b>JZ LBO</b>: Input JZ provided ACARS last block-out time.</li>
+                            <li><b>LBO Warn (countdown)</b>: Uses the <b>current time</b> to compute minutes remaining to the LBO of the next not-yet-OUT leg (LBO Rem). LBO Rem ≤ <b>C</b> → CAUTION; ≤ <b>A</b> or beyond LBO → ALERT. <b>Pop</b> shows a one-time toast when entering warning states.</li>
                         </ul>
                     </div>
 
@@ -1141,7 +1145,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.5.13：新增雙語使用手冊（Help）面板，支援 iPad 友善閱讀；不影響原公式與計算" onclick="showInfo('changelog')">Pro v6.5.13 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.6.0：新增 LBO（Last Legal Push）倒數預警（以目前時間計算剩餘分鐘）；預設啟用，整合 CAUTION/ALERT" onclick="showInfo('changelog')">Pro v6.6.0 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1190,6 +1194,21 @@
                             JZ LBO <span class="info-icon" onclick="showInfo('jz')">i</span>
                         </span>
                         <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="4" id="acarsLbo" placeholder="HHMM" style="background:transparent; text-align:right; font-weight:bold; width:50px; color:inherit;" oninput="updAcarsLbo(this.value)">
+                    </div>
+
+                    <div class="badge-input-wrapper badge-lboWarn" title="LBO 倒數預警（距離 Last Legal Push 剩餘分鐘） / LBO pre-warning (minutes to Last Legal Push)">
+                        <span style="display:flex; align-items:center; font-size:10px;">
+                            LBO Warn
+                        </span>
+                            <span class="info-icon" style="margin-left:6px; transform:scale(0.92);" onclick="showInfo('lboWarn')">i</span>
+<span style="font-size:10px; font-weight:800; margin-left:8px;">C</span>
+                        <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="3" id="lboWarnCaution" placeholder="30" style="background:transparent; text-align:right; font-weight:900; width:34px; color:inherit; margin-left:4px;" oninput="updLboWarnCaution(this.value)">
+                        <span style="font-size:10px; font-weight:800; margin-left:6px;">A</span>
+                        <input type="tel" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="3" id="lboWarnAlert" placeholder="10" style="background:transparent; text-align:right; font-weight:900; width:34px; color:inherit; margin-left:4px;" oninput="updLboWarnAlert(this.value)">
+                        <label style="display:flex; align-items:center; gap:6px; margin-left:8px; font-size:10px; font-weight:800;">
+                            Pop
+                            <input type="checkbox" id="lboWarnToast" onchange="toggleLboWarnToast(this.checked)" style="width:12px; height:12px;">
+                        </label>
                     </div>
 
                     <div class="toggle-wrapper" id="extFdtContainer">
@@ -1480,7 +1499,18 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.5.10 Next Duty 輸入穩定性（刪除不卡頓＋ICAO=Ground 規則）</b><br>
+            text: `<div class="info-zh"><b>v6.6.0 LBO 倒數預警（預設啟用）</b><br>
+                   • <b>新增</b>：以「目前時間」計算距離下一航段 Last Legal Push（LBO）的剩餘分鐘（LBO Rem）。<br>
+                   • <b>狀態整合</b>：LBO Rem 進入門檻即自動切換 Legal Status Strip → CAUTION/ALERT；超過 LBO 直接 ALERT。<br>
+                   • <b>視覺定位</b>：僅針對「下一個尚未 OUT 的航段」顯示/警示，避免噪音；同步標示該航段的 LBO 與 OUT 欄位。<br>
+                   • <b>設定簡化</b>：移除「LBO Warn 啟用」開關，功能固定啟用；保留 C/A 門檻與 Pop（Toast）選項。</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.6.0 LBO countdown warning (enabled by default)</b><br>
+                   • <b>Added</b>: real-time minutes remaining to the next leg’s Last Legal Push (LBO Rem), based on current time.<br>
+                   • <b>Status integration</b>: crossing thresholds automatically switches the Legal Status Strip to CAUTION/ALERT; exceeding LBO triggers ALERT.<br>
+                   • <b>Targeted highlight</b>: monitors only the next not-yet-OUT leg to avoid noise; highlights that leg’s LBO and OUT fields.<br>
+                   • <b>Settings</b>: warning is always on; adjustable C/A thresholds and Pop (toast) remain.</div>
+                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+                   <div class="info-zh"><b>v6.5.10 Next Duty 輸入穩定性（刪除不卡頓＋ICAO=Ground 規則）</b><br>
                    • <b>時間條極限瘦身</b>：Duty Timeline Minimap 進一步降低高度（Track／刻度／段落提示），釋放更多航段卡可視面積。<br>
                    • <b>鍵盤彈出自動讓位</b>：iPad 橫向輸入時間時，偵測鍵盤開啟自動隱藏上方統計/狀態/時間條與底部 HUD，避免航段卡被擠到看不見；收鍵盤後自動復原。<br>
                    • <b>輸入框置中</b>：點選時間欄位會自動 scrollIntoView 置中，降低被鍵盤遮擋。</div>
@@ -1597,6 +1627,18 @@
                    <div class="info-zh">遇到航班<b>「延誤 (Delay)」</b>時使用。點擊鎖定 🔒 可強制系統記住原訂報到時間。<br>⚠️ 往後修改 STD 測試極限時，系統仍會以<b>原報到時間</b>為基準計算，確保絕對合法。</div>
                    <div class="info-divider"></div>
                    <div class="info-en">Use when flight is delayed. Lock the original reporting time, as the FDP limits must be strictly calculated based on the original scheduled reporting time for regulatory compliance.</div>` 
+        },
+        'lboWarn': {
+            title: 'LBO 倒數預警 / LBO Countdown Warning',
+            text: `<div class="info-zh"><b>功能</b>：以「目前時間」計算距離「下一個尚未 OUT 的航段」Last Legal Push（LBO）的剩餘分鐘（LBO Rem）。<br>
+                   <b>門檻</b>：<b>C</b>=CAUTION 門檻（預設 30 分）／<b>A</b>=ALERT 門檻（預設 10 分）。<br>
+                   <b>狀態</b>：LBO Rem ≤ C → Status Strip 進入 CAUTION；LBO Rem ≤ A 或超過 LBO → ALERT。<br>
+                   <b>Pop</b>：進入 CAUTION/ALERT 時彈出一次 Toast（避免每分鐘重複跳）。</div>
+                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+                   <div class="info-en"><b>What it does</b>: Uses the <b>current time</b> to compute minutes remaining to the <b>Last Legal Push (LBO)</b> of the <b>next not-yet-OUT leg</b> (LBO Rem).<br>
+                   <b>Thresholds</b>: <b>C</b>=CAUTION threshold (default 30 min) / <b>A</b>=ALERT threshold (default 10 min).<br>
+                   <b>Status</b>: LBO Rem ≤ C → Status Strip becomes CAUTION; LBO Rem ≤ A or beyond LBO → ALERT.<br>
+                   <b>Pop</b>: shows a one-time toast when entering CAUTION/ALERT (debounced to avoid spam).</div>`
         }
     };
 
@@ -1842,6 +1884,32 @@ function uiToast(message, tone = 'info') {
 
         if (__uiToastTimer) clearTimeout(__uiToastTimer);
         __uiToastTimer = setTimeout(() => { toast.classList.remove('show'); }, 1800);
+    }
+
+
+    let __lboWarnToastKey = '';
+
+    function maybeToastLboWarning(st) {
+        if (!st) return;
+        if (!app.lboWarnToast) { __lboWarnToastKey = ''; return; }
+        if (!st.isLiveTracking || st.isDutyFinished || !(st.elapsedSinceRep >= 0)) { __lboWarnToastKey = ''; return; }
+        if (!st.lboState || st.lboState === 'none' || st.lboRem === null || st.lboRem === undefined) { __lboWarnToastKey = ''; return; }
+
+        const from = (st.lboLegFrom || '').trim();
+        const to = (st.lboLegTo || '').trim();
+        const rt = (from && to) ? ` ${from}→${to}` : '';
+
+        const rem = Math.floor(st.lboRem);
+        const key = `${st.lboState}|${st.lboLegIndex}|${rem <= 0 ? 'x' : 'p'}`;
+        if (key === __lboWarnToastKey) return;
+        __lboWarnToastKey = key;
+
+        if (st.lboState === 'alert') {
+            if (rem <= 0) uiToast(`⚠️ LBO Exceeded by ${Math.abs(rem)}m${rt}`, 'danger');
+            else uiToast(`⚠️ LBO in ${rem}m${rt}`, 'danger');
+        } else if (st.lboState === 'caution') {
+            uiToast(`LBO in ${rem}m${rt}`, 'warn');
+        }
     }
 
     
@@ -2103,6 +2171,9 @@ function uiToast(message, tone = 'info') {
         nextLegHeavy: false, 
         acarsLbo: '', 
         earlyMorning: '0',
+lboWarnCautionMins: 30,
+        lboWarnAlertMins: 10,
+        lboWarnToast: true,
         nextDuty: { code: '', date: '', time: '', timeMode: 'Z', offset: 0, isLongLayover: false },
         _stats: {
             fdpExcessMins: 0,
@@ -2712,6 +2783,17 @@ function uiToast(message, tone = 'info') {
     function toggleNextLegHigh(checked) { app.nextLegHeavy = checked; saveData(); runAllCalc(); }
     function updAcarsLbo(v) { app.acarsLbo = v; saveData(); runAllCalc(); }
     function updEarlyMorning(v) { app.earlyMorning = v; saveData(); runAllCalc(); }
+    function toggleLboWarnToast(checked) { app.lboWarnToast = !!checked; saveData(); runAllCalc(); }
+    function updLboWarnCaution(v) {
+        const n = parseInt(String(v || '').replace(/[^0-9]/g,''), 10);
+        app.lboWarnCautionMins = (Number.isFinite(n) && n >= 0) ? Math.min(n, 240) : app.lboWarnCautionMins;
+        saveData(); runAllCalc();
+    }
+    function updLboWarnAlert(v) {
+        const n = parseInt(String(v || '').replace(/[^0-9]/g,''), 10);
+        app.lboWarnAlertMins = (Number.isFinite(n) && n >= 0) ? Math.min(n, 240) : app.lboWarnAlertMins;
+        saveData(); runAllCalc();
+    }
 
     function togglePrevPopup(e) {
         if(e) e.stopPropagation();
@@ -2960,6 +3042,14 @@ function uiToast(message, tone = 'info') {
             if (st.isFtExceeded) d_msgs.push(`FT Limit (+${fmt(st.ftExcessMins, false)})`);
             if (st.isFdpExceeded) d_msgs.push(`FDP Limit (+${fmt(st.fdpExcessMins, false)})`);
             
+            if (st.lboState === 'alert' && st.lboRem !== null && st.lboRem !== undefined) {
+                const rem = Math.floor(st.lboRem);
+                const from = (st.lboLegFrom || '').trim(); const to = (st.lboLegTo || '').trim();
+                const rt = (from && to) ? ` ${from}→${to}` : '';
+                if (rem <= 0) d_msgs.push(`LBO Exceeded (+${Math.abs(rem)}m)${rt}`);
+                else d_msgs.push(`LBO Rem: ${rem}m${rt}`);
+            }
+
             if (st.restShortMins > 0) d_msgs.push(`Rest Short (+${fmt(st.restShortMins, false)})`);
             if (st.isLiveDutyExceeded) d_msgs.push('Live Duty Exceeded');
 
@@ -2973,6 +3063,13 @@ function uiToast(message, tone = 'info') {
                 
                 if (st.isLiveTracking && !st.isDutyFinished && st.elapsedSinceRep > 0 && st.rtRem >= 0 && st.rtRem <= 90) {
                     c_msgs.push(`Live FDP Rem: ${Math.floor(st.rtRem)}m`);
+                }
+
+                if (st.lboState === 'caution' && st.lboRem !== null && st.lboRem !== undefined) {
+                    const rem = Math.floor(st.lboRem);
+                    const from = (st.lboLegFrom || '').trim(); const to = (st.lboLegTo || '').trim();
+                    const rt = (from && to) ? ` ${from}→${to}` : '';
+                    if (rem > 0) c_msgs.push(`LBO Rem: ${rem}m${rt}`);
                 }
                 
                 if (c_msgs.length > 0) {
@@ -3205,6 +3302,15 @@ function uiToast(message, tone = 'info') {
 
     function updateResultsOnly() {
         app._stats.isReady = false; 
+
+        app._stats.lboLegIndex = null;
+        app._stats.lboLegFrom = '';
+        app._stats.lboLegTo = '';
+        app._stats.lboAbs = null;
+        app._stats.lboRem = null;
+        app._stats.lboState = 'none';
+        app._stats.lboCautionTh = null;
+        app._stats.lboAlertTh = null;
 
         const s1 = parse(app.stations[0].std); 
         const code = app.stations[0].code.trim().toUpperCase(); 
@@ -3910,7 +4016,7 @@ finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (
              if (app.stations[i].hotel) { const co = parse(app.stations[i].co); if (co !== null) { let coElapsed = co - rep; if (coElapsed < 0) coElapsed += 1440; if (lboFromReport < coElapsed) isImpossible = true; } }
              
              if(lboEl) {
-                lboEl.classList.remove('lbo-locked'); lboBox.classList.remove('lbo-warn', 'lbo-safe', 'lbo-acars');
+                lboEl.classList.remove('lbo-locked'); lboBox.classList.remove('lbo-warn', 'lbo-safe', 'lbo-acars', 'lbo-alert');
                 if (isImpossible) { lboEl.innerText = "IMPOSSIBLE"; lboEl.style.color = 'var(--brand-red)'; } 
                 else { lboEl.innerText = fmt(lboAbs)+" Z"; lboEl.style.color = 'var(--text-primary)'; if (isSectorFlown && app.stations[i].frozenLbo !== null) lboBox.classList.add('lbo-locked'); if (usedAcars && !isSectorFlown) lboBox.classList.add('lbo-acars'); }
              }
@@ -3919,12 +4025,57 @@ finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (
              if (lboDet) lboDet.innerText = detText;
              
              const outEl = document.getElementById(`out-${i}`); if(outEl) outEl.style.borderColor = 'var(--border-light)';
+
+             // LBO pre-warning vs current time (only for the next pending push leg)
+             if (!isImpossible && actualOut === null && app._stats.isLiveTracking && !app._stats.isDutyFinished && app._stats.elapsedSinceRep >= 0) {
+                const std = parse(app.stations[i].std);
+                const from = (app.stations[i].code || '').trim().toUpperCase();
+                const to = (app.stations[i+1].code || '').trim().toUpperCase();
+                if (std !== null && from && to) {
+                    if (app._stats.lboLegIndex === null || app._stats.lboLegIndex === undefined) {
+                        app._stats.lboLegIndex = i;
+                        app._stats.lboLegFrom = from;
+                        app._stats.lboLegTo = to;
+                        app._stats.lboAbs = lboAbs;
+                    }
+
+                    if (app._stats.lboLegIndex === i) {
+                        const cautionTh = Math.max(0, parseInt(app.lboWarnCautionMins, 10) || 0);
+                        const alertTh = Math.max(0, parseInt(app.lboWarnAlertMins, 10) || 0);
+                        const nowAbs = rep + app._stats.elapsedSinceRep;
+                        const lboRemNow = Math.floor(lboAbs - nowAbs);
+
+                        app._stats.lboRem = lboRemNow;
+                        app._stats.lboCautionTh = cautionTh;
+                        app._stats.lboAlertTh = alertTh;
+
+                        let lboState = 'safe';
+                        if (lboRemNow <= 0 || (alertTh > 0 && lboRemNow <= alertTh)) lboState = 'alert';
+                        else if (cautionTh > 0 && lboRemNow <= cautionTh) lboState = 'caution';
+                        app._stats.lboState = lboState;
+
+                        if (lboBox) {
+                            lboBox.classList.remove('lbo-alert');
+                            if (lboState === 'alert') lboBox.classList.add('lbo-alert');
+                            else if (lboState === 'caution') lboBox.classList.add('lbo-warn');
+                        }
+                        if (outEl) {
+                            if (lboState === 'alert') outEl.style.borderColor = 'var(--brand-red)';
+                            else if (lboState === 'caution') outEl.style.borderColor = 'var(--brand-orange)';
+                        }
+                    }
+                }
+             }
+
              if (!isImpossible && actualOut !== null) {
                 let outElapsed = actualOut - rep; if(outElapsed < 0) outElapsed += 1440; let actualOutAbs = rep + outElapsed; let diffTime = actualOutAbs - lboAbs;
                 if(diffTime > 0) { if(outEl) outEl.style.borderColor = 'var(--brand-red)'; if(lboBox) lboBox.classList.add('lbo-warn'); } 
                 else { if(lboBox && !usedAcars) lboBox.classList.add('lbo-safe'); }
              }
         }
+
+        // LBO pre-warning toast (optional)
+        maybeToastLboWarning(app._stats);
     }
 
     // === UTILITY FUNCTIONS ===
@@ -3950,7 +4101,7 @@ finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (
         const data = {
             stations: app.stations, sfts: app.sfts, crew: app.crew, 
             isNight: document.getElementById('nightOps').checked, isNoBunk: document.getElementById('noBunk').checked, prevFt: document.getElementById('prevFt').value, extFdt: document.getElementById('extFdt').checked, pfDate: document.getElementById('pf-date').value, pfIn: document.getElementById('pf-in').value, pfDur: document.getElementById('pf-dur').value, flightDate: document.getElementById('flightDate').value,
-            isLocked: app.isLocked, lockedReport: app.lockedReport, nextLegHeavy: app.nextLegHeavy, acarsLbo: app.acarsLbo, earlyMorning: app.earlyMorning, nextDuty: app.nextDuty, nightMode: localStorage.getItem('nightMode')
+            isLocked: app.isLocked, lockedReport: app.lockedReport, nextLegHeavy: app.nextLegHeavy, acarsLbo: app.acarsLbo, earlyMorning: app.earlyMorning, lboWarnCautionMins: app.lboWarnCautionMins, lboWarnAlertMins: app.lboWarnAlertMins, lboWarnToast: app.lboWarnToast, nextDuty: app.nextDuty, nightMode: localStorage.getItem('nightMode')
         };
         localStorage.setItem('calData158', JSON.stringify(data));
     }
@@ -3998,6 +4149,9 @@ finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (
                 if(p.nextLegHeavy !== undefined) app.nextLegHeavy = p.nextLegHeavy;
                 if(p.acarsLbo !== undefined) { app.acarsLbo = p.acarsLbo; document.getElementById('acarsLbo').value = p.acarsLbo; }
                 if(p.earlyMorning !== undefined) { app.earlyMorning = p.earlyMorning; document.getElementById('earlyMorningSel').value = p.earlyMorning; }
+                if(p.lboWarnCautionMins !== undefined) { app.lboWarnCautionMins = p.lboWarnCautionMins; const el = document.getElementById('lboWarnCaution'); if(el) el.value = String(p.lboWarnCautionMins); } else { const el = document.getElementById('lboWarnCaution'); if(el) el.value = String(app.lboWarnCautionMins); }
+                if(p.lboWarnAlertMins !== undefined) { app.lboWarnAlertMins = p.lboWarnAlertMins; const el = document.getElementById('lboWarnAlert'); if(el) el.value = String(p.lboWarnAlertMins); } else { const el = document.getElementById('lboWarnAlert'); if(el) el.value = String(app.lboWarnAlertMins); }
+                if(p.lboWarnToast !== undefined) { app.lboWarnToast = !!p.lboWarnToast; const el = document.getElementById('lboWarnToast'); if(el) el.checked = !!p.lboWarnToast; } else { const el = document.getElementById('lboWarnToast'); if(el) el.checked = !!app.lboWarnToast; }
                 if(p.nextDuty) {
                     app.nextDuty = p.nextDuty;
                     if(app.nextDuty.name !== undefined) {
