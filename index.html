@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.6.0)</title>
+    <title>CAL Duty (Pro v6.7.1)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -510,6 +510,37 @@
         body.dark-mode .dt-post-duty { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 4px, transparent 4px, transparent 8px); }
         .dt-rest { position: absolute; top: 0; bottom: 0; background: rgba(52, 199, 89, 0.15); z-index: 1; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #15803d; letter-spacing: 0.5px; overflow: hidden; white-space: nowrap; transition: left 0.5s ease, width 0.5s ease; }
         body.dark-mode .dt-rest { background: rgba(48, 209, 88, 0.2); color: #4ade80; }
+
+        /* Rest label readability (v6.7.1): keep track height, move text to a floating pill */
+        .dt-rest-label {
+            position: absolute;
+            top: -16px;
+            z-index: 6;
+            display: none;
+            padding: 1px 6px;
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 900;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            color: #065f46;
+            background: rgba(52, 199, 89, 0.18);
+            border: 1px solid rgba(21, 128, 61, 0.35);
+            box-shadow: var(--shadow-sm);
+            white-space: nowrap;
+            pointer-events: none;
+            transform: translateX(-50%);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .dt-rest-label .dt-rest-cut { letter-spacing: -2px; margin-left: 4px; opacity: 0.55; }
+        .dt-rest-label.align-left { transform: translateX(0); }
+        .dt-rest-label.align-right { transform: translateX(-100%); }
+        body.dark-mode .dt-rest-label {
+            color: #4ade80;
+            background: rgba(48, 209, 88, 0.22);
+            border-color: rgba(74, 222, 128, 0.45);
+        }
+
         .dt-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, var(--brand-blue), var(--brand-purple)); border-radius: var(--radius-full); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease, border-radius 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 2; }
         @keyframes pulseHatch { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 10px rgba(255,59,48,0.8); } 100% { opacity: 0.8; } }
         .dt-fill-danger { position: absolute; top: 0; height: 100%; background: repeating-linear-gradient(45deg, var(--brand-red), var(--brand-red) 4px, #b91c1c 4px, #b91c1c 8px); border-radius: 0 var(--radius-full) var(--radius-full) 0; box-shadow: 0 0 8px rgba(255,59,48,0.5); z-index: 2; animation: pulseHatch 1.5s infinite; display: none; transition: width 0.5s ease; }
@@ -986,7 +1017,7 @@
                 </div>
 
                 <div id="help-zh" class="help-section" role="tabpanel" aria-labelledby="helpTabZh">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.6.0) 雙語使用手冊 / Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.1) 雙語使用手冊 / Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【中文版使用說明】</div>
@@ -1059,7 +1090,7 @@
                 </div>
 
                 <div id="help-en" class="help-section" role="tabpanel" aria-labelledby="helpTabEn" style="display:none;">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.6.0) Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.1) Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【English User Guide】</div>
@@ -1145,7 +1176,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.6.0：新增 LBO（Last Legal Push）倒數預警（以目前時間計算剩餘分鐘）；預設啟用，整合 CAUTION/ALERT" onclick="showInfo('changelog')">Pro v6.6.0 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.1：Rest 時數顯示增強（時間條不增高）；v6.7.0：IATA/ICAO 機場轉換資料擴充（IATA 時區＋ICAO→IATA 對照，新增 67 個 IATA）；v6.6.0：LBO 倒數預警（預設啟用，整合 CAUTION/ALERT）" onclick="showInfo('changelog')">Pro v6.7.1 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1359,6 +1390,7 @@
                     <div class="dt-fill" id="dtFill"></div>
                     <div class="dt-fill-danger" id="dtFillDanger"></div>
                 </div>
+                <div class="dt-rest-label" id="dtRestLabel" aria-hidden="true"></div>
                 <div id="dtSegments"></div>
                 <div class="dt-limit-marker" id="dtMaxMarker">
                     <span class="dt-limit-text">MAX</span>
@@ -1499,17 +1531,32 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.6.0 LBO 倒數預警（預設啟用）</b><br>
+            text: `<div class="info-zh"><b>v6.7.1 Rest Time 顯示增強（時間條不增高）</b><br>
+                   • <b>改善</b>：Duty Timeline Minimap 的 Rest 時數改為「浮動膠囊標籤」顯示，維持 Track 高度不變，解決 10px 內文字難辨問題。<br>
+                   • <b>定位</b>：標籤會自動對齊 Rest 區段中心，並在左右邊界自動避開溢出。<br>
+                   • <b>不影響</b>：計算公式/數值完全不變（純顯示改善）。</div>
+                   <div class="info-zh" style="margin-top:8px;"><b>v6.7.0 資料庫更新</b><br>
+                   • <b>資料擴充</b>：把你提供的 IATA 清單整合進資料庫，新增/補齊 IATA→時區（IANA）與 ICAO→IATA 對照（新增 67 個 IATA code）。<br>
+                   • <b>影響</b>：提升 Local 時間換算正確性，並改善 Next Duty Planner（4 碼 ICAO→3 碼 IATA）自動轉換與 Flight/Ground 判定。</div>
+                   <div class="info-zh" style="margin-top:8px;"><b>v6.6.0 LBO 倒數預警（預設啟用）</b><br>
                    • <b>新增</b>：以「目前時間」計算距離下一航段 Last Legal Push（LBO）的剩餘分鐘（LBO Rem）。<br>
                    • <b>狀態整合</b>：LBO Rem 進入門檻即自動切換 Legal Status Strip → CAUTION/ALERT；超過 LBO 直接 ALERT。<br>
                    • <b>視覺定位</b>：僅針對「下一個尚未 OUT 的航段」顯示/警示，避免噪音；同步標示該航段的 LBO 與 OUT 欄位。<br>
                    • <b>設定簡化</b>：移除「LBO Warn 啟用」開關，功能固定啟用；保留 C/A 門檻與 Pop（Toast）選項。</div>
+
+                   <div class="info-en" style="margin-top:8px;"><b>v6.7.1 Rest label readability (no height change)</b><br>
+                   • <b>Improved</b>: moved Rest text out of the 10px track into a floating pill label for legibility; track height unchanged.<br>
+                   • <b>Positioning</b>: label anchors to the center of the Rest segment and auto-clamps near left/right edges.<br>
+                   • <b>No changes</b>: formulas/values remain identical (display-only).</div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.7.0 Airport DB update</b><br>
+                   • <b>Data expansion</b>: integrated your IATA list into the database, expanding IATA→IANA timezone and ICAO→IATA mappings (67 added IATA codes).<br>
+                   • <b>Impact</b>: improves Local-time conversion and enhances Next Duty Planner auto-conversion (ICAO→IATA) and Flight/Ground classification.</div>
                    <div class="info-en" style="margin-top:8px;"><b>v6.6.0 LBO countdown warning (enabled by default)</b><br>
                    • <b>Added</b>: real-time minutes remaining to the next leg’s Last Legal Push (LBO Rem), based on current time.<br>
                    • <b>Status integration</b>: crossing thresholds automatically switches the Legal Status Strip to CAUTION/ALERT; exceeding LBO triggers ALERT.<br>
                    • <b>Targeted highlight</b>: monitors only the next not-yet-OUT leg to avoid noise; highlights that leg’s LBO and OUT fields.<br>
                    • <b>Settings</b>: warning is always on; adjustable C/A thresholds and Pop (toast) remain.</div>
-                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+<hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
                    <div class="info-zh"><b>v6.5.10 Next Duty 輸入穩定性（刪除不卡頓＋ICAO=Ground 規則）</b><br>
                    • <b>時間條極限瘦身</b>：Duty Timeline Minimap 進一步降低高度（Track／刻度／段落提示），釋放更多航段卡可視面積。<br>
                    • <b>鍵盤彈出自動讓位</b>：iPad 橫向輸入時間時，偵測鍵盤開啟自動隱藏上方統計/狀態/時間條與底部 HUD，避免航段卡被擠到看不見；收鍵盤後自動復原。<br>
@@ -2152,7 +2199,27 @@ function uiToast(message, tone = 'info') {
         'ZSPD': 'PVG', 'ZSQD': 'TAO', 'ZSSS': 'SHA', 'ZSWH': 'WEH',
         'ZSWX': 'WUX', 'ZSWZ': 'WNZ', 'ZSXZ': 'XUZ', 'ZSYA': 'YTY',
         'ZSYN': 'YNZ', 'ZUCK': 'CKG', 'ZUTF': 'TFU', 'ZUUU': 'CTU',
-        'ZWWW': 'URC', 'ZYCC': 'CGQ', 'ZYTL': 'DLC', 'ZYTX': 'SHE'
+        'ZWWW': 'URC', 'ZYCC': 'CGQ', 'ZYTL': 'DLC', 'ZYTX': 'SHE',
+
+        // Added: ICAO→IATA conversion for expanded airport list
+        'EPWA': 'WAW', 'EYVI': 'VNO', 'KDTW': 'DTW', 'KMEM': 'MEM',
+        'KSDF': 'SDF', 'KVCV': 'VCV', 'OMAA': 'AUH', 'PAFA': 'FAI',
+        'RCBS': 'KNH', 'RCKU': 'CYI', 'RCQC': 'MZG', 'RCYU': 'HUN',
+        'RJAF': 'MMJ', 'RJBD': 'SHM', 'RJCB': 'OBO', 'RJCH': 'HKD',
+        'RJCK': 'KUH', 'RJCM': 'MMB', 'RJCN': 'SHB', 'RJCW': 'WKJ',
+        'RJDC': 'UBJ', 'RJEC': 'AKJ', 'RJFG': 'TNE', 'RJFM': 'KMI',
+        'RJFO': 'OIT', 'RJFR': 'KKJ', 'RJFS': 'HSG', 'RJFU': 'NGS',
+        'RJKN': 'TKN', 'RJNK': 'KMQ', 'RJNW': 'NTQ', 'RJOB': 'OKJ',
+        'RJOC': 'IZO', 'RJOK': 'KCZ', 'RJOM': 'MYJ', 'RJOR': 'TTJ',
+        'RJOS': 'TKS', 'RJOW': 'IWJ', 'RJSA': 'AOJ', 'RJSC': 'GAJ',
+        'RJSF': 'FKS', 'RJSI': 'HNA', 'RJSK': 'AXT', 'RJSM': 'YGJ',
+        'RJSN': 'KIJ', 'RJSR': 'ONJ', 'RJSS': 'SDJ', 'RJSY': 'SYO',
+        'RKJB': 'MWX', 'RKPC': 'CJU', 'RKTN': 'TAE', 'RKTU': 'CJJ',
+        'ROMY': 'MMY', 'UHWW': 'VVO', 'VABB': 'BOM', 'VDSA': 'SAI',
+        'VDSR': 'REP', 'VNKT': 'KTM', 'VTBU': 'UTP', 'VTSP': 'HKT',
+        'WBKK': 'BKI', 'WBSB': 'BWN', 'WMKD': 'KUA', 'YBCS': 'CNS',
+        'ZPLJ': 'LJG', 'ZSYT': 'YNT', 'ZYHB': 'HRB'
+
     };
 
     const DEFAULTS = [
@@ -2213,7 +2280,27 @@ lboWarnCautionMins: 30,
         'URC': 'Asia/Shanghai', 'VIE': 'Europe/Vienna', 'WEH': 'Asia/Shanghai', 'WNZ': 'Asia/Shanghai',
         'WUH': 'Asia/Shanghai', 'WUX': 'Asia/Shanghai', 'XIY': 'Asia/Shanghai', 'XMN': 'Asia/Shanghai',
         'XUZ': 'Asia/Shanghai', 'YNZ': 'Asia/Shanghai', 'YTY': 'Asia/Shanghai', 'YVR': 'America/Vancouver',
-        'YYZ': 'America/Toronto'
+        'YYZ': 'America/Toronto',
+
+        // Added: expanded IATA timezone coverage (CAL network / user list)
+        'AKJ': 'Asia/Tokyo', 'AOJ': 'Asia/Tokyo', 'AUH': 'Asia/Dubai', 'AXT': 'Asia/Tokyo',
+        'BKI': 'Asia/Kuching', 'BOM': 'Asia/Kolkata', 'BWN': 'Asia/Brunei', 'CJJ': 'Asia/Seoul',
+        'CJU': 'Asia/Seoul', 'CNS': 'Australia/Brisbane', 'CYI': 'Asia/Taipei', 'DTW': 'America/New_York',
+        'FAI': 'America/Anchorage', 'FKS': 'Asia/Tokyo', 'GAJ': 'Asia/Tokyo', 'HKD': 'Asia/Tokyo',
+        'HKT': 'Asia/Bangkok', 'HNA': 'Asia/Tokyo', 'HRB': 'Asia/Shanghai', 'HSG': 'Asia/Tokyo',
+        'HUN': 'Asia/Taipei', 'IWJ': 'Asia/Tokyo', 'IZO': 'Asia/Tokyo', 'KCZ': 'Asia/Tokyo',
+        'KIJ': 'Asia/Tokyo', 'KKJ': 'Asia/Tokyo', 'KMI': 'Asia/Tokyo', 'KMQ': 'Asia/Tokyo',
+        'KNH': 'Asia/Taipei', 'KTM': 'Asia/Kathmandu', 'KUA': 'Asia/Kuala_Lumpur', 'KUH': 'Asia/Tokyo',
+        'LJG': 'Asia/Shanghai', 'MEM': 'America/Chicago', 'MMB': 'Asia/Tokyo', 'MMJ': 'Asia/Tokyo',
+        'MMY': 'Asia/Tokyo', 'MWX': 'Asia/Seoul', 'MYJ': 'Asia/Tokyo', 'MZG': 'Asia/Taipei',
+        'NGS': 'Asia/Tokyo', 'NTQ': 'Asia/Tokyo', 'OBO': 'Asia/Tokyo', 'OIT': 'Asia/Tokyo',
+        'OKJ': 'Asia/Tokyo', 'ONJ': 'Asia/Tokyo', 'REP': 'Asia/Phnom_Penh', 'SAI': 'Asia/Phnom_Penh',
+        'SDF': 'America/Kentucky/Louisville', 'SDJ': 'Asia/Tokyo', 'SHB': 'Asia/Tokyo', 'SHM': 'Asia/Tokyo',
+        'SYO': 'Asia/Tokyo', 'TAE': 'Asia/Seoul', 'TKN': 'Asia/Tokyo', 'TKS': 'Asia/Tokyo',
+        'TNE': 'Asia/Tokyo', 'TTJ': 'Asia/Tokyo', 'UBJ': 'Asia/Tokyo', 'UTP': 'Asia/Bangkok',
+        'VCV': 'America/Los_Angeles', 'VNO': 'Europe/Vilnius', 'VVO': 'Asia/Vladivostok', 'WAW': 'Europe/Warsaw',
+        'WKJ': 'Asia/Tokyo', 'YGJ': 'Asia/Tokyo', 'YNT': 'Asia/Shanghai'
+
     };
 
     // Flight duty code classifier (robust for airports not in the timezone dictionary)
@@ -3724,7 +3811,19 @@ finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (
         }
     }
 
-    function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins) {
+    
+    function __clampDtRestLabel() {
+        const label = document.getElementById('dtRestLabel');
+        const track = document.querySelector('.dt-track');
+        if (!label || !track || label.style.display === 'none') return;
+        label.classList.remove('align-left', 'align-right');
+        const tr = track.getBoundingClientRect();
+        const lr = label.getBoundingClientRect();
+        if (lr.left < tr.left + 4) label.classList.add('align-left');
+        else if (lr.right > tr.right - 4) label.classList.add('align-right');
+    }
+
+function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restMins, solidBarElapsed, hasAnyInput, elapsedSinceRepMins) {
         const wrapper = document.getElementById('dutyTimelineWrapper'); const content = document.getElementById('dtContent');
         if (rep === null || !maxFdpMins || (schedElapsed === 0 && !hasAnyInput)) {
             wrapper.style.display = 'none'; 
@@ -3752,14 +3851,37 @@ finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (
         if (schedElapsed > 0) { document.getElementById('dt-sch-val').innerText = fmt(schedElapsed, false); let schedPct = (schedElapsed / scaleMins) * 100; ghostEl.style.display = 'block'; ghostEl.style.width = Math.min(schedPct, 100) + '%'; } 
         else { ghostEl.style.display = 'none'; document.getElementById('dt-sch-val').innerText = '--:--'; }
 
-        const fillEl = document.getElementById('dtFill'); const fillDangerEl = document.getElementById('dtFillDanger'); const pctLabel = document.getElementById('dt-pct-label'); const titleAct = document.getElementById('dt-act-title'); const segmentsContainer = document.getElementById('dtSegments'); const postDutyEl = document.getElementById('dtPostDuty'); const restEl = document.getElementById('dtRest'); const segmentInfoBar = document.getElementById('dtSegmentInfo');
+        const fillEl = document.getElementById('dtFill'); const fillDangerEl = document.getElementById('dtFillDanger'); const pctLabel = document.getElementById('dt-pct-label'); const titleAct = document.getElementById('dt-act-title'); const segmentsContainer = document.getElementById('dtSegments'); const postDutyEl = document.getElementById('dtPostDuty'); const restEl = document.getElementById('dtRest'); const restLabelEl = document.getElementById('dtRestLabel'); const segmentInfoBar = document.getElementById('dtSegmentInfo');
         segmentsContainer.innerHTML = ''; fillDangerEl.style.display = 'none'; fillDangerEl.style.width = '0%'; segmentInfoBar.innerHTML = ''; segmentInfoBar.style.opacity = 0;
 
         if (!hasAnyInput) {
             fillEl.style.width = '0%'; pctLabel.innerText = '0%'; pctLabel.style.color = 'var(--text-tertiary)'; titleAct.style.color = 'var(--text-tertiary)'; document.getElementById('dt-act-val').innerText = '--:--';
             if (schedElapsed > 0) { postDutyEl.style.display = 'block'; postDutyEl.style.left = (schedElapsed / scaleMins) * 100 + '%'; postDutyEl.style.width = (postDutyMins / scaleMins) * 100 + '%'; } else { postDutyEl.style.display = 'none'; }
-            if (restMins > 0) { restEl.style.display = 'flex'; restEl.style.left = ((schedElapsed + postDutyMins) / scaleMins) * 100 + '%'; restEl.style.width = (visualRestMins / scaleMins) * 100 + '%'; let restText = (restMins / 60 >= 24 && document.getElementById('ulr-tag')) ? 'REST 4 Local Nights' : `REST ${(restMins/60).toFixed(1).replace('.0','')}h`; if (isRestTruncated) restText += ` <span style="letter-spacing:-2px; margin-left:4px; opacity:0.5;">//</span>`; restEl.innerHTML = restText; } 
-            else { restEl.style.display = 'none'; restEl.innerHTML = ''; }
+            if (restMins > 0) { 
+                restEl.style.display = 'block';
+                const __restLeftPct = ((schedElapsed + postDutyMins) / scaleMins) * 100;
+                const __restWidthPct = (visualRestMins / scaleMins) * 100;
+                restEl.style.left = __restLeftPct + '%'; 
+                restEl.style.width = __restWidthPct + '%'; 
+                const __restHStr = (restMins/60).toFixed(1).replace('.0','');
+                let restText = (restMins / 60 >= 24 && document.getElementById('ulr-tag')) ? 'REST 4 Local Nights' : `REST ${__restHStr}h`; 
+                if (isRestTruncated) restText += ` <span class="dt-rest-cut">//</span>`; 
+                restEl.innerHTML = ''; 
+                if (restLabelEl) {
+                    restLabelEl.style.display = 'block';
+                    restLabelEl.innerHTML = restText;
+                    restLabelEl.style.left = (__restLeftPct + (__restWidthPct/2)) + '%';
+                    restLabelEl.title = (restMins / 60 >= 24 && document.getElementById('ulr-tag'))
+                        ? '休息：4 個當地夜 / Rest: 4 Local Nights'
+                        : `休息：${__restHStr} 小時 / Rest: ${__restHStr}h`;
+                    requestAnimationFrame(__clampDtRestLabel);
+                }
+            } 
+            else { 
+                restEl.style.display = 'none'; 
+                restEl.innerHTML = ''; 
+                if (restLabelEl) { restLabelEl.style.display = 'none'; restLabelEl.innerHTML = ''; restLabelEl.title = ''; restLabelEl.classList.remove('align-left','align-right'); }
+            }
         } else {
             let safeSolidMins = Math.min(solidBarElapsed, maxFdpMins); let displaySafePct = (safeSolidMins / scaleMins) * 100; fillEl.style.width = displaySafePct + '%';
             if (solidBarElapsed > maxFdpMins) { let overflowMins = solidBarElapsed - maxFdpMins; fillDangerEl.style.display = 'block'; fillDangerEl.style.left = (maxFdpMins / scaleMins) * 100 + '%'; fillDangerEl.style.width = (overflowMins / scaleMins) * 100 + '%'; fillEl.style.borderRadius = 'var(--radius-full) 0 0 var(--radius-full)'; } 
@@ -3772,8 +3894,31 @@ finalRestHours = tableRest; let actualFdpMins = estimatedDutyEndTime - rep; if (
             document.getElementById('dt-act-val').innerText = fmt(projElapsed, false); pctLabel.innerText = Math.round(fdpHealthPct) + '%'; 
 
             postDutyEl.style.display = 'block'; postDutyEl.style.left = (projElapsed / scaleMins) * 100 + '%'; postDutyEl.style.width = (postDutyMins / scaleMins) * 100 + '%';
-            if (restMins > 0) { restEl.style.display = 'flex'; restEl.style.left = ((projElapsed + postDutyMins) / scaleMins) * 100 + '%'; restEl.style.width = (visualRestMins / scaleMins) * 100 + '%'; let restText = (restMins / 60 >= 24 && document.getElementById('ulr-tag')) ? 'REST 4 Local Nights' : `REST ${(restMins/60).toFixed(1).replace('.0','')}h`; if (isRestTruncated) restText += ` <span style="letter-spacing:-2px; margin-left:4px; opacity:0.5;">//</span>`; restEl.innerHTML = restText; } 
-            else { restEl.style.display = 'none'; restEl.innerHTML = ''; }
+            if (restMins > 0) { 
+                restEl.style.display = 'block';
+                const __restLeftPct = ((projElapsed + postDutyMins) / scaleMins) * 100;
+                const __restWidthPct = (visualRestMins / scaleMins) * 100;
+                restEl.style.left = __restLeftPct + '%'; 
+                restEl.style.width = __restWidthPct + '%'; 
+                const __restHStr = (restMins/60).toFixed(1).replace('.0','');
+                let restText = (restMins / 60 >= 24 && document.getElementById('ulr-tag')) ? 'REST 4 Local Nights' : `REST ${__restHStr}h`; 
+                if (isRestTruncated) restText += ` <span class="dt-rest-cut">//</span>`; 
+                restEl.innerHTML = ''; 
+                if (restLabelEl) {
+                    restLabelEl.style.display = 'block';
+                    restLabelEl.innerHTML = restText;
+                    restLabelEl.style.left = (__restLeftPct + (__restWidthPct/2)) + '%';
+                    restLabelEl.title = (restMins / 60 >= 24 && document.getElementById('ulr-tag'))
+                        ? '休息：4 個當地夜 / Rest: 4 Local Nights'
+                        : `休息：${__restHStr} 小時 / Rest: ${__restHStr}h`;
+                    requestAnimationFrame(__clampDtRestLabel);
+                }
+            } 
+            else { 
+                restEl.style.display = 'none'; 
+                restEl.innerHTML = ''; 
+                if (restLabelEl) { restLabelEl.style.display = 'none'; restLabelEl.innerHTML = ''; restLabelEl.title = ''; restLabelEl.classList.remove('align-left','align-right'); }
+            }
 
             let lastProgElapsed = (app.stations[0].code.trim().toUpperCase() === 'TPE') ? 90 : 60;
             for (let i = 0; i < app.stations.length - 1; i++) {
