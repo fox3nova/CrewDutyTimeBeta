@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.7.2)</title>
+    <title>CAL Duty (Pro v6.7.3)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -945,7 +945,7 @@
         }
 
     
-        /* === v6.7.2 LBO warning emphasis (visibility upgrade; no formula changes) === */
+        /* === v6.7.3 Continuous HHMM input (auto-advance) + prior v6.7.2 LBO warning emphasis (visibility upgrade; no formula changes) === */
         .lbo-display { position: relative; overflow: hidden; }
         @keyframes lboPulseWarn {
             0%,100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-orange) 26%, transparent), 0 6px 18px rgba(0,0,0,0.06); }
@@ -1077,7 +1077,7 @@
                 </div>
 
                 <div id="help-zh" class="help-section" role="tabpanel" aria-labelledby="helpTabZh">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.7.2) 雙語使用手冊 / Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.3) 雙語使用手冊 / Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【中文版使用說明】</div>
@@ -1150,7 +1150,7 @@
                 </div>
 
                 <div id="help-en" class="help-section" role="tabpanel" aria-labelledby="helpTabEn" style="display:none;">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.7.2) Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.3) Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【English User Guide】</div>
@@ -1236,7 +1236,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.2：LBO（LAST LEGAL PUSH）警告更顯眼（動畫/圖示/高對比；OUT> LBO 直接紅色 ALERT）；v6.7.1：Rest 時數顯示增強（時間條不增高）；v6.7.0：IATA/ICAO 機場轉換資料擴充（IATA 時區＋ICAO→IATA 對照，新增 67 個 IATA）；v6.6.0：LBO 倒數預警（預設啟用，整合 CAUTION/ALERT）" onclick="showInfo('changelog')">Pro v6.7.2 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.3：HHMM 連續輸入（輸入滿 4 碼且有效即自動跳到下一個脈衝欄位；維持四碼顯示）；v6.7.2：LBO（LAST LEGAL PUSH）警告更顯眼（動畫/圖示/高對比；OUT> LBO 直接紅色 ALERT）；v6.7.1：Rest 時數顯示增強（時間條不增高）；v6.7.0：IATA/ICAO 機場轉換資料擴充（IATA 時區＋ICAO→IATA 對照，新增 67 個 IATA）；v6.6.0：LBO 倒數預警（預設啟用，整合 CAUTION/ALERT）" onclick="showInfo('changelog')">Pro v6.7.3 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1591,7 +1591,10 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.7.2 LBO（LAST LEGAL PUSH / Z）警告更顯眼</b><br>
+            text: `<div class="info-zh"><b>v6.7.3 HHMM 連續輸入（無間斷）</b><br>
+                   • <b>新增</b>：在「脈衝陰影（Guided Focus）」的時間欄位，輸入滿 4 碼且有效（0000–2359）後，會自動跳到下一個脈衝欄位，連續輸入不中斷。<br>
+                   • <b>顯示維持</b>：時間仍以四碼 HHMM 顯示，不轉換成 HH:MM。<br><br>
+                   <b>v6.7.2 LBO（LAST LEGAL PUSH / Z）警告更顯眼</b><br>
                    • <b>加強</b>：LBO 卡片在 CAUTION/ALERT 時使用高對比邊框、警示圖示與輕微脈衝陰影，提升 iPad 上可辨識度。<br>
                    • <b>修正</b>：若 ACT OUT 已超過 LBO，改為直接顯示 <b>ALERT（紅色）</b>（原先為橘色 warn）。<br>
                    • <b>不影響</b>：所有計算公式/數值完全不變（純視覺強化）。</div>
@@ -1608,7 +1611,10 @@
                    • <b>視覺定位</b>：僅針對「下一個尚未 OUT 的航段」顯示/警示，避免噪音；同步標示該航段的 LBO 與 OUT 欄位。<br>
                    • <b>設定簡化</b>：移除「LBO Warn 啟用」開關，功能固定啟用；保留 C/A 門檻與 Pop（Toast）選項。</div>
 
-                   <div class="info-en" style="margin-top:8px;"><b>v6.7.2 More visible LBO (LAST LEGAL PUSH / Z) warnings</b><br>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.7.3 Continuous HHMM input (seamless)</b><br>
+                   • <b>New</b>: For Guided Focus time fields, once 4 digits (0000–2359) are entered and valid, focus automatically moves to the next pulsing field for uninterrupted entry.<br>
+                   • <b>Display</b>: Times remain 4-digit HHMM (no HH:MM conversion).<br><br>
+                   <b>v6.7.2 More visible LBO (LAST LEGAL PUSH / Z) warnings</b><br>
                    • <b>Enhanced</b>: higher-contrast borders, warning icon, and subtle pulsing shadow for CAUTION/ALERT to improve legibility on iPad.<br>
                    • <b>Fix</b>: when ACT OUT exceeds LBO, it now shows <b>ALERT (red)</b> instead of an orange warn state.<br>
                    • <b>No changes</b>: formulas/values remain identical (visual-only).</div>
@@ -2204,6 +2210,24 @@ function uiToast(message, tone = 'info') {
     }
     
     function initHHMMUX() {
+        // Continuous HHMM input (4 digits) + validation UX + auto-advance along Guided Focus order
+        let __hhmmGuidedBefore = null;
+
+        function __isValidHHMM4(v) {
+            if (!/^\d{4}$/.test(v)) return false;
+            const h = parseInt(v.slice(0,2), 10);
+            const m = parseInt(v.slice(2,4), 10);
+            return (h >= 0 && h <= 23 && m >= 0 && m <= 59);
+        }
+
+        // Capture guided target *before* inline oninput handlers run (so we can decide whether to auto-advance)
+        document.addEventListener('input', function(e){
+            const el = e.target;
+            if (!isHHMMFieldTarget(el)) return;
+            try { __hhmmGuidedBefore = (typeof __lastGuidedTargetId !== 'undefined') ? (__lastGuidedTargetId || null) : null; }
+            catch (_) { __hhmmGuidedBefore = null; }
+        }, true);
+
         document.addEventListener('blur', function(e){
             const el = e.target;
             if (!isHHMMFieldTarget(el)) return;
@@ -2229,13 +2253,41 @@ function uiToast(message, tone = 'info') {
                 el.title = '格式錯誤：請輸入 HHMM（0000–2359）';
             }
         }, true);
-        
+
         document.addEventListener('input', function(e){
             const el = e.target;
             if (!isHHMMFieldTarget(el)) return;
+
+            // Keep display strictly 4-digit HHMM (no HH:MM conversion)
             el.classList.remove('hhmm-invalid', 'hhmm-valid');
-            const cleaned = el.value.replace(/\D/g, '').slice(0, 4);
+            const cleaned = String(el.value || '').replace(/\D/g, '').slice(0, 4);
             if (String(el.value) !== cleaned) el.value = cleaned;
+
+            // Auto-advance: only when the user is typing into the current Guided Focus target,
+            // only for real user input events (avoid synthetic input from blur-padding), and only when 4 digits are valid.
+            if (e && e.isTrusted !== true) return;
+            const id = el.id || '';
+            if (!id || __hhmmGuidedBefore !== id) return;
+            if (cleaned.length !== 4 || !__isValidHHMM4(cleaned)) return;
+
+            requestAnimationFrame(() => {
+                let nextId = null;
+                try { nextId = (typeof __lastGuidedTargetId !== 'undefined') ? (__lastGuidedTargetId || null) : null; } catch(_) { nextId = null; }
+                if (!nextId || nextId === id) return;
+
+                const nextEl = document.getElementById(nextId);
+                if (!nextEl || !nextEl.focus) return;
+
+                // Focus without collapsing iOS keyboard; then ensure visibility if needed.
+                try { nextEl.focus({ preventScroll: true }); } catch(_) { try { nextEl.focus(); } catch(__) {} }
+                try { if (nextEl.select) nextEl.select(); } catch(_) {}
+
+                try {
+                    if (typeof __isInViewport === 'function' && !__isInViewport(nextEl)) {
+                        nextEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                    }
+                } catch(_) {}
+            });
         });
     }
 
