@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.7.1)</title>
+    <title>CAL Duty (Pro v6.7.2)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -511,7 +511,7 @@
         .dt-rest { position: absolute; top: 0; bottom: 0; background: rgba(52, 199, 89, 0.15); z-index: 1; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: #15803d; letter-spacing: 0.5px; overflow: hidden; white-space: nowrap; transition: left 0.5s ease, width 0.5s ease; }
         body.dark-mode .dt-rest { background: rgba(48, 209, 88, 0.2); color: #4ade80; }
 
-        /* Rest label readability (v6.7.1): keep track height, move text to a floating pill */
+        /* Rest label readability (v6.7.1+): keep track height, move text to a floating pill */
         .dt-rest-label {
             position: absolute;
             top: -16px;
@@ -944,6 +944,66 @@
             scroll-margin-bottom: 40px;
         }
 
+    
+        /* === v6.7.2 LBO warning emphasis (visibility upgrade; no formula changes) === */
+        .lbo-display { position: relative; overflow: hidden; }
+        @keyframes lboPulseWarn {
+            0%,100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-orange) 26%, transparent), 0 6px 18px rgba(0,0,0,0.06); }
+            50%     { box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-orange) 18%, transparent), 0 10px 22px rgba(0,0,0,0.08); }
+        }
+        @keyframes lboPulseAlert {
+            0%,100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-red) 30%, transparent), 0 8px 22px rgba(255,59,48,0.10); }
+            50%     { box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand-red) 22%, transparent), 0 14px 28px rgba(255,59,48,0.14); }
+        }
+
+        .lbo-display.lbo-warn{
+            border-left-width: 6px;
+            border-color: color-mix(in srgb, var(--brand-orange) 45%, var(--border-light) 55%);
+            animation: lboPulseWarn 2.2s ease-in-out infinite;
+        }
+        .lbo-display.lbo-warn::before{
+            content:"⚠︎";
+            position:absolute; top:6px; left:8px;
+            font-size:12px; font-weight:900;
+            color: var(--brand-orange);
+            opacity:0.95;
+            pointer-events:none;
+        }
+        .lbo-display.lbo-warn .lbo-label{
+            color: color-mix(in srgb, var(--brand-orange) 70%, var(--text-secondary) 30%);
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+        .lbo-display.lbo-warn:not(.lbo-acars) .lbo-time{ color: var(--brand-orange) !important; text-shadow: 0 1px 0 rgba(0,0,0,0.06); }
+
+        .lbo-display.lbo-alert{
+            border-left-width: 6px;
+            border-color: color-mix(in srgb, var(--brand-red) 52%, var(--border-light) 48%);
+            animation: lboPulseAlert 1.35s ease-in-out infinite;
+        }
+        .lbo-display.lbo-alert::before{
+            content:"⛔";
+            position:absolute; top:6px; left:8px;
+            font-size:12px; font-weight:900;
+            color: var(--brand-red);
+            opacity:0.95;
+            pointer-events:none;
+        }
+        .lbo-display.lbo-alert .lbo-label{
+            color: color-mix(in srgb, var(--brand-red) 74%, var(--text-secondary) 26%);
+            font-weight: 900;
+            letter-spacing: 0.4px;
+        }
+        .lbo-display.lbo-alert:not(.lbo-acars) .lbo-time{ color: var(--brand-red) !important; text-shadow: 0 1px 0 rgba(0,0,0,0.06); }
+
+        /* If ACARS-limited and also warned, keep purple time but retain warning emphasis */
+        .lbo-display.lbo-acars.lbo-warn{ border-left: 6px solid var(--brand-orange); }
+        .lbo-display.lbo-acars.lbo-alert{ border-left: 6px solid var(--brand-red); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .lbo-display.lbo-warn, .lbo-display.lbo-alert { animation: none; }
+        }
+
     </style>
 </head>
 <body class="light-mode">
@@ -1017,7 +1077,7 @@
                 </div>
 
                 <div id="help-zh" class="help-section" role="tabpanel" aria-labelledby="helpTabZh">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.7.1) 雙語使用手冊 / Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.2) 雙語使用手冊 / Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【中文版使用說明】</div>
@@ -1090,7 +1150,7 @@
                 </div>
 
                 <div id="help-en" class="help-section" role="tabpanel" aria-labelledby="helpTabEn" style="display:none;">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.7.1) Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.2) Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【English User Guide】</div>
@@ -1176,7 +1236,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.1：Rest 時數顯示增強（時間條不增高）；v6.7.0：IATA/ICAO 機場轉換資料擴充（IATA 時區＋ICAO→IATA 對照，新增 67 個 IATA）；v6.6.0：LBO 倒數預警（預設啟用，整合 CAUTION/ALERT）" onclick="showInfo('changelog')">Pro v6.7.1 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.2：LBO（LAST LEGAL PUSH）警告更顯眼（動畫/圖示/高對比；OUT> LBO 直接紅色 ALERT）；v6.7.1：Rest 時數顯示增強（時間條不增高）；v6.7.0：IATA/ICAO 機場轉換資料擴充（IATA 時區＋ICAO→IATA 對照，新增 67 個 IATA）；v6.6.0：LBO 倒數預警（預設啟用，整合 CAUTION/ALERT）" onclick="showInfo('changelog')">Pro v6.7.2 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1531,7 +1591,11 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.7.1 Rest Time 顯示增強（時間條不增高）</b><br>
+            text: `<div class="info-zh"><b>v6.7.2 LBO（LAST LEGAL PUSH / Z）警告更顯眼</b><br>
+                   • <b>加強</b>：LBO 卡片在 CAUTION/ALERT 時使用高對比邊框、警示圖示與輕微脈衝陰影，提升 iPad 上可辨識度。<br>
+                   • <b>修正</b>：若 ACT OUT 已超過 LBO，改為直接顯示 <b>ALERT（紅色）</b>（原先為橘色 warn）。<br>
+                   • <b>不影響</b>：所有計算公式/數值完全不變（純視覺強化）。</div>
+                   <div class="info-zh" style="margin-top:8px;"><b>v6.7.1 Rest Time 顯示增強（時間條不增高）</b><br>
                    • <b>改善</b>：Duty Timeline Minimap 的 Rest 時數改為「浮動膠囊標籤」顯示，維持 Track 高度不變，解決 10px 內文字難辨問題。<br>
                    • <b>定位</b>：標籤會自動對齊 Rest 區段中心，並在左右邊界自動避開溢出。<br>
                    • <b>不影響</b>：計算公式/數值完全不變（純顯示改善）。</div>
@@ -1544,6 +1608,10 @@
                    • <b>視覺定位</b>：僅針對「下一個尚未 OUT 的航段」顯示/警示，避免噪音；同步標示該航段的 LBO 與 OUT 欄位。<br>
                    • <b>設定簡化</b>：移除「LBO Warn 啟用」開關，功能固定啟用；保留 C/A 門檻與 Pop（Toast）選項。</div>
 
+                   <div class="info-en" style="margin-top:8px;"><b>v6.7.2 More visible LBO (LAST LEGAL PUSH / Z) warnings</b><br>
+                   • <b>Enhanced</b>: higher-contrast borders, warning icon, and subtle pulsing shadow for CAUTION/ALERT to improve legibility on iPad.<br>
+                   • <b>Fix</b>: when ACT OUT exceeds LBO, it now shows <b>ALERT (red)</b> instead of an orange warn state.<br>
+                   • <b>No changes</b>: formulas/values remain identical (visual-only).</div>
                    <div class="info-en" style="margin-top:8px;"><b>v6.7.1 Rest label readability (no height change)</b><br>
                    • <b>Improved</b>: moved Rest text out of the 10px track into a floating pill label for legibility; track height unchanged.<br>
                    • <b>Positioning</b>: label anchors to the center of the Rest segment and auto-clamps near left/right edges.<br>
@@ -4214,7 +4282,7 @@ function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restM
 
              if (!isImpossible && actualOut !== null) {
                 let outElapsed = actualOut - rep; if(outElapsed < 0) outElapsed += 1440; let actualOutAbs = rep + outElapsed; let diffTime = actualOutAbs - lboAbs;
-                if(diffTime > 0) { if(outEl) outEl.style.borderColor = 'var(--brand-red)'; if(lboBox) lboBox.classList.add('lbo-warn'); } 
+                if(diffTime > 0) { if(outEl) outEl.style.borderColor = 'var(--brand-red)'; if(lboBox) lboBox.classList.add('lbo-alert'); } 
                 else { if(lboBox && !usedAcars) lboBox.classList.add('lbo-safe'); }
              }
         }
