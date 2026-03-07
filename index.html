@@ -849,6 +849,87 @@
         .changelog-summary::-webkit-details-marker { display: none; }
 
 
+        .changelog-shell { display: flex; flex-direction: column; gap: 12px; }
+        .changelog-intro {
+            background: color-mix(in srgb, var(--brand-blue) 7%, var(--bg-card) 93%);
+            border: 1px solid color-mix(in srgb, var(--brand-blue) 18%, var(--border-light) 82%);
+            color: var(--text-secondary);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .cl-entry {
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            background: var(--bg-card);
+            padding: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+        .cl-entry.current {
+            border-color: color-mix(in srgb, var(--brand-blue) 28%, var(--border-light) 72%);
+            background: color-mix(in srgb, var(--brand-blue) 4%, var(--bg-card) 96%);
+        }
+        .cl-entry-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .cl-version {
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--brand-blue);
+            letter-spacing: 0.01em;
+        }
+        .cl-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            background: var(--bg-input);
+            border: 1px solid var(--border-light);
+            white-space: nowrap;
+        }
+        .cl-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .cl-lang {
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            background: var(--bg-input);
+            padding: 10px 12px;
+        }
+        .cl-lang-title {
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .cl-list {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+        .cl-list li + li { margin-top: 6px; }
+        .cl-history-wrap { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .cl-history-wrap .cl-entry { background: color-mix(in srgb, var(--bg-input) 55%, var(--bg-card) 45%); }
+        @media (max-width: 720px) {
+            .cl-grid { grid-template-columns: 1fr; }
+        }
+
+
         /* === iPad TIMELINE HEIGHT FIX (v6.5.5) ===
            Goal: reduce Duty Timeline vertical footprint on iPad WebKit to prevent leg cards from being squeezed.
         */
@@ -1271,7 +1352,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.4：iPad Safari NOW 標記穩定性修正＋版本更新標注補齊中英雙語 / v6.7.4: iPad Safari NOW marker stability fix + bilingual update annotations; v6.7.3：HHMM 連續輸入 / v6.7.3: Continuous HHMM input; v6.7.2：LBO 警告更顯眼 / v6.7.2: More visible LBO warnings; v6.7.1：Rest 時數顯示增強 / v6.7.1: Rest label readability; v6.7.0：IATA/ICAO 資料庫更新 / v6.7.0: Airport DB update; v6.6.0：LBO 倒數預警 / v6.6.0: LBO countdown warning" onclick="showInfo('changelog')">Pro v6.7.4 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="版本更新資訊 / Bilingual Changelog&#10;v6.7.4｜iPad Safari NOW 標記穩定性修正＋版號標注全面中英對照 / NOW marker stability fix + fully bilingual version notes&#10;v6.7.3｜HHMM 連續輸入 / Continuous HHMM input&#10;v6.7.2｜LBO 警告更顯眼 / More visible LBO warnings&#10;v6.7.1｜Rest 時數顯示增強 / Rest label readability&#10;v6.7.0｜IATA/ICAO 資料庫更新 / Airport database update&#10;v6.6.0｜LBO 倒數預警 / LBO countdown warning&#10;點擊查看完整中英版更新說明 / Tap for the full bilingual changelog" onclick="showInfo('changelog')">Pro v6.7.4 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1626,116 +1707,399 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.7.4 iPad Safari NOW 標記穩定性修正（UI；不更動計算公式）</b><br>
-                   • <b>修正</b>：Duty Timeline 的 NOW 改為實體標籤層，不再依賴 iPad Safari 較容易漏繪的偽元素重繪。<br>
-                   • <b>穩定化</b>：NOW 採中心點定位並限制在 0.5%–99.5% 區間，同時使用較穩定的合成層轉換，降低 Safari 在工具列/重排時消失的機率。<br>
-                   • <b>文件</b>：版本更新標注補齊中英雙語。<br><br></div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.7.4 iPad Safari NOW marker stability fix (UI-only; no formula changes)</b><br>
-                   • <b>Fix</b>: the Duty Timeline NOW indicator now uses a real label layer instead of a Safari-sensitive pseudo-element. <br>
-                   • <b>Stabilized</b>: NOW uses center-based positioning, is clamped to the 0.5%–99.5% range, and uses GPU-friendly transforms to reduce disappearing during Safari relayout or toolbar changes.<br>
-                   • <b>Docs</b>: changelog/update annotations are now fully bilingual.<br><br></div>
-                   <div class="info-zh"><b>v6.7.3 HHMM 連續輸入（無間斷）</b><br>
-                   • <b>新增</b>：在「脈衝陰影（Guided Focus）」的時間欄位，輸入滿 4 碼且有效（0000–2359）後，會自動跳到下一個脈衝欄位，連續輸入不中斷。<br>
-                   • <b>顯示維持</b>：時間仍以四碼 HHMM 顯示，不轉換成 HH:MM。<br><br>
-                   <b>v6.7.2 LBO（LAST LEGAL PUSH / Z）警告更顯眼</b><br>
-                   • <b>加強</b>：LBO 卡片在 CAUTION/ALERT 時使用高對比邊框、警示圖示與輕微脈衝陰影，提升 iPad 上可辨識度。<br>
-                   • <b>修正</b>：若 ACT OUT 已超過 LBO，改為直接顯示 <b>ALERT（紅色）</b>（原先為橘色 warn）。<br>
-                   • <b>不影響</b>：所有計算公式/數值完全不變（純視覺強化）。</div>
-                   <div class="info-zh" style="margin-top:8px;"><b>v6.7.1 Rest Time 顯示增強（時間條不增高）</b><br>
-                   • <b>改善</b>：Duty Timeline Minimap 的 Rest 時數改為「浮動膠囊標籤」顯示，維持 Track 高度不變，解決 10px 內文字難辨問題。<br>
-                   • <b>定位</b>：標籤會自動對齊 Rest 區段中心，並在左右邊界自動避開溢出。<br>
-                   • <b>不影響</b>：計算公式/數值完全不變（純顯示改善）。</div>
-                   <div class="info-zh" style="margin-top:8px;"><b>v6.7.0 資料庫更新</b><br>
-                   • <b>資料擴充</b>：把你提供的 IATA 清單整合進資料庫，新增/補齊 IATA→時區（IANA）與 ICAO→IATA 對照（新增 67 個 IATA code）。<br>
-                   • <b>影響</b>：提升 Local 時間換算正確性，並改善 Next Duty Planner（4 碼 ICAO→3 碼 IATA）自動轉換與 Flight/Ground 判定。</div>
-                   <div class="info-zh" style="margin-top:8px;"><b>v6.6.0 LBO 倒數預警（預設啟用）</b><br>
-                   • <b>新增</b>：以「目前時間」計算距離下一航段 Last Legal Push（LBO）的剩餘分鐘（LBO Rem）。<br>
-                   • <b>狀態整合</b>：LBO Rem 進入門檻即自動切換 Legal Status Strip → CAUTION/ALERT；超過 LBO 直接 ALERT。<br>
-                   • <b>視覺定位</b>：僅針對「下一個尚未 OUT 的航段」顯示/警示，避免噪音；同步標示該航段的 LBO 與 OUT 欄位。<br>
-                   • <b>設定簡化</b>：移除「LBO Warn 啟用」開關，功能固定啟用；保留 C/A 門檻與 Pop（Toast）選項。</div>
+            text: `<div class="changelog-shell">
+                   <div class="changelog-intro">
+                       目前版本更新已改為逐版中英對照排列，中文與英文說明會並列或分段呈現，閱讀時不需要在大段中文與大段英文之間來回對照。<br>
+                       The changelog is now organized version by version with matched Chinese and English notes for faster scanning and easier comparison.
+                   </div>
 
-                   <div class="info-en" style="margin-top:8px;"><b>v6.7.3 Continuous HHMM input (seamless)</b><br>
-                   • <b>New</b>: For Guided Focus time fields, once 4 digits (0000–2359) are entered and valid, focus automatically moves to the next pulsing field for uninterrupted entry.<br>
-                   • <b>Display</b>: Times remain 4-digit HHMM (no HH:MM conversion).<br><br>
-                   <b>v6.7.2 More visible LBO (LAST LEGAL PUSH / Z) warnings</b><br>
-                   • <b>Enhanced</b>: higher-contrast borders, warning icon, and subtle pulsing shadow for CAUTION/ALERT to improve legibility on iPad.<br>
-                   • <b>Fix</b>: when ACT OUT exceeds LBO, it now shows <b>ALERT (red)</b> instead of an orange warn state.<br>
-                   • <b>No changes</b>: formulas/values remain identical (visual-only).</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.7.1 Rest label readability (no height change)</b><br>
-                   • <b>Improved</b>: moved Rest text out of the 10px track into a floating pill label for legibility; track height unchanged.<br>
-                   • <b>Positioning</b>: label anchors to the center of the Rest segment and auto-clamps near left/right edges.<br>
-                   • <b>No changes</b>: formulas/values remain identical (display-only).</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.7.0 Airport DB update</b><br>
-                   • <b>Data expansion</b>: integrated your IATA list into the database, expanding IATA→IANA timezone and ICAO→IATA mappings (67 added IATA codes).<br>
-                   • <b>Impact</b>: improves Local-time conversion and enhances Next Duty Planner auto-conversion (ICAO→IATA) and Flight/Ground classification.</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.6.0 LBO countdown warning (enabled by default)</b><br>
-                   • <b>Added</b>: real-time minutes remaining to the next leg’s Last Legal Push (LBO Rem), based on current time.<br>
-                   • <b>Status integration</b>: crossing thresholds automatically switches the Legal Status Strip to CAUTION/ALERT; exceeding LBO triggers ALERT.<br>
-                   • <b>Targeted highlight</b>: monitors only the next not-yet-OUT leg to avoid noise; highlights that leg’s LBO and OUT fields.<br>
-                   • <b>Settings</b>: warning is always on; adjustable C/A thresholds and Pop (toast) remain.</div>
-<hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
-                   <div class="info-zh"><b>v6.5.10 Next Duty 輸入穩定性（刪除不卡頓＋ICAO=Ground 規則）</b><br>
-                   • <b>時間條極限瘦身</b>：Duty Timeline Minimap 進一步降低高度（Track／刻度／段落提示），釋放更多航段卡可視面積。<br>
-                   • <b>鍵盤彈出自動讓位</b>：iPad 橫向輸入時間時，偵測鍵盤開啟自動隱藏上方統計/狀態/時間條與底部 HUD，避免航段卡被擠到看不見；收鍵盤後自動復原。<br>
-                   • <b>輸入框置中</b>：點選時間欄位會自動 scrollIntoView 置中，降低被鍵盤遮擋。</div>
-                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
-                   <div class="info-zh"><b>v6.5.5 48h Long Layover 規則修正（邏輯）</b><br>
-                   • <b>修正</b>：依 FOM 3.4.3.2，「返台後 48 小時內不得再派遣 Flight Duty」僅適用於 Flight Duty。當 Planned Next Duty 為非機場代碼（例如 SIM／訓練）時，不再誤判為 Rest Short。<br>
-                   • <b>保留</b>：若下次 Flight Duty 目的地為前一 &gt;48h 外站或與其時差≤3h，仍自動豁免 48h 限制（但一般 minimum rest 仍需滿足）。<br>
-                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+                   <div class="cl-entry current">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.7.4</div>
+                           <div class="cl-tag">Current / 目前版本</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>iPad Safari NOW 標記穩定性修正</b>：Duty Timeline 的 NOW 改為實體標籤層，不再依賴較容易漏繪的偽元素。</li>
+                                   <li><b>穩定化</b>：NOW 採中心點定位並限制在 0.5%–99.5% 區間，同時使用較穩定的合成層轉換，降低 Safari 在工具列變化或重排時消失的機率。</li>
+                                   <li><b>文件更新</b>：版號標注與更新說明全面補齊中英對照，排版同步整理。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>iPad Safari NOW marker stability fix</b>: the Duty Timeline NOW indicator now uses a real label layer instead of a pseudo-element that Safari may fail to repaint.</li>
+                                   <li><b>Stabilized</b>: NOW uses center-based positioning, is clamped to the 0.5%–99.5% range, and uses more stable compositing transforms to reduce disappearing during toolbar changes or relayout.</li>
+                                   <li><b>Documentation</b>: version labels and update notes are now fully bilingual with a cleaner reading layout.</li>
+                               </ul>
+                           </section>
+                       </div>
                    </div>
-                   <div class="info-zh"><b>v6.5.2 iPad 時間條高度修正（UI；不更動計算公式）</b><br>
-                   • <b>iPad Safari/Chrome</b>：Duty Timeline（時間條）改為 Compact（降低刻度/間距），避免擠壓航段卡區塊。<br>
-                   • <b>Viewport 校正</b>：使用 Visual Viewport 高度鎖定 App 版面，降低 iPad 動態工具列造成的高度誤判。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.10 Next Duty input stability (smooth delete + ICAO-as-ground rule)</b><br>
-                   • <b>Minimap ultra-compact</b>: further reduced Duty Timeline Minimap height to reclaim leg-card space.<br>
-                   • <b>Keyboard-aware layout</b>: on iPad landscape while editing time fields, auto-hides top strips and bottom HUD to prevent the leg cards from being squeezed; auto-restores when the keyboard closes.<br>
-                   • <b>Auto-centering inputs</b>: focused time fields are scrolled into the center of the viewport to avoid being covered by the keyboard.</div>
-                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.5 48h Long Layover Rule Fix (Logic)</b><br>
-                   • <b>Fix</b>: per FOM 3.4.3.2, the “no flight duty within 48h after returning to home base” restriction applies to <u>flight duty</u> only. When the planned next duty is NOT a flight duty (non-airport code such as SIM/training), it will no longer be flagged as Rest Short.<br>
-                   • <b>Kept</b>: exemption still applies when the next <u>flight</u> is to the previous &gt;48h layover point or any point within ≤3h TZ difference (minimum required rest still applies).<br>
-                   <hr style="border:none;border-top:1px solid #e2e8f0;margin:10px 0;">
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.7.3</div>
+                           <div class="cl-tag">Input Flow / 輸入流程</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>HHMM 連續輸入</b>：在 Guided Focus 的時間欄位輸入滿 4 碼且有效（0000–2359）後，會自動跳到下一個欄位。</li>
+                                   <li><b>顯示維持</b>：時間仍維持四碼 HHMM，不轉換成 HH:MM。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>Continuous HHMM input</b>: when a Guided Focus time field receives 4 valid digits (0000–2359), focus automatically moves to the next field.</li>
+                                   <li><b>Display preserved</b>: times remain in 4-digit HHMM format with no HH:MM conversion.</li>
+                               </ul>
+                           </section>
+                       </div>
                    </div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.2 iPad Timeline Height Fix (UI-only; no formula changes)</b><br>
-                   • <b>iPad Safari/Chrome</b>: compact the duty timeline (ruler/track spacing) so leg cards are not squeezed.<br>
-                   • <b>Viewport stabilization</b>: use the visual viewport height to keep flex layout stable when browser toolbars resize.</div>
-<div class="info-divider"></div>
-<div class="info-zh"><b>v6.5.1 輸休換班鬧鐘（不更動計算公式 / 不改動視覺風格）</b><br>
-                   • <b>輸休展開</b>：點擊航段卡的 💤 輸休時間，可展開輸入 Block Off（OUT）時間。<br>
-                   • <b>自動計算換班時間</b>：
-                       <span style="font-weight:800;">D Crew</span> 顯示 2 段、<span style="font-weight:800;">M Crew</span> 顯示 3 段，依序計算：<br>
-                       &nbsp;&nbsp;第1段 = Block Off + 00:15 + 輪休時間<br>
-                       &nbsp;&nbsp;第2段 = Block Off + 00:15 + 2×輪休時間<br>
-                       &nbsp;&nbsp;第3段 = Block Off + 00:15 + 3×輪休時間（僅 M Crew）<br>
-                   • <b>同步更新</b>：輪休時間採用既有機上輪休估算（依 FT 或 Plan），輸入/更動後即時更新。</div>
-                   <div class="info-en" style="margin-top:8px;"><b>v6.5.1 In-flight Rest Alarm Helper (No formula/style changes)</b><br>
-                   • Tap the 💤 rest chip to expand a small panel for Block Off (OUT).<br>
-                   • Auto swap-time schedule: <b>D Crew</b> shows 2 times, <b>M Crew</b> shows 3 times.<br>
-                     1) Block Off + 00:15 + 1×Rest<br>
-                     2) Block Off + 00:15 + 2×Rest<br>
-                     3) Block Off + 00:15 + 3×Rest (M only)<br>
-                   • Uses the existing rest estimate (FT/Plan-based) and updates live.</div>
-<div class="info-divider"></div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.7.2</div>
+                           <div class="cl-tag">Visibility / 警示顯示</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>LBO 警告更顯眼</b>：CAUTION／ALERT 狀態改用高對比邊框、警示圖示與輕微脈衝陰影，提升 iPad 上辨識度。</li>
+                                   <li><b>修正</b>：若 ACT OUT 已超過 LBO，直接顯示 <b>ALERT（紅色）</b>，不再停留在橘色 warn。</li>
+                                   <li><b>不影響</b>：所有公式與數值不變，僅為視覺強化。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>More visible LBO warnings</b>: CAUTION and ALERT now use higher-contrast borders, a warning icon, and a subtle pulsing shadow for better iPad legibility.</li>
+                                   <li><b>Fix</b>: when ACT OUT exceeds LBO, the status now shows <b>ALERT (red)</b> instead of an orange warn state.</li>
+                                   <li><b>No logic changes</b>: formulas and values remain identical; this is visual-only.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.7.1</div>
+                           <div class="cl-tag">Timeline / 時間條</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>Rest 時數顯示增強</b>：Rest 改為浮動膠囊標籤顯示，維持 Track 高度不變，解決窄時間條內文字難辨問題。</li>
+                                   <li><b>定位</b>：標籤會自動對齊 Rest 區段中心，並在左右邊界自動避免溢出。</li>
+                                   <li><b>不影響</b>：計算公式與數值完全不變。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>Rest label readability</b>: Rest time is now displayed as a floating pill label, keeping the track height unchanged while improving legibility.</li>
+                                   <li><b>Positioning</b>: the label centers on the Rest segment and automatically avoids overflow near the left or right edge.</li>
+                                   <li><b>No logic changes</b>: formulas and values remain exactly the same.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.7.0</div>
+                           <div class="cl-tag">Database / 資料庫</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>IATA/ICAO 資料庫更新</b>：整合你提供的 IATA 清單，補齊 IATA→時區（IANA）與 ICAO→IATA 對照。</li>
+                                   <li><b>影響</b>：提升 Local 時間換算正確性，並改善 Next Duty Planner 的 ICAO→IATA 自動轉換與 Flight／Ground 判定。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>Airport database update</b>: integrated your IATA list and expanded the IATA→IANA timezone and ICAO→IATA mappings.</li>
+                                   <li><b>Impact</b>: improves Local-time conversion accuracy and enhances ICAO→IATA auto-conversion plus Flight/Ground classification in the Next Duty Planner.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.6.0</div>
+                           <div class="cl-tag">Warning Logic / 預警邏輯</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>LBO 倒數預警</b>：依目前時間計算距離下一航段 Last Legal Push 的剩餘分鐘（LBO Rem）。</li>
+                                   <li><b>狀態整合</b>：進入門檻即自動切換 Legal Status Strip 為 CAUTION／ALERT；超過 LBO 直接 ALERT。</li>
+                                   <li><b>視覺定位</b>：僅針對下一個尚未 OUT 的航段進行監看與提示，避免噪音。</li>
+                                   <li><b>設定</b>：功能固定啟用，保留 C／A 門檻與 Pop（toast）選項。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>LBO countdown warning</b>: calculates the real-time minutes remaining to the next leg’s Last Legal Push (LBO Rem).</li>
+                                   <li><b>Status integration</b>: the Legal Status Strip automatically switches to CAUTION or ALERT when thresholds are crossed; exceeding LBO triggers ALERT.</li>
+                                   <li><b>Targeted monitoring</b>: only the next not-yet-OUT leg is highlighted to avoid noise.</li>
+                                   <li><b>Settings</b>: the feature is always enabled; C/A thresholds and Pop (toast) remain configurable.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.5.10</div>
+                           <div class="cl-tag">iPad Input / iPad 輸入</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>Next Duty 輸入穩定性</b>：刪除輸入更順暢，並強化 ICAO 非機場代碼時的 Ground Duty 判定。</li>
+                                   <li><b>時間條極限瘦身</b>：進一步降低 Duty Timeline Minimap 高度，釋放更多航段卡可視面積。</li>
+                                   <li><b>鍵盤彈出自動讓位</b>：iPad 橫向輸入時間時，會暫時隱藏上方條帶與底部 HUD，避免航段卡被壓縮。</li>
+                                   <li><b>輸入框置中</b>：聚焦時間欄位時自動捲動置中，降低被鍵盤遮擋機率。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>Next Duty input stability</b>: smoother deletion behavior and stronger Ground Duty detection when an ICAO entry is not a real airport code.</li>
+                                   <li><b>Ultra-compact minimap</b>: further reduced the Duty Timeline Minimap height to reclaim more leg-card space.</li>
+                                   <li><b>Keyboard-aware layout</b>: on iPad landscape, the top strips and bottom HUD auto-hide while editing time fields so the leg cards are not squeezed.</li>
+                                   <li><b>Auto-centering inputs</b>: focused time fields scroll into the center of the viewport to avoid keyboard obstruction.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.5.5</div>
+                           <div class="cl-tag">Rule Logic / 規則邏輯</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>48h Long Layover 規則修正</b>：依 FOM 3.4.3.2，返台後 48 小時內不得再派遣 Flight Duty 的限制僅適用於 Flight Duty。</li>
+                                   <li><b>修正</b>：當 Planned Next Duty 為非機場代碼（如 SIM／訓練）時，不再誤判為 Rest Short。</li>
+                                   <li><b>保留</b>：若下次 Flight Duty 目的地為前一個大於 48h 的外站，或與其時差 ≤3h，仍自動豁免 48h 限制，但一般 minimum rest 仍需滿足。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>48h Long Layover rule fix</b>: per FOM 3.4.3.2, the “no flight duty within 48 hours after returning to base” restriction applies only to Flight Duty.</li>
+                                   <li><b>Fix</b>: when the Planned Next Duty is a non-airport code such as SIM or training, it is no longer misclassified as Rest Short.</li>
+                                   <li><b>Kept</b>: the exemption still applies if the next Flight Duty goes to the previous >48h layover point or to a point within a ≤3h time-zone difference, while minimum required rest still applies.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.5.2</div>
+                           <div class="cl-tag">Timeline UI / 時間條介面</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>iPad 時間條高度修正</b>：Duty Timeline 改為更精簡的 Compact 呈現，避免擠壓航段卡區塊。</li>
+                                   <li><b>Viewport 校正</b>：改用 Visual Viewport 高度穩定版面，降低 iPad 動態工具列造成的高度誤判。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>iPad timeline height fix</b>: the Duty Timeline was compacted so the leg cards are not squeezed.</li>
+                                   <li><b>Viewport stabilization</b>: the app now uses the Visual Viewport height to reduce layout instability caused by dynamic iPad toolbars.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
+                   <div class="cl-entry">
+                       <div class="cl-entry-head">
+                           <div class="cl-version">v6.5.1</div>
+                           <div class="cl-tag">Rest Helper / 輸休輔助</div>
+                       </div>
+                       <div class="cl-grid">
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">中文</div>
+                               <ul class="cl-list">
+                                   <li><b>輸休換班鬧鐘</b>：點擊航段卡的 💤 輸休時間，可展開輸入 Block Off（OUT）時間。</li>
+                                   <li><b>自動計算換班時間</b>：D Crew 顯示 2 段、M Crew 顯示 3 段，依序以 Block Off + 00:15 + n×輪休時間計算。</li>
+                                   <li><b>同步更新</b>：沿用既有機上輪休估算（依 FT 或 Plan），輸入或更動後即時更新。</li>
+                               </ul>
+                           </section>
+                           <section class="cl-lang">
+                               <div class="cl-lang-title">English</div>
+                               <ul class="cl-list">
+                                   <li><b>In-flight Rest Alarm Helper</b>: tap the 💤 rest chip on a leg card to expand a small Block Off (OUT) input panel.</li>
+                                   <li><b>Auto swap-time schedule</b>: D Crew shows 2 times and M Crew shows 3 times, calculated as Block Off + 00:15 + n×Rest.</li>
+                                   <li><b>Live updates</b>: it reuses the existing in-flight rest estimate (FT- or Plan-based) and updates immediately when input changes.</li>
+                               </ul>
+                           </section>
+                       </div>
+                   </div>
+
                    <details class="changelog-details">
-                       <summary class="changelog-summary">查看歷史版本 (Previous Versions) ▼</summary>
-                       <div class="info-zh" style="margin-top:8px; font-size:12px; line-height:1.6;">
-                           <b>v6.5.0 UI/可用性強化</b><br>• Legal Status Strip 診斷（可點擊原因/數值）。<br>• Routes 全改內建 Modal/Toast（移除瀏覽器彈窗）。<br>• HHMM 輸入防呆擴充；Guided Focus 自動捲動；Info/Dialogs 無障礙鍵盤支援。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.4.2 引導光環強化</b><br>• 加強引導輸入脈衝光暈；新增 Safari WebKit 動畫支援。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.4.1 Safari 相容性修復</b><br>• 修復 iOS/macOS Safari Flexbox 高度崩塌問題。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.4.0 智慧引導輸入</b><br>• 視覺脈衝引導填寫；支援智慧捷徑 (Smart Bypass)。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.3.0 智慧機上輪休計算</b><br>• 航段卡新增輪休預估，支援 M/D Crew 動態雙重計算。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.2.4 智慧字典反向判定</b><br>• 自動將非機場代碼識別為地面任務 (-0m)。
+                       <summary class="changelog-summary">查看較早版本 / Earlier Versions ▼</summary>
+                       <div class="cl-history-wrap">
+                           <div class="cl-entry">
+                               <div class="cl-entry-head">
+                                   <div class="cl-version">v6.5.0</div>
+                                   <div class="cl-tag">UI / Usability</div>
+                               </div>
+                               <div class="cl-grid">
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">中文</div>
+                                       <ul class="cl-list">
+                                           <li><b>UI／可用性強化</b>：新增可點擊原因與數值的 Legal Status Strip 診斷。</li>
+                                           <li><b>內建對話介面</b>：Routes 操作改用內建 Modal／Toast，移除瀏覽器彈窗。</li>
+                                           <li><b>輸入與無障礙</b>：擴充 HHMM 輸入防呆、Guided Focus 自動捲動，以及 Info／Dialogs 鍵盤支援。</li>
+                                       </ul>
+                                   </section>
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">English</div>
+                                       <ul class="cl-list">
+                                           <li><b>UI and usability enhancements</b>: added clickable Legal Status Strip diagnostics for reasons and values.</li>
+                                           <li><b>Built-in dialogs</b>: route actions moved to built-in Modal and Toast UI, removing browser popups.</li>
+                                           <li><b>Input and accessibility</b>: expanded HHMM validation, Guided Focus auto-scroll, and keyboard support for Info and Dialogs.</li>
+                                       </ul>
+                                   </section>
+                               </div>
+                           </div>
+
+                           <div class="cl-entry">
+                               <div class="cl-entry-head">
+                                   <div class="cl-version">v6.4.2</div>
+                                   <div class="cl-tag">Focus Halo / 引導光環</div>
+                               </div>
+                               <div class="cl-grid">
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">中文</div>
+                                       <ul class="cl-list">
+                                           <li><b>引導光環強化</b>：加強聚焦輸入框的脈衝光暈。</li>
+                                           <li><b>Safari 支援</b>：新增 Safari WebKit 動畫相容性支援。</li>
+                                       </ul>
+                                   </section>
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">English</div>
+                                       <ul class="cl-list">
+                                           <li><b>Guided halo enhancement</b>: strengthened the pulsing highlight around focused inputs.</li>
+                                           <li><b>Safari support</b>: added Safari WebKit animation compatibility.</li>
+                                       </ul>
+                                   </section>
+                               </div>
+                           </div>
+
+                           <div class="cl-entry">
+                               <div class="cl-entry-head">
+                                   <div class="cl-version">v6.4.1</div>
+                                   <div class="cl-tag">Safari Fix / Safari 修正</div>
+                               </div>
+                               <div class="cl-grid">
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">中文</div>
+                                       <ul class="cl-list">
+                                           <li><b>Safari 相容性修復</b>：修復 iOS／macOS Safari 的 Flexbox 高度崩塌問題。</li>
+                                       </ul>
+                                   </section>
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">English</div>
+                                       <ul class="cl-list">
+                                           <li><b>Safari compatibility fix</b>: fixed Flexbox height collapse on iOS and macOS Safari.</li>
+                                       </ul>
+                                   </section>
+                               </div>
+                           </div>
+
+                           <div class="cl-entry">
+                               <div class="cl-entry-head">
+                                   <div class="cl-version">v6.4.0</div>
+                                   <div class="cl-tag">Guided Input / 引導輸入</div>
+                               </div>
+                               <div class="cl-grid">
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">中文</div>
+                                       <ul class="cl-list">
+                                           <li><b>智慧引導輸入</b>：加入視覺脈衝引導填寫。</li>
+                                           <li><b>Smart Bypass</b>：支援智慧捷徑以加快輸入流程。</li>
+                                       </ul>
+                                   </section>
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">English</div>
+                                       <ul class="cl-list">
+                                           <li><b>Smart guided input</b>: added visual pulsing guidance for data entry.</li>
+                                           <li><b>Smart Bypass</b>: supports shortcut logic for faster input flow.</li>
+                                       </ul>
+                                   </section>
+                               </div>
+                           </div>
+
+                           <div class="cl-entry">
+                               <div class="cl-entry-head">
+                                   <div class="cl-version">v6.3.0</div>
+                                   <div class="cl-tag">Rest Logic / 輪休邏輯</div>
+                               </div>
+                               <div class="cl-grid">
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">中文</div>
+                                       <ul class="cl-list">
+                                           <li><b>智慧機上輪休計算</b>：航段卡新增輪休預估，支援 M／D Crew 動態雙重計算。</li>
+                                       </ul>
+                                   </section>
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">English</div>
+                                       <ul class="cl-list">
+                                           <li><b>Smart in-flight rest calculation</b>: added rest estimates to leg cards with dynamic dual logic for M and D Crew.</li>
+                                       </ul>
+                                   </section>
+                               </div>
+                           </div>
+
+                           <div class="cl-entry">
+                               <div class="cl-entry-head">
+                                   <div class="cl-version">v6.2.4</div>
+                                   <div class="cl-tag">Duty Detection / 任務判定</div>
+                               </div>
+                               <div class="cl-grid">
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">中文</div>
+                                       <ul class="cl-list">
+                                           <li><b>智慧字典反向判定</b>：自動將未知且非機場代碼的輸入識別為地面任務（-0m）。</li>
+                                       </ul>
+                                   </section>
+                                   <section class="cl-lang">
+                                       <div class="cl-lang-title">English</div>
+                                       <ul class="cl-list">
+                                           <li><b>Reverse dictionary duty detection</b>: automatically classifies unknown non-airport codes as ground duty (-0m).</li>
+                                       </ul>
+                                   </section>
+                               </div>
+                           </div>
                        </div>
-                       <div class="info-en" style="margin-top:8px; font-size:12px; line-height:1.6;">
-                           <b>v6.5.0 UI / usability enhancements</b><br>• Legal Status Strip diagnostics (clickable reason/values).<br>• Route actions moved to built-in Modal/Toast UI (browser popups removed).<br>• Expanded HHMM input validation, Guided Focus auto-scroll, and keyboard accessibility for Info/Dialogs.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.4.2 Guided halo enhancement</b><br>• Stronger pulsing guidance halo for focused inputs; added Safari WebKit animation support.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.4.1 Safari compatibility fix</b><br>• Fixed flexbox height collapse on iOS/macOS Safari.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.4.0 Smart guided input</b><br>• Visual pulsing guidance and Smart Bypass shortcuts for faster entry.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.3.0 Smart in-flight rest calculation</b><br>• Added rest estimates to leg cards with dynamic dual logic for M/D Crew.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
-                           <b>v6.2.4 Reverse dictionary duty detection</b><br>• Automatically classifies unknown non-airport codes as ground duty (-0m).
-                       </div>
-                   </details>`
+                   </details>
+               </div>`
         },
         'nextRpt': {
             title: '下次合法報到 (Next Report)',
