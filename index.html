@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.7.3)</title>
+    <title>CAL Duty (Pro v6.7.4)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -544,9 +544,44 @@
         .dt-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(90deg, var(--brand-blue), var(--brand-purple)); border-radius: var(--radius-full); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease, border-radius 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 2; }
         @keyframes pulseHatch { 0% { opacity: 0.8; } 50% { opacity: 1; box-shadow: 0 0 10px rgba(255,59,48,0.8); } 100% { opacity: 0.8; } }
         .dt-fill-danger { position: absolute; top: 0; height: 100%; background: repeating-linear-gradient(45deg, var(--brand-red), var(--brand-red) 4px, #b91c1c 4px, #b91c1c 8px); border-radius: 0 var(--radius-full) var(--radius-full) 0; box-shadow: 0 0 8px rgba(255,59,48,0.5); z-index: 2; animation: pulseHatch 1.5s infinite; display: none; transition: width 0.5s ease; }
-        .dt-now-marker { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #06b6d4; box-shadow: 0 0 6px #06b6d4; z-index: 20; display: none; transition: left 1s ease; pointer-events: none; }
-        .dt-now-marker::before { content: 'NOW'; position: absolute; top: -13px; left: 50%; transform: translateX(-50%); font-size: 7px; font-weight: 900; color: #083344; background: #cffafe; padding: 1px 3px; border-radius: 4px; border: 1px solid #06b6d4; letter-spacing: 0.5px; }
-        body.dark-mode .dt-now-marker::before { background: #083344; color: #22d3ee; border-color: #22d3ee; }
+        .dt-now-marker {
+            position: absolute;
+            top: -4px;
+            bottom: -4px;
+            width: 2px;
+            background: #06b6d4;
+            box-shadow: 0 0 6px #06b6d4;
+            z-index: 20;
+            display: none;
+            transition: left 1s ease;
+            pointer-events: none;
+            transform: translateX(-50%) translateZ(0);
+            -webkit-transform: translateX(-50%) translateZ(0);
+            will-change: left, transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .dt-now-pill {
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%) translateZ(0);
+            -webkit-transform: translateX(-50%) translateZ(0);
+            font-size: 7px;
+            font-weight: 900;
+            color: #083344;
+            background: #cffafe;
+            padding: 1px 3px;
+            border-radius: 4px;
+            border: 1px solid #06b6d4;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            line-height: 1;
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        body.dark-mode .dt-now-pill { background: #083344; color: #22d3ee; border-color: #22d3ee; }
         .dt-segment { position: absolute; top: 1px; bottom: 1px; background: rgba(255, 255, 255, 0.3); border-radius: 4px; z-index: 10; box-shadow: 1px 0 0 rgba(0,0,0,0.1); cursor: pointer; transition: background 0.2s, border 0.2s; -webkit-tap-highlight-color: transparent; }
         body.dark-mode .dt-segment { background: rgba(0, 0, 0, 0.25); }
         .dt-segment.selected { background: rgba(255, 255, 255, 0.6); border: 2px solid white; box-shadow: 0 0 6px rgba(255,255,255,0.8); }
@@ -1077,7 +1112,7 @@
                 </div>
 
                 <div id="help-zh" class="help-section" role="tabpanel" aria-labelledby="helpTabZh">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.7.3) 雙語使用手冊 / Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.4) 雙語使用手冊 / Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【中文版使用說明】</div>
@@ -1150,7 +1185,7 @@
                 </div>
 
                 <div id="help-en" class="help-section" role="tabpanel" aria-labelledby="helpTabEn" style="display:none;">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.7.3) Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.7.4) Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【English User Guide】</div>
@@ -1236,7 +1271,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.3：HHMM 連續輸入（輸入滿 4 碼且有效即自動跳到下一個脈衝欄位；維持四碼顯示）；v6.7.2：LBO（LAST LEGAL PUSH）警告更顯眼（動畫/圖示/高對比；OUT> LBO 直接紅色 ALERT）；v6.7.1：Rest 時數顯示增強（時間條不增高）；v6.7.0：IATA/ICAO 機場轉換資料擴充（IATA 時區＋ICAO→IATA 對照，新增 67 個 IATA）；v6.6.0：LBO 倒數預警（預設啟用，整合 CAUTION/ALERT）" onclick="showInfo('changelog')">Pro v6.7.3 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.7.4：iPad Safari NOW 標記穩定性修正＋版本更新標注補齊中英雙語 / v6.7.4: iPad Safari NOW marker stability fix + bilingual update annotations; v6.7.3：HHMM 連續輸入 / v6.7.3: Continuous HHMM input; v6.7.2：LBO 警告更顯眼 / v6.7.2: More visible LBO warnings; v6.7.1：Rest 時數顯示增強 / v6.7.1: Rest label readability; v6.7.0：IATA/ICAO 資料庫更新 / v6.7.0: Airport DB update; v6.6.0：LBO 倒數預警 / v6.6.0: LBO countdown warning" onclick="showInfo('changelog')">Pro v6.7.4 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1455,7 +1490,7 @@
                 <div class="dt-limit-marker" id="dtMaxMarker">
                     <span class="dt-limit-text">MAX</span>
                 </div>
-                <div class="dt-now-marker" id="dtNowMarker"></div>
+                <div class="dt-now-marker" id="dtNowMarker" aria-hidden="true"><span class="dt-now-pill">NOW</span></div>
             </div>
             
             <div class="dt-ruler" id="dtRuler"></div>
@@ -1591,7 +1626,15 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.7.3 HHMM 連續輸入（無間斷）</b><br>
+            text: `<div class="info-zh"><b>v6.7.4 iPad Safari NOW 標記穩定性修正（UI；不更動計算公式）</b><br>
+                   • <b>修正</b>：Duty Timeline 的 NOW 改為實體標籤層，不再依賴 iPad Safari 較容易漏繪的偽元素重繪。<br>
+                   • <b>穩定化</b>：NOW 採中心點定位並限制在 0.5%–99.5% 區間，同時使用較穩定的合成層轉換，降低 Safari 在工具列/重排時消失的機率。<br>
+                   • <b>文件</b>：版本更新標注補齊中英雙語。<br><br></div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.7.4 iPad Safari NOW marker stability fix (UI-only; no formula changes)</b><br>
+                   • <b>Fix</b>: the Duty Timeline NOW indicator now uses a real label layer instead of a Safari-sensitive pseudo-element. <br>
+                   • <b>Stabilized</b>: NOW uses center-based positioning, is clamped to the 0.5%–99.5% range, and uses GPU-friendly transforms to reduce disappearing during Safari relayout or toolbar changes.<br>
+                   • <b>Docs</b>: changelog/update annotations are now fully bilingual.<br><br></div>
+                   <div class="info-zh"><b>v6.7.3 HHMM 連續輸入（無間斷）</b><br>
                    • <b>新增</b>：在「脈衝陰影（Guided Focus）」的時間欄位，輸入滿 4 碼且有效（0000–2359）後，會自動跳到下一個脈衝欄位，連續輸入不中斷。<br>
                    • <b>顯示維持</b>：時間仍以四碼 HHMM 顯示，不轉換成 HH:MM。<br><br>
                    <b>v6.7.2 LBO（LAST LEGAL PUSH / Z）警告更顯眼</b><br>
@@ -1683,6 +1726,14 @@
                            <b>v6.4.0 智慧引導輸入</b><br>• 視覺脈衝引導填寫；支援智慧捷徑 (Smart Bypass)。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
                            <b>v6.3.0 智慧機上輪休計算</b><br>• 航段卡新增輪休預估，支援 M/D Crew 動態雙重計算。<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
                            <b>v6.2.4 智慧字典反向判定</b><br>• 自動將非機場代碼識別為地面任務 (-0m)。
+                       </div>
+                       <div class="info-en" style="margin-top:8px; font-size:12px; line-height:1.6;">
+                           <b>v6.5.0 UI / usability enhancements</b><br>• Legal Status Strip diagnostics (clickable reason/values).<br>• Route actions moved to built-in Modal/Toast UI (browser popups removed).<br>• Expanded HHMM input validation, Guided Focus auto-scroll, and keyboard accessibility for Info/Dialogs.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.4.2 Guided halo enhancement</b><br>• Stronger pulsing guidance halo for focused inputs; added Safari WebKit animation support.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.4.1 Safari compatibility fix</b><br>• Fixed flexbox height collapse on iOS/macOS Safari.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.4.0 Smart guided input</b><br>• Visual pulsing guidance and Smart Bypass shortcuts for faster entry.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.3.0 Smart in-flight rest calculation</b><br>• Added rest estimates to leg cards with dynamic dual logic for M/D Crew.<hr style="border:0; border-top:1px dashed var(--border-light); margin:8px 0;">
+                           <b>v6.2.4 Reverse dictionary duty detection</b><br>• Automatically classifies unknown non-airport codes as ground duty (-0m).
                        </div>
                    </details>`
         },
@@ -4070,7 +4121,12 @@ function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restM
         }
         
         const nowMarker = document.getElementById('dtNowMarker');
-        if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins && !app._stats.isDutyFinished && app._stats.isLiveTracking) { let nowPct = (elapsedSinceRepMins / scaleMins) * 100; nowMarker.style.display = 'block'; nowMarker.style.left = nowPct + '%'; } 
+        if (elapsedSinceRepMins !== null && elapsedSinceRepMins >= 0 && elapsedSinceRepMins <= scaleMins && !app._stats.isDutyFinished && app._stats.isLiveTracking) {
+            let nowPct = (elapsedSinceRepMins / scaleMins) * 100;
+            nowPct = Math.max(0.5, Math.min(99.5, nowPct));
+            nowMarker.style.display = 'block';
+            nowMarker.style.left = nowPct + '%';
+        } 
         else { nowMarker.style.display = 'none'; }
 
         const ruler = document.getElementById('dtRuler'); ruler.innerHTML = '';
