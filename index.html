@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.8.0)</title>
+    <title>CAL Duty (Pro v6.8.1)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -727,7 +727,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: 0; } }
 
 
-        /* === iPad Floating Time Pad (v6.8.0) === */
+        /* === iPad Floating Time Pad (v6.8.1) === */
         .glass-input.custom-pad-active {
             border-color: var(--brand-blue) !important;
             box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-blue) 20%, transparent) !important;
@@ -1158,7 +1158,7 @@
                 </div>
 
                 <div id="help-zh" class="help-section" role="tabpanel" aria-labelledby="helpTabZh">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.8.0) 雙語使用手冊 / Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.8.1) 雙語使用手冊 / Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【中文版使用說明】</div>
@@ -1185,7 +1185,7 @@
                             <li><b>輸入機場代碼 (Code)</b>：輸入 3 碼 IATA 或 4 碼 ICAO 代碼（如輸入 RJAA 會自動轉為 NRT）。</li>
                             <li>點擊卡片下方的 <b>+</b> 新增航段，<b>⤵</b> 新增轉降 (Divert)。</li>
                             <li><b>輸入表定時間 (STD / STA)</b>：輸入 4 位數字（如 0830），系統會自動換算時區。</li>
-                            <li><b>iPad 浮動數字鍵盤</b>：在 iPad 點選 HHMM 時間欄位時，會直接顯示 app 內建數字鍵盤（含 ⌫／清除／完成），避免 Safari / Chrome 原生鍵盤把航段卡頂到看不見。</li>
+                            <li><b>iPad 浮動數字鍵盤</b>：在 iPad 點按 HHMM 時間欄位時，會直接顯示 app 內建數字鍵盤（含 ⌫／清除／完成）；v6.8.1 已改為更直接的點按觸發，提升 Safari / Chrome 顯示成功率，並避免原生鍵盤把航段卡頂到看不見。</li>
                         </ul>
                         <div class="help-tip">💡 提示：輸入完成後，底部 HUD 會自動算出您的報到時間 (Report) 與 最大任務時間 (Max FDT)。</div>
                     </div>
@@ -1232,7 +1232,7 @@
                 </div>
 
                 <div id="help-en" class="help-section" role="tabpanel" aria-labelledby="helpTabEn" style="display:none;">
-                    <div class="help-title">✈️ CAL Duty (Pro v6.8.0) Bilingual User Guide</div>
+                    <div class="help-title">✈️ CAL Duty (Pro v6.8.1) Bilingual User Guide</div>
 
                     <div class="help-block">
                         <div class="help-h">【English User Guide】</div>
@@ -1258,7 +1258,7 @@
                         <ul class="help-ul">
                             <li><b>Code</b>: Input 3-letter IATA or 4-letter ICAO codes. Tap <b>+</b> to add legs, <b>⤵</b> to add diverts.</li>
                             <li><b>STD / STA</b>: Input 4 digits (e.g., 0830). The system automatically formats and converts timezones.</li>
-                            <li><b>iPad floating number pad</b>: On iPad, tapping an HHMM field opens the built-in number pad (with ⌫ / Clear / Done) so Safari / Chrome does not push the leg cards out of view with the native keyboard.</li>
+                            <li><b>iPad floating number pad</b>: On iPad, tapping an HHMM field opens the built-in number pad (with ⌫ / Clear / Done); v6.8.1 now uses a more direct tap trigger for better Safari / Chrome reliability, while keeping the native keyboard from pushing the leg cards out of view.</li>
                         </ul>
                         <div class="help-tip">💡 Tip: Bottom HUD will auto-calculate your Report Time and Max FDT once STD/STA are entered.</div>
                     </div>
@@ -1319,7 +1319,7 @@
             <!-- 1. Logo (Left) -->
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
-                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.8.0：iPad 自訂浮動時間鍵盤（免叫出原生鍵盤） / v6.8.0: iPad floating custom time pad (no native keyboard); v6.7.4：iPad Safari NOW 標記穩定性修正 / v6.7.4: iPad Safari NOW marker stability fix; v6.7.3：HHMM 連續輸入 / v6.7.3: Continuous HHMM input; v6.7.2：LBO 警告更顯眼 / v6.7.2: More visible LBO warnings; v6.7.1：Rest 時數顯示增強 / v6.7.1: Rest label readability; v6.7.0：IATA/ICAO 資料庫更新 / v6.7.0: Airport DB update; v6.6.0：LBO 倒數預警 / v6.6.0: LBO countdown warning" onclick="showInfo('changelog')">Pro v6.8.0 ⓘ</span>
+                <span class="text-xs font-medium text-secondary" style="border:1px solid var(--border-light); padding:1px 4px; border-radius:4px; cursor:pointer;" title="v6.8.1：修正 iPad 浮動時間鍵盤觸發，改以點按即開啟 / v6.8.1: fixed iPad floating time pad trigger; opens directly on tap; v6.8.0：iPad 自訂浮動時間鍵盤（免叫出原生鍵盤） / v6.8.0: iPad floating custom time pad (no native keyboard); v6.7.4：iPad Safari NOW 標記穩定性修正 / v6.7.4: iPad Safari NOW marker stability fix; v6.7.3：HHMM 連續輸入 / v6.7.3: Continuous HHMM input; v6.7.2：LBO 警告更顯眼 / v6.7.2: More visible LBO warnings; v6.7.1：Rest 時數顯示增強 / v6.7.1: Rest label readability; v6.7.0：IATA/ICAO 資料庫更新 / v6.7.0: Airport DB update; v6.6.0：LBO 倒數預警 / v6.6.0: LBO countdown warning" onclick="showInfo('changelog')">Pro v6.8.1 ⓘ</span>
             </div>
 
             <!-- 2. Primary Responsive Group (Center on iPad, Wraps to Bottom on Mobile) -->
@@ -1703,7 +1703,17 @@
     const INFO_DATA = {
         'changelog': {
             title: '版本更新資訊 (Changelog)',
-            text: `<div class="info-zh"><b>v6.8.0 iPad 浮動時間鍵盤（UI；不更動計算公式）</b><br>
+            text: `<div class="info-zh"><b>v6.8.1 iPad 浮動時間鍵盤觸發修正（UI；不更動計算公式）</b><br>
+                   • <b>修正</b>：改善部分 iPad Safari / Chrome 點選 HHMM 欄位時未顯示浮動鍵盤的問題，改以點按事件直接開啟，不再依賴原生 focus 流程。<br>
+                   • <b>裝置判定</b>：放寬 iPad / 觸控平板偵測邏輯，提升不同 iPadOS / 瀏覽器組合下的觸發成功率。<br>
+                   • <b>保留</b>：既有 HHMM 驗證、Guided Focus、自動跳下一格與不叫出原生鍵盤的設計維持不變。<br>
+                   • <b>文件</b>：版本號更新為 v6.8.1，並同步補上中英雙語更新說明。<br><br></div>
+                   <div class="info-en" style="margin-top:8px;"><b>v6.8.1 iPad floating time pad trigger fix (UI-only; no formula changes)</b><br>
+                   • <b>Fix</b>: resolved cases where the floating pad did not appear on some iPad Safari / Chrome setups; HHMM fields now open the pad directly on tap instead of depending on the native focus flow.<br>
+                   • <b>Device detection</b>: broadened iPad / touch-tablet detection to improve trigger reliability across different iPadOS and browser combinations.<br>
+                   • <b>Kept</b>: HHMM validation, Guided Focus, auto-advance, and the no-native-keyboard behavior remain unchanged.<br>
+                   • <b>Docs</b>: version is bumped to v6.8.1 with bilingual update notes.<br><br></div>
+                   <div class="info-zh"><b>v6.8.0 iPad 浮動時間鍵盤（UI；不更動計算公式）</b><br>
                    • <b>新增</b>：在 iPad 點選 HHMM 時間欄位時，改用 app 內建浮動數字鍵盤（含 0–9、00、⌫、清除、完成），避免 Safari / Chrome 原生鍵盤把中間航段卡往上頂。<br>
                    • <b>定位</b>：鍵盤會優先貼近輸入欄位旁邊顯示；若左右空間不足，會自動改到下方或上方，並隨畫面捲動 / 旋轉重新定位。<br>
                    • <b>輸入體驗</b>：保留既有 HHMM 驗證、Guided Focus 與自動跳下一格邏輯；完成 4 碼有效時間後，會延續既有引導流程。<br>
@@ -2430,7 +2440,7 @@ function uiToast(message, tone = 'info') {
     }
 
 
-    // === iPad FLOATING TIME PAD (v6.8.0) ===
+    // === iPad FLOATING TIME PAD (v6.8.1) ===
     const __customTimePad = {
         enabled: false,
         open: false,
@@ -2439,8 +2449,14 @@ function uiToast(message, tone = 'info') {
     };
 
     function __isIpadCustomPadDevice() {
-        return /iPad/.test(navigator.userAgent)
-            || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 && Math.max(window.screen.width || 0, window.screen.height || 0) >= 1024);
+        const ua = navigator.userAgent || '';
+        const maxSide = Math.max(window.screen.width || 0, window.screen.height || 0, window.innerWidth || 0, window.innerHeight || 0);
+        const coarsePointer = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+        const isiPadUA = /iPad/.test(ua);
+        const touchMac = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+        const touchTabletLike = navigator.maxTouchPoints > 0 && coarsePointer && maxSide >= 768;
+        const iosBrowser = /Safari|CriOS|FxiOS|EdgiOS|Version\//.test(ua);
+        return isiPadUA || touchMac || (touchTabletLike && iosBrowser);
     }
 
     function __isValidHHMMGlobal(v) {
@@ -2670,6 +2686,18 @@ function uiToast(message, tone = 'info') {
             });
             __customTimePad.observer.observe(document.body, { childList: true, subtree: true });
         }
+
+        const __openPadFromPointer = function(e) {
+            const inputEl = e.target && e.target.closest ? e.target.closest('input[type="tel"]') : null;
+            if (!__isCustomTimePadTarget(inputEl)) return;
+            e.preventDefault();
+            e.stopPropagation();
+            __openCustomTimePad(inputEl);
+        };
+
+        document.addEventListener('pointerdown', __openPadFromPointer, true);
+        document.addEventListener('touchstart', __openPadFromPointer, { capture: true, passive: false });
+        document.addEventListener('mousedown', __openPadFromPointer, true);
 
         document.addEventListener('focusin', function(e) {
             const el = e.target;
