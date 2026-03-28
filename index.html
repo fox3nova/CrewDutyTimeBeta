@@ -1252,27 +1252,33 @@
             .station-card { padding: 12px !important; }
         }
 
-      /* Keyboard-open mode: 打字時暫時隱藏中間的統計與時間軸，釋放物理空間給航段卡 */
+      /* Keyboard-open mode: 終極排版防撞設定 */
         body.keyboard-open .stats-dashboard,
-        body.keyboard-open .duty-timeline-wrapper {
-            display: none !important; /* 釋放約 150px 的空間 */
+        body.keyboard-open .legal-status-strip,
+        body.keyboard-open .duty-timeline-wrapper,
+        body.keyboard-open .hud-footer {
+            display: none !important; /* 隱藏非必要資訊，釋放最大垂直空間 */
         }
 
         body.keyboard-open #timeline-container {
+            padding-top: 100px !important; /* 物理防撞區：強制航段卡頂部往下壓 100px，絕對不會再鑽進 Header 背後 */
+            padding-bottom: 50vh !important; /* 底部給予大量虛擬空間，讓 Safari 有餘裕把畫面推到正中央 */
             overflow-y: auto !important;
+            align-items: flex-start !important;
             overscroll-behavior-y: auto !important;
+            scroll-padding-top: 100px !important; /* 告知系統上方有障礙物 */
         }
 
         body.keyboard-open .station-card {
             max-height: none !important;
             overflow: visible !important;
         }
-        
+
         body.keyboard-open input,
         body.keyboard-open select,
         body.keyboard-open textarea {
-            scroll-margin-top: 100px !important; /* 完美閃過最頂端的導覽列與狀態條 */
-            scroll-margin-bottom: 40px !important;
+            scroll-margin-top: 120px !important; /* 雙重保險：輸入框自身的安全對焦距離 */
+            scroll-margin-bottom: 60px !important;
         }
 
     
