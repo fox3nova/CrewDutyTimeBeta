@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>CAL Duty (Pro v6.8.3)</title>
+    <title>CAL Duty (Pro v6.8.4)</title>
     <style>
         /* === SYSTEM & VARIABLES === */
         :root {
@@ -808,7 +808,7 @@
         .ctp-key:active { transform: scale(0.98); opacity: 0.96; }
         .ctp-key.action { font-size: 12px; font-weight: 800; }
         .ctp-key.done { background: var(--brand-blue); color: white; border-color: transparent; }
-        .ctp-actions { display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px; }
+        .ctp-actions { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-top:8px; }
         @media (max-width: 430px) {
             .custom-time-pad { width: min(220px, calc(100vw - 12px)); padding: 9px; }
             .ctp-key { height: 40px; }
@@ -1445,7 +1445,7 @@
                             <li><b>輸入機場代碼 (Code)</b>：輸入 3 碼 IATA 或 4 碼 ICAO 代碼（如輸入 RJAA 會自動轉為 NRT）。</li>
                             <li>點擊卡片下方的 <b>+</b> 新增航段，<b>⤵</b> 新增轉降 (Divert)。</li>
                             <li><b>輸入表定時間 (STD / STA)</b>：輸入 4 位數字（如 0830），系統會自動換算時區。</li>
-                            <li><b>iPad 浮動數字鍵盤</b>：在 iPad 點按 HHMM 時間欄位時，會直接顯示 app 內建數字鍵盤（含 ⌫／清除／完成）；v6.8.3 延續 v6.8.2 的 iPad 浮動鍵盤修正，並把版本更新標註重構為卡片式雙語 Release Notes，現在更容易閱讀與檢索。</li>
+                            <li><b>iPad 浮動數字鍵盤</b>：在 iPad 點按 HHMM 時間欄位時，會直接顯示 app 內建數字鍵盤（含 ⌫／清除／現在／完成）；v6.8.4 新增「現在/Now」一鍵輸入當下時間功能，並支援自動判斷 UTC (Z) 或當地 (L) 機場時區。</li>
                         </ul>
                         <div class="help-tip">💡 提示：輸入完成後，底部 HUD 會自動算出您的報到時間 (Report) 與 最大任務時間 (Max FDT)。</div>
                     </div>
@@ -1518,7 +1518,7 @@
                         <ul class="help-ul">
                             <li><b>Code</b>: Input 3-letter IATA or 4-letter ICAO codes. Tap <b>+</b> to add legs, <b>⤵</b> to add diverts.</li>
                             <li><b>STD / STA</b>: Input 4 digits (e.g., 0830). The system automatically formats and converts timezones.</li>
-                            <li><b>iPad floating number pad</b>: On iPad, tapping an HHMM field opens the built-in number pad (with ⌫ / Clear / Done); v6.8.3 carries forward the v6.8.2 iPad floating-pad fix and restructures update annotations into a bilingual card-based Release Notes panel for cleaner reading and scanning.</li>
+                            <li><b>iPad floating number pad</b>: On iPad, tapping an HHMM field opens the built-in number pad (with ⌫ / Clear / Now / Done); v6.8.4 adds a 'Now' shortcut to instantly input the current time, with smart support for UTC (Z) or the specific airport's Local (L) timezone.</li>
                         </ul>
                         <div class="help-tip">💡 Tip: Bottom HUD will auto-calculate your Report Time and Max FDT once STD/STA are entered.</div>
                     </div>
@@ -1580,7 +1580,7 @@
             <div class="app-title">
                 <span style="font-size:20px;">✈️</span> CAL Duty 
                 <button class="release-pill" title="Open structured bilingual release notes / 開啟結構化中英雙語版本更新" onclick="showInfo('changelog')">
-                    <span class="release-pill-main">v6.8.3</span>
+                    <span class="release-pill-main">v6.8.4</span>
                     <span class="release-pill-sub">Release Notes</span>
                 </button>
             </div>
@@ -1874,6 +1874,7 @@
         </div>
         <div class="ctp-actions">
             <button type="button" class="ctp-key action" data-key="CLR">清除 / Clear</button>
+            <button type="button" class="ctp-key action" data-key="NOW">現在 / Now</button>
             <button type="button" class="ctp-key action done" data-key="DONE">完成 / Done</button>
         </div>
     </div>
@@ -2046,11 +2047,40 @@
     };
 
     
-    const RELEASE_NOTES_VERSION = '6.8.3';
+    const RELEASE_NOTES_VERSION = '6.8.4';
     const RELEASE_NOTES = [
     {
-        "version": "6.8.3",
+        "version": "6.8.4",
         "latest": true,
+        "summary": {
+            "zh": "時間鍵盤新增「現在/Now」快捷鍵",
+            "en": "Added 'Now' shortcut to the floating time pad"
+        },
+        "description": {
+            "zh": "在 iPad 浮動數字鍵盤中新增「現在/Now」按鈕，可一鍵填入當下時間（支援 UTC 與當地時區自動判斷）。",
+            "en": "Added a 'Now' button to the iPad floating number pad for one-tap current time entry (auto-supports UTC and Local timezone contexts)."
+        },
+        "tags": {
+            "zh": ["New", "UI", "Input"],
+            "en": ["New", "UI", "Input"]
+        },
+        "scope": {
+            "zh": "鍵盤輸入優化",
+            "en": "Keyboard input enhancement"
+        },
+        "points": [
+            {
+                "label": { "zh": "新增", "en": "New" },
+                "text": { "zh": "鍵盤底部新增快捷鍵，一鍵輸入當下實際時間。", "en": "Added a shortcut at the bottom of the pad to enter the exact current time." }
+            },
+            {
+                "label": { "zh": "智慧", "en": "Smart" },
+                "text": { "zh": "自動判斷欄位狀態，精準填入對應的 UTC (Z) 或當地 (L) 機場時間。", "en": "Auto-detects field mode to input either UTC (Z) or the specific airport's Local (L) time." }
+            }
+        ]
+    },
+    {
+        "version": "6.8.3",
         "summary": {
             "zh": "版本更新面板重構為卡片式雙語 Release Notes",
             "en": "Release notes panel redesigned into structured bilingual cards"
@@ -3894,6 +3924,49 @@ function uiToast(message, tone = 'info') {
         }
         if (key === 'CLR') {
             __commitCustomTimePadValue('', { triggerAdvance: false });
+            return;
+        }
+        if (key === 'NOW') {
+            const now = new Date();
+            let h = now.getUTCHours();
+            let m = now.getUTCMinutes();
+            let isLocal = false;
+            let zone = null;
+
+            // 1. 判斷目標欄位是否處於 Local (L) 模式
+            const wrapper = target.closest('.smart-input-wrapper');
+            if (wrapper) {
+                const badge = wrapper.querySelector('.mode-badge');
+                if (badge && badge.classList.contains('mode-l')) isLocal = true;
+            } else if (target.id === 'nd-time') {
+                if (app.nextDuty && app.nextDuty.timeMode === 'L') isLocal = true;
+            }
+
+            // 2. 如果是 Local 模式，抓出對應機場的時區
+            if (isLocal) {
+                const match = target.id.match(/-(\d+)$/);
+                if (match) {
+                    const idx = parseInt(match[1], 10);
+                    if (app.stations[idx]) zone = airportIanaZones[app.stations[idx].code.trim().toUpperCase()];
+                } else if (target.id === 'nd-time') {
+                    const destCode = app.stations[app.stations.length-1].code.trim().toUpperCase();
+                    zone = airportIanaZones[destCode];
+                }
+            }
+
+            // 3. 將目前時間轉換成該機場的當地時間
+            if (isLocal && zone) {
+                try {
+                    const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+                    const parts = fmt.formatToParts(now);
+                    h = parseInt(parts.find(p => p.type === 'hour').value, 10);
+                    m = parseInt(parts.find(p => p.type === 'minute').value, 10);
+                } catch(e) {} // 容錯，若轉換失敗則退回 UTC
+            }
+
+            // 4. 格式化為 HHMM 並觸發寫入與自動跳下一格
+            const val = String(h).padStart(2, '0') + String(m).padStart(2, '0');
+            __commitCustomTimePadValue(val, { triggerAdvance: true });
             return;
         }
         if (!isNumeric) return;
