@@ -1252,24 +1252,10 @@
             .station-card { padding: 12px !important; }
         }
 
-        /* Keyboard-open mode (iPad landscape): maximize leg card viewport */
-        body.keyboard-open .stats-dashboard,
-        body.keyboard-open .legal-status-strip,
-        body.keyboard-open .duty-timeline-wrapper{
-            display: none !important;
-        }
-
-        body.keyboard-open .hud-footer{
-            display: none !important;
-        }
-
+        /* Keyboard-open mode: 移除破壞版面的隱藏邏輯，保留平滑捲動，避免畫面錯位與底部灰色破圖 */
         body.keyboard-open #timeline-container{
-            padding-top: 6px !important;
-            padding-bottom: 12px !important;
             overflow-y: auto !important;
-            align-items: flex-start !important;
             overscroll-behavior-y: auto !important;
-            touch-action: pan-x pan-y;
         }
 
         body.keyboard-open .station-card{
@@ -1277,12 +1263,9 @@
             overflow: auto;
             -webkit-overflow-scrolling: touch;
         }
-
-        body.keyboard-open input,
-        body.keyboard-open select,
-        body.keyboard-open textarea{
-            scroll-margin-top: 10px;
-            scroll-margin-bottom: 40px;
+        
+        body.keyboard-open input {
+            scroll-margin-top: 80px; /* 預留上方 Header 的安全距離 */
         }
 
     
