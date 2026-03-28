@@ -1252,24 +1252,27 @@
             .station-card { padding: 12px !important; }
         }
 
-      /* Keyboard-open mode: 保留上方所有資訊卡，並修正對焦高度與捲動空間 */
+      /* Keyboard-open mode: 打字時暫時隱藏中間的統計與時間軸，釋放物理空間給航段卡 */
+        body.keyboard-open .stats-dashboard,
+        body.keyboard-open .duty-timeline-wrapper {
+            display: none !important; /* 釋放約 150px 的空間 */
+        }
+
         body.keyboard-open #timeline-container {
             overflow-y: auto !important;
             overscroll-behavior-y: auto !important;
-            padding-bottom: 45vh !important; /* 增加底部虛擬空間，確保畫面有足夠的餘裕把航段卡往上推 */
-            scroll-padding-top: 280px !important; /* 告訴 Safari 上方有固定障礙物 */
         }
 
         body.keyboard-open .station-card {
-            max-height: none !important; /* 解除卡片內部的高度限制，讓它能跟著整體自然捲動 */
+            max-height: none !important;
             overflow: visible !important;
         }
         
         body.keyboard-open input,
         body.keyboard-open select,
         body.keyboard-open textarea {
-            scroll-margin-top: 280px !important; /* 核心關鍵：強制輸入框對焦時，距離螢幕頂端至少保留 280px 的安全距離（完美閃開上方所有資訊卡） */
-            scroll-margin-bottom: 60px !important;
+            scroll-margin-top: 100px !important; /* 完美閃過最頂端的導覽列與狀態條 */
+            scroll-margin-bottom: 40px !important;
         }
 
     
