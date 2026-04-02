@@ -1252,33 +1252,37 @@
             .station-card { padding: 12px !important; }
         }
 
-      /* Keyboard-open mode: 終極排版防撞設定 */
+        /* Keyboard-open mode (iPad landscape): maximize leg card viewport */
         body.keyboard-open .stats-dashboard,
         body.keyboard-open .legal-status-strip,
-        body.keyboard-open .duty-timeline-wrapper,
-        body.keyboard-open .hud-footer {
-            display: none !important; /* 隱藏非必要資訊，釋放最大垂直空間 */
+        body.keyboard-open .duty-timeline-wrapper{
+            display: none !important;
         }
 
-        body.keyboard-open #timeline-container {
-            padding-top: 100px !important; /* 物理防撞區：強制航段卡頂部往下壓 100px，絕對不會再鑽進 Header 背後 */
-            padding-bottom: 50vh !important; /* 底部給予大量虛擬空間，讓 Safari 有餘裕把畫面推到正中央 */
+        body.keyboard-open .hud-footer{
+            display: none !important;
+        }
+
+        body.keyboard-open #timeline-container{
+            padding-top: 6px !important;
+            padding-bottom: 12px !important;
             overflow-y: auto !important;
             align-items: flex-start !important;
             overscroll-behavior-y: auto !important;
-            scroll-padding-top: 100px !important; /* 告知系統上方有障礙物 */
+            touch-action: pan-x pan-y;
         }
 
-        body.keyboard-open .station-card {
-            max-height: none !important;
-            overflow: visible !important;
+        body.keyboard-open .station-card{
+            max-height: calc(var(--app-height, 100vh) - 16px);
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         body.keyboard-open input,
         body.keyboard-open select,
-        body.keyboard-open textarea {
-            scroll-margin-top: 120px !important; /* 雙重保險：輸入框自身的安全對焦距離 */
-            scroll-margin-bottom: 60px !important;
+        body.keyboard-open textarea{
+            scroll-margin-top: 10px;
+            scroll-margin-bottom: 40px;
         }
 
     
@@ -3401,8 +3405,10 @@
             if (!__rbOpen) return;
             const t = e.target;
             const insidePop = pop && pop.contains(t);
+            const padEl = document.getElementById('customTimePad');
+            const insidePad = !!(padEl && padEl.contains(t));
             const isChip = (t && t.id && /^rb-\d+$/.test(t.id)) || (t && t.closest && t.closest('[id^="rb-"]') && t.closest('[id^="rb-"]').id && /^rb-\d+$/.test(t.closest('[id^="rb-"]').id));
-            if (!insidePop && !isChip) closeRestPopover();
+            if (!insidePop && !insidePad && !isChip) closeRestPopover();
         }, true);
 
         window.addEventListener('resize', () => { if (__rbOpen) rbPositionPopover(); }, { passive:true });
@@ -6061,8 +6067,11 @@ function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restM
              let usedAcars = false;
              if (acarsLboMins !== null) { let acarsElapsed = acarsLboMins - rep; if (acarsElapsed < -720) acarsElapsed += 1440;  if (acarsElapsed > 0) { let absoluteAcars = rep + acarsElapsed; if (absoluteAcars < lboAbs) { lboAbs = absoluteAcars; usedAcars = true; } } }
 
-             const actualOut = parse(app.stations[i].out); const nextIn = parse(app.stations[i+1].in); const isSectorFlown = (actualOut !== null && nextIn !== null);
-             if (isSectorFlown) { if (app.stations[i].frozenLbo === undefined || app.stations[i].frozenLbo === null) { app.stations[i].frozenLbo = lboAbs; } else { lboAbs = app.stations[i].frozenLbo; } } 
+             const actualOut = parse(app.stations[i].out);
+             const nextIn = parse(app.stations[i+1].in);
+             const nextLegOut = (i + 1 < app.stations.length - 1) ? parse(app.stations[i+1].out) : null;
+             const shouldFreezeLbo = (actualOut !== null || nextIn !== null || nextLegOut !== null);
+             if (shouldFreezeLbo) { if (app.stations[i].frozenLbo === undefined || app.stations[i].frozenLbo === null) { app.stations[i].frozenLbo = lboAbs; } else { lboAbs = app.stations[i].frozenLbo; } } 
              else { app.stations[i].frozenLbo = null; }
              
              const lboEl = document.getElementById(`lbo-${i}`); const lboDet = document.getElementById(`lbo-detail-${i}`); const lboBox = document.getElementById(`lbo-box-${i}`);
@@ -6070,9 +6079,9 @@ function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restM
              if (app.stations[i].hotel) { const co = parse(app.stations[i].co); if (co !== null) { let coElapsed = co - rep; if (coElapsed < 0) coElapsed += 1440; if (lboFromReport < coElapsed) isImpossible = true; } }
              
              if(lboEl) {
-                lboEl.classList.remove('lbo-locked'); lboBox.classList.remove('lbo-warn', 'lbo-safe', 'lbo-acars', 'lbo-alert');
+                lboEl.classList.remove('lbo-locked'); lboBox.classList.remove('lbo-locked', 'lbo-warn', 'lbo-safe', 'lbo-acars', 'lbo-alert');
                 if (isImpossible) { lboEl.innerText = "IMPOSSIBLE"; lboEl.style.color = 'var(--brand-red)'; } 
-                else { lboEl.innerText = fmt(lboAbs)+" Z"; lboEl.style.color = 'var(--text-primary)'; if (isSectorFlown && app.stations[i].frozenLbo !== null) lboBox.classList.add('lbo-locked'); if (usedAcars && !isSectorFlown) lboBox.classList.add('lbo-acars'); }
+                else { lboEl.innerText = fmt(lboAbs)+" Z"; lboEl.style.color = 'var(--text-primary)'; if (shouldFreezeLbo && app.stations[i].frozenLbo !== null) lboBox.classList.add('lbo-locked'); if (usedAcars && !shouldFreezeLbo) lboBox.classList.add('lbo-acars'); }
              }
              let detText = "";
              if (usedAcars) { detText += `LIMITED BY JZ ACARS`; } else { if (globalPauseMinutes > 0) detText += `Split+${fmt(globalPauseMinutes,false)} `; if (midDutyBonus > 0) detText += `Ext+${fmt(midDutyBonus,false)}`; if (isExt) detText += `CD+2h`;  }
@@ -6161,6 +6170,8 @@ function updateDynamicTimeline(rep, maxFdpMins, projElapsed, schedElapsed, restM
     }
 
     const hideGlobalElements = (e) => {
+        const padEl = document.getElementById('customTimePad');
+        if (padEl && padEl.contains(e.target)) return;
         const prevPopup = document.getElementById('prevPopup'); const prevBadge = document.querySelector('.badge-prev-ft');
         if (prevPopup && prevPopup.classList.contains('show')) { if (!prevPopup.contains(e.target) && prevBadge && !prevBadge.contains(e.target)) prevPopup.classList.remove('show'); }
         const routePopup = document.getElementById('routePopup'); const routeBtn = document.getElementById('routeBtn');
